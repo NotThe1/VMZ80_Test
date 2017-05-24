@@ -23,7 +23,7 @@ public class ConditionCodeRegisterTest {
 		ccr.clearAllCodes();
 		assertThat(" 01 ", false, equalTo(ccr.isSignFlagSet()));
 		assertThat(" 02 ", false, equalTo(ccr.isZeroFlagSet()));
-		assertThat(" 03 ", false, equalTo(ccr.isAuxFlagSet()));
+		assertThat(" 03 ", false, equalTo(ccr.isHFlagSet()));
 		assertThat(" 04 ", false, equalTo(ccr.isPvFlagSet()));
 		assertThat(" 05 ", false, equalTo(ccr.isNFlagSet()));
 		assertThat(" 06 ", false, equalTo(ccr.isCarryFlagSet()));
@@ -31,8 +31,8 @@ public class ConditionCodeRegisterTest {
 		assertThat(" 10 ", true, equalTo(ccr.isSignFlagSet()));
 		ccr.setZeroFlag(true);
 		assertThat(" 11 ", true, equalTo(ccr.isZeroFlagSet()));
-		ccr.setAuxFlag(true);
-		assertThat(" 12 ", true, equalTo(ccr.isAuxFlagSet()));
+		ccr.setHFlag(true);
+		assertThat(" 12 ", true, equalTo(ccr.isHFlagSet()));
 		ccr.setPvFlag(true);
 		assertThat(" 13 ", true, equalTo(ccr.isPvFlagSet()));
 		ccr.setNFlag(true);
@@ -42,7 +42,7 @@ public class ConditionCodeRegisterTest {
 		ccr.clearAllCodes();
 		assertThat(" 21 ", false, equalTo(ccr.isSignFlagSet()));
 		assertThat(" 22 ", false, equalTo(ccr.isZeroFlagSet()));
-		assertThat(" 23 ", false, equalTo(ccr.isAuxFlagSet()));
+		assertThat(" 23 ", false, equalTo(ccr.isHFlagSet()));
 		assertThat(" 24 ", false, equalTo(ccr.isPvFlagSet()));
 		assertThat(" 25 ", false, equalTo(ccr.isNFlagSet()));
 		assertThat(" 26 ", false, equalTo(ccr.isCarryFlagSet()));
@@ -63,9 +63,9 @@ public class ConditionCodeRegisterTest {
 		ccr.setZeroFlag(false);
 		
 		 value = Z80.BIT_AUX;
-		ccr.setAuxFlag(true);
+		ccr.setHFlag(true);
 		assertThat(" 03 ", value, equalTo(ccr.getConditionCode()));
-		ccr.setAuxFlag(false);
+		ccr.setHFlag(false);
 
 		 value = Z80.BIT_PV;
 		ccr.setPvFlag(true);
@@ -108,16 +108,16 @@ public class ConditionCodeRegisterTest {
 		
 		ccr.clearAllCodes();
 		ccr.setCarryFlag(true);
-		ccr.setAuxFlag(true);
+		ccr.setHFlag(true);
 		
 		assertThat(" 31 ", true, equalTo(ccr.isCarryFlagSet()));
-		assertThat(" 32 ", true, equalTo(ccr.isAuxFlagSet()));
+		assertThat(" 32 ", true, equalTo(ccr.isHFlagSet()));
 		
 		 value = (byte) 0XFF;
 		ccr.setZSPclearCYandAUX(value);
 		assertThat(" 33 ", true, equalTo(ccr.isSignFlagSet()));
 		assertThat(" 34 ", false, equalTo(ccr.isZeroFlagSet()));
-		assertThat(" 35 ", false, equalTo(ccr.isAuxFlagSet()));
+		assertThat(" 35 ", false, equalTo(ccr.isHFlagSet()));
 		assertThat(" 36 ", true, equalTo(ccr.isPvFlagSet()));
 		assertThat(" 37 ", false, equalTo(ccr.isNFlagSet()));
 		assertThat(" 38 ", false, equalTo(ccr.isCarryFlagSet()));
