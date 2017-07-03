@@ -1,4 +1,4 @@
-package codeSupport;
+package hardware;
 
 import hardware.Adder;
 
