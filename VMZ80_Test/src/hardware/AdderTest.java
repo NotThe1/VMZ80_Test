@@ -127,6 +127,88 @@ public class AdderTest {
 			assertThat("Word Add (" + i + ") " + val1, total, equalTo(result));
 		} // for
 	}// testWordIncrement
+	
+	@Test
+	public void testWordDecrement() {
+		int total, result;
+		Random random = new Random();
+		int COUNT = 1;
+		for (int i = 0; i < COUNT; i++) {
+			val1 = random.nextInt(0XFFFF);
+			word1 = loadWord(val1);
+			total = (val1 - 1) & 0XFFFF;
+			answers = adder.decrementWord(word1);
+			result = ((answers[1] * 0X100) + (answers[0] & 0XFF)) & 0XFFFF;
+			// System.out.printf("total = %04X, result = %04X%n", total,result);
+			assertThat("Word dec(" + i + ") " + val1, total, equalTo(result));
+		} // for
+	}// testWordDecrement
+	
+
+	@Test
+	public void testByteSub() {
+		for (val1 = 0; val1 < 0X100; val1++) {
+			for (val2 = 0; val2 < 0X100; val2++) {
+				byte answer = (byte) ((val1 - val2) & 0XFF);
+				bite1[0] = (byte) val1;
+				bite2[0] = (byte) val2;
+				assertThat("Full SUB:  " + val1 + " - " + val2, answer, equalTo(adder.sub(bite1, bite2)));
+			} // for val2
+		} // for val1
+	}// simpleTestOfAdd
+
+	@Test
+	public void testByteSubWithCarry() {
+		Random random = new Random();
+		boolean carryVar;
+		int carry;
+		byte answer;
+		String msg;
+		for (val1 = 0; val1 < 0X100; val1++) {
+			for (val2 = 0; val2 < 0X100; val2++) {
+				carryVar = random.nextBoolean();
+				carry = carryVar ? 1 : 0;
+				answer = (byte) ((val1 - (val2 + carry)) & 0XFF);
+				bite1[0] = (byte) val1;
+				bite2[0] = (byte) val2;
+				msg = String.format("Byte Sub With Carry, var1 = %02x, var2 = %02X, Carry = %s", val1, val2, carryVar);
+				assertThat(msg, answer, equalTo(adder.subWithCarry(bite1, bite2,carryVar)));
+			} // for val2
+		} // for val1
+	}// simpleTestOfAdd
+	@Test
+	public void testWordSubWithCarry() {
+		int total, result;
+		boolean carryVar;
+		int carry;
+		Random random = new Random();
+		int COUNT = 1;
+		for (int i = 0; i < COUNT; i++) {
+			val1 = random.nextInt(0XFFFF);
+			word1 = loadWord(val1);
+			val2 = random.nextInt(0XFFFF);
+			word2 = loadWord(val2);
+			carryVar = random.nextBoolean();
+			carry = carryVar?1:0;
+			total = (val1 - (val2 + carry)) & 0XFFFF;
+			answers = adder.subWordWithCarry(word1, word2,carryVar);
+			result = ((answers[1] * 0X100) + (answers[0] & 0XFF)) & 0XFFFF;
+			assertThat("Word Sub with Carry (" + i + ") " + val1 + " + " + val2, total, equalTo(result));
+		} // for
+	}// testWordAdd
+
+
+
+	@Test
+	public void testByteDecrement() {
+		for (val1 = 0; val1 < 0X100; val1++) {
+			byte answer = (byte) ((val1 - 1) & 0XFF);
+			bite1[0] = (byte) val1;
+			assertThat("Byte decrement:  " + val1, answer, equalTo(adder.decrement(bite1)));
+		} // for val1
+	}// testByteIncrement
+
+
 
 	@Test
 	public void testZFlag() {
@@ -156,9 +238,9 @@ public class AdderTest {
 			zeroFlag = (((val1 + val2) & 0XFFFF) == 0) ? true : false;
 			word1 = loadWord(val1);
 			word2 = loadWord(val2);
-			adder.add(word1, word2);
+			adder.addWord(word1, word2);
 			assertThat("testZFlag word:  " + val1 + " + " + val2 + " = " + (val2 + val1), zeroFlag,
-					equalTo(adder.isZeroWord()));
+					equalTo(adder.isZero()));
 		} // for
 
 	}// testZFlag
@@ -186,9 +268,9 @@ public class AdderTest {
 			signFlag = (((val1 + val2) & 0X8000) == 0X8000) ? true : false;
 			word1 = loadWord(val1);
 			word2 = loadWord(val2);
-			adder.add(word1, word2);
+			adder.addWord(word1, word2);
 			assertThat("testSign word:  " + val1 + " + " + val2 + " = " + (val2 + val1), signFlag,
-					equalTo(adder.hasSignWord()));
+					equalTo(adder.hasSign()));
 		} // for
 	}// testSign
 
@@ -217,9 +299,9 @@ public class AdderTest {
 			halfCarry = ((val1 & byteAndNibbleMask) + (val2 & byteAndNibbleMask)) > byteAndNibbleMask ? true : false;
 			word1 = loadWord(val1);
 			word2 = loadWord(val2);
-			adder.add(word1, word2);
+			adder.addWord(word1, word2);
 			assertThat("testHalfCarry word:  " + val1 + " + " + val2 + " = " + (val2 + val1), halfCarry,
-					equalTo(adder.hasHalfCarryWord()));
+					equalTo(adder.hasHalfCarry()));
 		} // for
 
 	}// testHalfCarry
@@ -252,9 +334,9 @@ public class AdderTest {
 
 			word1 = loadWord(val1);
 			word2 = loadWord(val2);
-			adder.add(word1, word2);
+			adder.addWord(word1, word2);
 			assertThat("testParity word:  " + val1 + " + " + val2 + " = " + (val2 + val1), parityFlag,
-					equalTo(adder.hasParityWord()));
+					equalTo(adder.hasParity()));
 		} // for
 	}// testParity
 
@@ -301,9 +383,9 @@ public class AdderTest {
 
 			word1 = loadWord(val1);
 			word2 = loadWord(val2);
-			adder.add(word1, word2);
+			adder.addWord(word1, word2);
 			assertThat("testOverflow word:  " + val1 + " + " + val2 + " = " + (val2 + val1), overflow,
-					equalTo(adder.hasOverflowWord()));
+					equalTo(adder.hasOverflow()));
 		} // for
 	}// testOverflow
 
@@ -332,9 +414,9 @@ public class AdderTest {
 			carry = ((val1 & wordMask) + (val2 & wordMask)) > wordMask ? true : false;
 			word1 = loadWord(val1);
 			word2 = loadWord(val2);
-			adder.add(word1, word2);
+			adder.addWord(word1, word2);
 			assertThat("testCarry word:  " + val1 + " + " + val2 + " = " + (val2 + val1), carry,
-					equalTo(adder.hasCarryWord()));
+					equalTo(adder.hasCarry()));
 		} // for
 
 	}// testHalfCarry
@@ -383,11 +465,21 @@ public class AdderTest {
 
 	@Test
 	public void testCPL() {
-		// one's compleeeeement
+		// one's complement
 		for (val1 = 0; val1 < 0X100; val1++) {
 			answers = new byte[] { (byte) (~val1 & 0XFF) };
 			bite1[0] = (byte) val1;
 			assertThat("Full CPL:  " + val1, answers[0], equalTo(adder.complement(bite1)[0]));
+		} // for val1
+	}// testCPL
+
+	@Test
+	public void testNegate() {
+		// Two's complement
+		for (val1 = 0; val1 < 0X100; val1++) {
+			byte answer =  (byte) ((~val1+1) & 0XFF) ;
+			bite1[0] = (byte) val1;
+			assertThat("Full Negate:  " + val1, answer, equalTo(adder.negate(bite1)));
 		} // for val1
 	}// testCPL
 
