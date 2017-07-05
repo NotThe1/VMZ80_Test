@@ -3,12 +3,20 @@ package hardware;
 public class AdderTestLite {
 	static Adder adder = Adder.getInstance();
 
+	private static boolean mSign;
+	private static boolean mZero;
+	private static boolean mHalfCarry;
+	private static boolean mParity;
+	private static boolean mOverflow;
+	private static boolean mCarry;
+
 	public static void main(String[] args) {
-		//checkCompare();
+		checkFixedFlags();
+		// checkCompare();
 		// checkNeg();
 		// checkSubWord();
 		// checkWordSignFlag();
-		 checkSUB();
+		// checkSUB();
 		// checkNOT();
 		// checkAND();
 		// checkOverFlow();
@@ -16,6 +24,14 @@ public class AdderTestLite {
 		// addWord();
 		// addByte();
 	}// main
+	
+	public static void checkFixedFlags(){
+		int arg1 = 0X7800;
+		int arg2 = 0X6900;
+		boolean hasCarry = false;
+		fixFlagsADD(arg1,arg2,WORD_ARG,hasCarry);
+		showFixedFlagsV();
+	}//checkFixedFlags
 
 	private static void checkCompare() {
 		int val1 = 0X80;
@@ -77,7 +93,7 @@ public class AdderTestLite {
 
 		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlags(adder);
-		
+
 		val1 = 0X30;
 		val2 = 0X30;
 		bite1 = new byte[] { (byte) val1 };
@@ -86,7 +102,7 @@ public class AdderTestLite {
 
 		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlags(adder);
-		
+
 		val1 = 0X30;
 		val2 = 0X60;
 		bite1 = new byte[] { (byte) val1 };
@@ -95,7 +111,7 @@ public class AdderTestLite {
 
 		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlags(adder);
-		
+
 	}// checkSUB
 
 	private static void checkNOT() {
@@ -155,7 +171,7 @@ public class AdderTestLite {
 		boolean pf = adder.hasParity();
 		if (pf == parityFlag) {
 			int a = 1;
-		}//if
+		} // if
 	}// checkParity
 
 	private static void addWord() {
@@ -205,4 +221,66 @@ public class AdderTestLite {
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFlags
 
+	private static void showFixedFlagsP() {
+		String sign = mSign ? "S" : "s";
+		String zero = mZero ? "Z" : "z";
+		String bit5 = ".";
+		String half = mHalfCarry ? "H" : "h";
+		String bit3 = ".";
+		String PV = mParity ? "P" : "p";
+		String AS = ".";
+		String carry = mCarry ? "C" : "c";
+		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
+	}// showFixedFlags
+
+	private static void showFixedFlagsV() {
+		String sign = mSign ? "S" : "s";
+		String zero = mZero ? "Z" : "z";
+		String bit5 = ".";
+		String half = mHalfCarry ? "H" : "h";
+		String bit3 = ".";
+		String PV = mOverflow ? "V" : "v";
+		String AS = ".";
+		String carry = mCarry ? "C" : "c";
+		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
+	}// showFixedFlags
+
+	private static void fixFlagsADD(int arg1, int arg2, String argSize, boolean carryArg) {
+		// mSign;
+		// mZero;
+		// mHalfCarry;
+		// mParity;
+		// mOverflow;
+		// mCarry;
+
+		int halfCarryMask = (argSize == BYTE_ARG) ? 0X0F : 0X0FFF;
+		int signMask = (argSize == BYTE_ARG) ? 0X80 : 0X8000;
+		int sizeMask = (argSize == BYTE_ARG) ? 0XFF : 0XFFFF;
+		int value1 = arg1 & sizeMask;
+		int value2 = arg2 & sizeMask;
+		int valueCarry = carryArg ? 1 : 0;
+		int ans = (value1 + value2 + valueCarry) & sizeMask;
+
+		mSign = (ans & signMask) == signMask;
+		mZero = ans == 0;
+		mHalfCarry = ((arg1 & halfCarryMask) + (arg2 & halfCarryMask)) > halfCarryMask;
+
+		String bits = Integer.toBinaryString(ans);
+		bits = bits.replace("0", "");
+		mParity = (bits.length() % 2) == 0;
+
+		boolean sign1 = (value1 & signMask) == signMask;
+		boolean sign2 = (value2 & signMask) == signMask;
+		boolean signAns = (ans & signMask) == signMask;
+		mOverflow = false;
+		if (!(sign1 ^ sign2)) {
+			mOverflow = sign1 ^ signAns;
+		} // if
+
+		mCarry = ((arg1 & sizeMask) + (arg2 & sizeMask)) > sizeMask;
+
+	}// fixFlags
+
+	private static final String BYTE_ARG = "ByteArg";
+	private static final String WORD_ARG = "WordArg";
 }// AdderTestLite

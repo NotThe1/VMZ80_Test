@@ -8,7 +8,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AdderTest {
+public class AdderTest1 {
 	Adder adder;
 	byte[] bite1 = new byte[] { (byte) 00 };
 	byte[] bite2 = new byte[] { (byte) 00 };
