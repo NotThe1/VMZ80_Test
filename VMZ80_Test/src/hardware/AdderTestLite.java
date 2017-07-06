@@ -11,12 +11,13 @@ public class AdderTestLite {
 	private static boolean mCarry;
 
 	public static void main(String[] args) {
-		checkFixedFlags();
+		checkFixedFlags1();
+//		checkFixedFlags0();
 		// checkCompare();
 		// checkNeg();
 		// checkSubWord();
 		// checkWordSignFlag();
-		// checkSUB();
+//		 checkSUB();
 		// checkNOT();
 		// checkAND();
 		// checkOverFlow();
@@ -25,13 +26,33 @@ public class AdderTestLite {
 		// addByte();
 	}// main
 	
-	public static void checkFixedFlags(){
+	public static void checkFixedFlags1(){
+		int arg1 = 22304;
+		int arg2 = 32768;
+		boolean hasCarry = false;
+		fixFlagsSUB(arg1,arg2,WORD_ARG,hasCarry);
+		showFixedFlagsV();
+		
+		int val1 = arg1;
+		int val2 = arg2;
+		byte[] bite1 = new byte[] { (byte) val1 };
+		byte[] bite2 = new byte[] { (byte) val2 };
+		byte[] word1 = loadWord(val1);
+		byte[] word2 = loadWord(val2);
+
+		byte[] ans = adder.subWordWithCarry(word1, word2, hasCarry);
+
+		System.out.printf("%02X - %02X = %02X", val1, val2, ans[0]);
+		showFlagsV(adder);
+	}//checkFixedFlags1
+	
+	public static void checkFixedFlags0(){
 		int arg1 = 0X7800;
 		int arg2 = 0X6900;
 		boolean hasCarry = false;
 		fixFlagsADD(arg1,arg2,WORD_ARG,hasCarry);
 		showFixedFlagsV();
-	}//checkFixedFlags
+	}//checkFixedFlags0
 
 	private static void checkCompare() {
 		int val1 = 0X80;
@@ -76,11 +97,11 @@ public class AdderTestLite {
 	}// checkWordSignFlag
 
 	private static void checkSUB() {
-		int val1 = 0X4;
-		int val2 = 0X2;
+		int val1 = 0X7F;
+		int val2 = 0XFF;
 		byte[] bite1 = new byte[] { (byte) val1 };
 		byte[] bite2 = new byte[] { (byte) val2 };
-		byte ans = adder.subWithCarry(bite1, bite2, true);
+		byte ans = adder.subWithCarry(bite1, bite2, false);
 
 		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlags(adder);
@@ -280,6 +301,61 @@ public class AdderTestLite {
 		mCarry = ((arg1 & sizeMask) + (arg2 & sizeMask)) > sizeMask;
 
 	}// fixFlags
+	
+	private static void fixFlagsSUB(int arg1, int arg2, String argSize, boolean carryArg) {
+
+		int valueCarry = carryArg ? 1 : 0;
+		
+		int halfCarryMask = (argSize == BYTE_ARG) ? 0X0F : 0X0FFF;
+		int signMask = (argSize == BYTE_ARG) ? 0X80 : 0X8000;
+		int sizeMask = (argSize == BYTE_ARG) ? 0XFF : 0XFFFF;
+		int argument1 = arg1 & sizeMask;
+		int argument2 = (arg2 + valueCarry) & sizeMask;
+		
+		
+		int ans = (argument1 - argument2  ) & sizeMask;
+
+		mSign = (ans & signMask) == signMask;
+		mZero = ans == 0;
+		
+
+		String bits = Integer.toBinaryString(ans);
+		bits = bits.replace("0", "");
+		mParity = (bits.length() % 2) == 0;
+
+		boolean sign1 = (argument1 & signMask) == signMask;
+		boolean sign2 = (argument2 & signMask) == signMask;
+		boolean signAns = (ans & signMask) == signMask;
+		
+		
+		mOverflow = false;
+		if ((sign1 ^ sign2)) {
+			mOverflow = sign2 == signAns;
+		} // if
+		
+		// carry ?
+		boolean halfCarry0 = ((arg2 & halfCarryMask) + valueCarry) > halfCarryMask;
+		boolean carry0 = ((arg2 & sizeMask) + valueCarry) > sizeMask;
+		arg2 = (arg2 + valueCarry);
+		
+		//Two's complement
+		int notArg2 = ~arg2 & sizeMask;
+		boolean halfCarry1 = ((notArg2 & halfCarryMask) + 1) > halfCarryMask;
+		boolean carry1 = ((notArg2 & sizeMask) + 1) > sizeMask;
+		
+		notArg2 = (notArg2+1) & sizeMask;	// make the arg two's complement
+		
+		//Actual add
+		boolean halfCarry2 = (((argument1 & halfCarryMask) + (notArg2 & halfCarryMask)) > halfCarryMask);
+		boolean carry2 = (((argument1 & sizeMask) + (notArg2 & sizeMask) ) >  sizeMask);
+		
+		
+		
+		mHalfCarry = !(halfCarry0 | halfCarry1 | halfCarry2);
+		mCarry = !(carry0 | carry1 | carry2);
+
+	}// fixFlags
+
 
 	private static final String BYTE_ARG = "ByteArg";
 	private static final String WORD_ARG = "WordArg";

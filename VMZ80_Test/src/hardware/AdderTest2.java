@@ -25,8 +25,8 @@ public class AdderTest2 {
 
 	@Test
 	public void testByteAdd() {
-		for (value1 = 0; value1 < 0X100; value1++) {
-			for (value2 = 0; value2 < 0X100; value2++) {
+		for (value1 = 0; value1 < 0XFF; value1++) {
+			for (value2 = 0; value2 < 0XFF; value2++) {
 				fixFlagsADD(value1, value2, BYTE_ARG, false);
 				byte answer = (byte) ((value1 + value2) & 0XFF);
 				bite1[0] = (byte) value1;
@@ -40,12 +40,12 @@ public class AdderTest2 {
 				assertThat("Full Add Carry:  " + value1 + " " + value2, mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1
-	}// simpleTestOfAdd
+	}// testByteAdd
 
 	@Test
 	public void testByteAddWithCarry() {
-		for (value1 = 0; value1 < 0X100; value1++) {
-			for (value2 = 0; value2 < 0X100; value2++) {
+		for (value1 = 0; value1 < 0XFF; value1++) {
+			for (value2 = 0; value2 < 0XFF; value2++) {
 				fixFlagsADD(value1, value2, BYTE_ARG, false);
 				byte answer = (byte) ((value1 + value2) & 0XFF);
 				bite1[0] = (byte) value1;
@@ -76,7 +76,7 @@ public class AdderTest2 {
 
 			} // for val2
 		} // for val1
-	}// simpleTestOfAdd
+	}// testByteAddWithCarry
 
 	@Test
 	public void testWordAdd() {
@@ -132,7 +132,7 @@ public class AdderTest2 {
 	
 	@Test
 	public void testByteIncrement() {
-		for (value1 = 0; value1 < 0X100; value1++) {
+		for (value1 = 0; value1 < 0XFF; value1++) {
 				fixFlagsADD(value1, 1, BYTE_ARG, false);
 				byte answer = (byte) ((value1 + 1) & 0XFF);
 				bite1[0] = (byte) value1;
@@ -166,6 +166,90 @@ public class AdderTest2 {
 
 		} // for val1
 	}// testWordIncrement
+	
+	@Test
+	public void testByteSUB() {
+		for (value1 = 0; value1 < 0XFF; value1++) {
+			for (value2 = 0; value2 < 0XFF; value2++) {
+				fixFlagsSUB(value1, value2, BYTE_ARG, false);
+				byte answer = (byte) ((value1 - value2) & 0XFF);
+				bite1[0] = (byte) value1;
+				bite2[0] = (byte) value2;
+				assertThat("Full Sub:  " + value1 + " " + value2, answer, equalTo(adder.sub(bite1, bite2)));
+				assertThat("Full Sub Sign:  " + value1 + " " + value2, mSign, equalTo(adder.hasSign()));
+				assertThat("Full Sub Zero:  " + value1 + " " + value2, mZero, equalTo(adder.isZero()));
+				assertThat("Full Sub HalfCarry:  " + value1 + " " + value2, mHalfCarry, equalTo(adder.hasHalfCarry()));
+				assertThat("Full Sub Parity:  " + value1 + " " + value2, mParity, equalTo(adder.hasParity()));
+				assertThat("Full Sub Overflow:  " + value1 + " " + value2, mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Sub Carry:  " + value1 + " " + value2, mCarry, equalTo(adder.hasCarry()));
+			} // for val2
+		} // for val1
+	}// simpleTestOfSUB
+
+	@Test
+	public void testByteSUBWithCarry() {
+		for (value1 = 0; value1 < 0XFF; value1++) {
+			for (value2 = 0; value2 < 0XFF; value2++) {
+				fixFlagsSUB(value1, value2, BYTE_ARG, false);
+				byte answer = (byte) ((value1 - (value2 +0)) & 0XFF);
+				bite1[0] = (byte) value1;
+				bite2[0] = (byte) value2;
+				assertThat("Full Sub/WCf:  " + value1 + " " + value2, answer, equalTo(adder.subWithCarry(bite1, bite2,false)));
+				assertThat("Full Sub/WCf Sign:  " + value1 + " " + value2, mSign, equalTo(adder.hasSign()));
+				assertThat("Full Sub/WCf Zero:  " + value1 + " " + value2, mZero, equalTo(adder.isZero()));
+				assertThat("Full Sub/WCf HalfCarry:  " + value1 + " " + value2, mHalfCarry, equalTo(adder.hasHalfCarry()));
+				assertThat("Full Sub/WCf Parity:  " + value1 + " " + value2, mParity, equalTo(adder.hasParity()));
+				assertThat("Full Sub/WCf Overflow:  " + value1 + " " + value2, mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Sub/WCf Carry:  " + value1 + " " + value2, mCarry, equalTo(adder.hasCarry()));
+			} // for val2
+		} // for val1
+		
+		for (value1 = 0; value1 < 0XFF; value1++) {
+			for (value2 = 0; value2 < 0XFF; value2++) {
+				fixFlagsSUB(value1, value2, BYTE_ARG, true);
+				byte answer = (byte) ((value1 - (value2 +1)) & 0XFF);
+				bite1[0] = (byte) value1;
+				bite2[0] = (byte) (value2 );
+				assertThat("Full Sub/WCt:  " + value1 + " " + value2, answer, equalTo(adder.subWithCarry(bite1, bite2,true)));
+				assertThat("Full Sub/WCt Sign:  " + value1 + " " + value2, mSign, equalTo(adder.hasSign()));
+				assertThat("Full Sub/WCt Zero:  " + value1 + " " + value2, mZero, equalTo(adder.isZero()));
+				assertThat("Full Sub/WCt HalfCarry:  " + value1 + " " + value2, mHalfCarry, equalTo(adder.hasHalfCarry()));
+				assertThat("Full Sub/WCt Parity:  " + value1 + " " + value2, mParity, equalTo(adder.hasParity()));
+				assertThat("Full Sub/WCt Overflow:  " + value1 + " " + value2, mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Sub/WCt Carry:  " + value1 + " " + value2, mCarry, equalTo(adder.hasCarry()));
+			} // for val2
+		} // for val1	
+	}// testByteSUBWithCarry
+
+	@Test
+	public void testWordSubWithCarry() {
+		Random random = new Random();
+		boolean carryState;
+		int carryValue;
+		int COUNT = 16000;
+		for (int i = 0; i < COUNT; i++) {
+			carryState = random.nextBoolean();
+			carryValue = carryState?1:0;
+			value1 = random.nextInt(0XFFFF);
+			value2 = random.nextInt(0XFFFF);
+			fixFlagsSUB(value1, value2, WORD_ARG, carryState);
+			int answer = ((value1 - (value2 + carryValue)) & 0XFFFF);
+			word1 = loadWord(value1);
+			word2 = loadWord(value2);
+			// byte[] result = adder.addWord(word1, word2);
+			int ans = getWordValue(adder.subWordWithCarry(word1, word2,carryState));
+			assertThat("Full SubWord/WC:  " + value1 + " " + value2, answer, equalTo(ans));
+			assertThat("Full SubWord/WC Sign:  " + value1 + " " + value2, mSign, equalTo(adder.hasSign()));
+			assertThat("Full SubWord/WC Zero:  " + value1 + " " + value2, mZero, equalTo(adder.isZero()));
+			assertThat("Full SubWord/WC HalfCarry:  " + value1 + " " + value2, mHalfCarry, equalTo(adder.hasHalfCarry()));
+			assertThat("Full SubWord/WC Parity:  " + value1 + " " + value2, mParity, equalTo(adder.hasParity()));
+			assertThat("Full SubWord/WC Overflow:  " + value1 + " " + value2, mOverflow, equalTo(adder.hasOverflow()));
+			assertThat("Full SubWord/WC Carry:  " + value1 + " " + value2, mCarry, equalTo(adder.hasCarry()));
+
+		} // for val1
+	}// testWordSubWithCarry
+	
+
 
 
 
@@ -204,6 +288,59 @@ public class AdderTest2 {
 			mOverflow = sign1 ^ signAns;
 		} // if
 		mCarry = ((arg1 & sizeMask) + (arg2 & sizeMask) + valueCarry) > sizeMask;
+
+	}// fixFlags
+	private void fixFlagsSUB(int arg1, int arg2, String argSize, boolean carryArg) {
+
+		int valueCarry = carryArg ? 1 : 0;
+		
+		int halfCarryMask = (argSize == BYTE_ARG) ? 0X0F : 0X0FFF;
+		int signMask = (argSize == BYTE_ARG) ? 0X80 : 0X8000;
+		int sizeMask = (argSize == BYTE_ARG) ? 0XFF : 0XFFFF;
+		int argument1 = arg1 & sizeMask;
+		int argument2 = (arg2 + valueCarry) & sizeMask;
+		
+		
+		int ans = (argument1 - argument2 ) & sizeMask;
+
+		mSign = (ans & signMask) == signMask;
+		mZero = ans == 0;
+		
+
+		String bits = Integer.toBinaryString(ans);
+		bits = bits.replace("0", "");
+		mParity = (bits.length() % 2) == 0;
+
+		boolean sign1 = (argument1 & signMask) == signMask;
+		boolean sign2 = (argument2 & signMask) == signMask;
+		boolean signAns = (ans & signMask) == signMask;
+		
+		
+		mOverflow = false;
+		if ((sign1 ^ sign2)) {
+			mOverflow = sign2 == signAns;
+		} // if
+		
+		// carry ?
+		boolean halfCarry0 = ((arg2 & halfCarryMask) + valueCarry) > halfCarryMask;
+		boolean carry0 = ((arg2 & sizeMask) + valueCarry) > sizeMask;
+		arg2 = (arg2 + valueCarry);
+		
+		//Two's complement
+		int notArg2 = ~arg2 & sizeMask;
+		boolean halfCarry1 = ((notArg2 & halfCarryMask) + 1) > halfCarryMask;
+		boolean carry1 = ((notArg2 & sizeMask) + 1) > sizeMask;
+		
+		notArg2 = (notArg2+1) & sizeMask;	// make the arg two's complement
+		
+		//Actual add
+		boolean halfCarry2 = (((argument1 & halfCarryMask) + (notArg2 & halfCarryMask)) > halfCarryMask);
+		boolean carry2 = (((argument1 & sizeMask) + (notArg2 & sizeMask) ) >  sizeMask);
+		
+		
+		
+		mHalfCarry = !(halfCarry0 | halfCarry1 | halfCarry2);
+		mCarry = !(carry0 | carry1 | carry2);
 
 	}// fixFlags
 
