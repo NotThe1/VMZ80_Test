@@ -11,7 +11,8 @@ public class AdderTestLite {
 	private static boolean mCarry;
 
 	public static void main(String[] args) {
-		checkFixedFlags1();
+		checkFixedFlags2();
+//		checkFixedFlags1();
 //		checkFixedFlags0();
 		// checkCompare();
 		// checkNeg();
@@ -26,10 +27,10 @@ public class AdderTestLite {
 		// addByte();
 	}// main
 	
-	public static void checkFixedFlags1(){
-		int arg1 = 22304;
-		int arg2 = 32768;
-		boolean hasCarry = false;
+	public static void checkFixedFlags2(){
+		int arg1 = 0X00;
+		int arg2 = 0X7F;
+		boolean hasCarry = true;
 		fixFlagsSUB(arg1,arg2,WORD_ARG,hasCarry);
 		showFixedFlagsV();
 		
@@ -37,14 +38,33 @@ public class AdderTestLite {
 		int val2 = arg2;
 		byte[] bite1 = new byte[] { (byte) val1 };
 		byte[] bite2 = new byte[] { (byte) val2 };
-		byte[] word1 = loadWord(val1);
-		byte[] word2 = loadWord(val2);
 
-		byte[] ans = adder.subWordWithCarry(word1, word2, hasCarry);
+		int ans = adder.subWithCarry(bite1, bite2, hasCarry) & 0XFF;
+		
 
-		System.out.printf("%02X - %02X = %02X", val1, val2, ans[0]);
+		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlagsV(adder);
-	}//checkFixedFlags1
+	}//checkFixedFlags2
+	
+	public static void checkFixedFlags1(){
+	int arg1 = 58408;
+	int arg2 = 32767;
+	boolean hasCarry = true;
+	fixFlagsSUB(arg1,arg2,WORD_ARG,hasCarry);
+	showFixedFlagsV();
+	
+	int val1 = arg1;
+	int val2 = arg2;
+	byte[] bite1 = new byte[] { (byte) val1 };
+	byte[] bite2 = new byte[] { (byte) val2 };
+	byte[] word1 = loadWord(val1);
+	byte[] word2 = loadWord(val2);
+
+	byte[] ans = adder.subWordWithCarry(word1, word2, hasCarry);
+
+	System.out.printf("%02X - %02X = %02X", val1, val2, getWordValue(ans));
+	showFlagsV(adder);
+}//checkFixedFlags1
 	
 	public static void checkFixedFlags0(){
 		int arg1 = 0X7800;
@@ -217,6 +237,10 @@ public class AdderTestLite {
 	private static byte[] loadWord(int value) {
 		return new byte[] { (byte) (value & 0XFF), (byte) ((value & 0XFF00) >> 8) };
 	}// loadWord
+	
+	private static int getWordValue(byte[] word) {
+		return ((word[1] << 8) & 0XFF00) + (word[0] & 0X00FF);
+	}// getWordValue
 
 	private static void showFlags(Adder adder) {
 		String sign = adder.hasSign() ? "S" : "s";
@@ -267,13 +291,7 @@ public class AdderTestLite {
 	}// showFixedFlags
 
 	private static void fixFlagsADD(int arg1, int arg2, String argSize, boolean carryArg) {
-		// mSign;
-		// mZero;
-		// mHalfCarry;
-		// mParity;
-		// mOverflow;
-		// mCarry;
-
+		
 		int halfCarryMask = (argSize == BYTE_ARG) ? 0X0F : 0X0FFF;
 		int signMask = (argSize == BYTE_ARG) ? 0X80 : 0X8000;
 		int sizeMask = (argSize == BYTE_ARG) ? 0XFF : 0XFFFF;
@@ -324,7 +342,7 @@ public class AdderTestLite {
 		mParity = (bits.length() % 2) == 0;
 
 		boolean sign1 = (argument1 & signMask) == signMask;
-		boolean sign2 = (argument2 & signMask) == signMask;
+		boolean sign2 = (arg2 & signMask) == signMask;
 		boolean signAns = (ans & signMask) == signMask;
 		
 		

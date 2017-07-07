@@ -312,7 +312,7 @@ public class AdderTest2 {
 		mParity = (bits.length() % 2) == 0;
 
 		boolean sign1 = (argument1 & signMask) == signMask;
-		boolean sign2 = (argument2 & signMask) == signMask;
+		boolean sign2 = (arg2 & signMask) == signMask;
 		boolean signAns = (ans & signMask) == signMask;
 		
 		
