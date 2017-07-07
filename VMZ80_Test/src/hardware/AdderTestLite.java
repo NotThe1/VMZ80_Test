@@ -49,8 +49,8 @@ public class AdderTestLite {
 	}// checkFixedFlags2
 
 	public static void checkFixedFlags1() {
-		int arg1 = 52266;
-		int arg2 = 32768;
+		int arg1 = 0X0E11;	// 3601
+		int arg2 = 0X8000;	// 32768
 		boolean hasCarry = false;
 		atu.fixFlagsSUB(arg1, arg2, WORD_ARG, hasCarry);
 		atu.showFixedFlagsV();
@@ -168,8 +168,8 @@ public class AdderTestLite {
 		int val2 = 0XAA;
 		byte[] bite1 = new byte[] { (byte) val1 };
 		byte[] bite2 = new byte[] { (byte) val2 };
-		byte[] ans = adder.and(bite1, bite2);
-		System.out.printf("parity = %s,\tans[0] = %02X,\t val1 = %02X,\t val2 = %02X%n", adder.hasParity(), ans[0],
+		byte ans = adder.and(bite1, bite2);
+		System.out.printf("parity = %s,\tans[0] = %02X,\t val1 = %02X,\t val2 = %02X%n", adder.hasParity(), ans,
 				val1, val2);
 	}// checkAND
 

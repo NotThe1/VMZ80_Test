@@ -29,7 +29,7 @@ public class AdderWordSubtract {
 		Random random = new Random();
 		boolean carryState;
 		int carryValue;
-		int COUNT = 16000;
+		int COUNT = 8000;
 		for (int i = 0; i < COUNT; i++) {
 			carryState = random.nextBoolean();
 			carryValue = carryState?1:0;
@@ -51,5 +51,25 @@ public class AdderWordSubtract {
 
 		} // for val1
 	}// testWordSubWithCarry
+	
+	@Test
+	public void testWordDecrement() {
+		for (int value1 = 0; value1 <0XFFFF ; value1++) {
+			
+			atu.fixFlagsSUB(value1, 1, AdderTestUtility.WORD_ARG, false);
+			int answer = (value1 -1) & 0XFFFF;
+			word1 = atu.loadWord(value1);
+			int ans = atu.getWordValue(adder.decrementWord(word1));
+			assertThat("Full AddWord:  " + value1 + " " + value2, answer, equalTo(ans));
+			assertThat("Full AddWord Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
+			assertThat("Full AddWord Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
+			assertThat("Full AddWord HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
+			assertThat("Full AddWord Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
+			assertThat("Full AddWord Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+			assertThat("Full AddWord Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
+
+		} // for val1
+	}// testWordAdd
+
 
 }// class AdderTest2

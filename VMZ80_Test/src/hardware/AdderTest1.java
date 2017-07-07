@@ -429,7 +429,7 @@ public class AdderTest1 {
 				answers = new byte[] { (byte) ((val1 & val2) & 0XFF) };
 				bite1[0] = (byte) val1;
 				bite2[0] = (byte) val2;
-				assertThat("Full AND:  " + val1 + " " + val2, answers[0], equalTo(adder.and(bite1, bite2)[0]));
+				assertThat("Full AND:  " + val1 + " " + val2, answers[0], equalTo(adder.and(bite1, bite2)));
 			} // for val2
 		} // for val1
 
@@ -443,7 +443,7 @@ public class AdderTest1 {
 				answers = new byte[] { (byte) ((val1 | val2) & 0XFF) };
 				bite1[0] = (byte) val1;
 				bite2[0] = (byte) val2;
-				assertThat("Full OR:  " + val1 + " " + val2, answers[0], equalTo(adder.or(bite1, bite2)[0]));
+				assertThat("Full OR:  " + val1 + " " + val2, answers[0], equalTo(adder.or(bite1, bite2)));
 			} // for val2
 		} // for val1
 
@@ -457,7 +457,7 @@ public class AdderTest1 {
 				answers = new byte[] { (byte) ((val1 ^ val2) & 0XFF) };
 				bite1[0] = (byte) val1;
 				bite2[0] = (byte) val2;
-				assertThat("Full XOR:  " + val1 + " " + val2, answers[0], equalTo(adder.xor(bite1, bite2)[0]));
+				assertThat("Full XOR:  " + val1 + " " + val2, answers[0], equalTo(adder.xor(bite1, bite2)));
 			} // for val2
 		} // for val1
 
