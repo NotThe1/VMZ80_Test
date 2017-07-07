@@ -155,7 +155,7 @@ public class AdderTestUtility {
 	public boolean mOverflow;
 	public boolean mCarry;
 
-	private static final String BYTE_ARG = "ByteArg";
-	private static final String WORD_ARG = "WordArg";
+	public static final String BYTE_ARG = "ByteArg";
+	public static final String WORD_ARG = "WordArg";
 
 }//class AdderTestUtility

@@ -35,7 +35,7 @@ public class AdderWordSubtract {
 			carryValue = carryState?1:0;
 			value1 = random.nextInt(0XFFFF);
 			value2 = random.nextInt(0XFFFF);
-			atu.fixFlagsSUB(value1, value2, WORD_ARG, carryState);
+			atu.fixFlagsSUB(value1, value2, AdderTestUtility.WORD_ARG, carryState);
 			int answer = ((value1 - (value2 + carryValue)) & 0XFFFF);
 			word1 = atu.loadWord(value1);
 			word2 = atu.loadWord(value2);
@@ -51,110 +51,5 @@ public class AdderWordSubtract {
 
 		} // for val1
 	}// testWordSubWithCarry
-	
-
-
-
-//
-//	private int atu.getWordValue(byte[] word) {
-//		return ((word[1] << 8) & 0XFF00) + (word[0] & 0X00FF);
-//	}// atu.getWordValue
-//
-//	// returns LSB in index 0 and MSB in index 1
-//	private byte[] atu.loadWord(int value) {
-//		return new byte[] { (byte) (value & 0XFF), (byte) ((value & 0XFF00) >> 8) };
-//	}// atu.loadWord
-//
-//	private void fixFlagsADD(int arg1, int arg2, String argSize, boolean carryArg) {
-//
-//		int halfCarryMask = (argSize == BYTE_ARG) ? 0X0F : 0X0FFF;
-//		int signMask = (argSize == BYTE_ARG) ? 0X80 : 0X8000;
-//		int sizeMask = (argSize == BYTE_ARG) ? 0XFF : 0XFFFF;
-//		int argument1 = arg1 & sizeMask;
-//		int argument2 = arg2 & sizeMask;
-//		int valueCarry = carryArg ? 1 : 0;
-//		int ans = (argument1 + argument2 + valueCarry) & sizeMask;
-//
-//		mSign = (ans & signMask) == signMask;
-//		mZero = ans == 0;
-//		mHalfCarry = ((arg1 & halfCarryMask) + (arg2 & halfCarryMask) + valueCarry) > halfCarryMask;
-//
-//		String bits = Integer.toBinaryString(ans);
-//		bits = bits.replace("0", "");
-//		mParity = (bits.length() % 2) == 0;
-//
-//		boolean sign1 = (argument1 & signMask) == signMask;
-//		boolean sign2 = (argument2 & signMask) == signMask;
-//		boolean signAns = (ans & signMask) == signMask;
-//		mOverflow = false;
-//		if (!(sign1 ^ sign2)) {
-//			mOverflow = sign1 ^ signAns;
-//		} // if
-//		mCarry = ((arg1 & sizeMask) + (arg2 & sizeMask) + valueCarry) > sizeMask;
-//
-//	}// fixFlags
-//	private void atu.fixFlagsSUB(int arg1, int arg2, String argSize, boolean carryArg) {
-//
-//		int valueCarry = carryArg ? 1 : 0;
-//		
-//		int halfCarryMask = (argSize == BYTE_ARG) ? 0X0F : 0X0FFF;
-//		int signMask = (argSize == BYTE_ARG) ? 0X80 : 0X8000;
-//		int sizeMask = (argSize == BYTE_ARG) ? 0XFF : 0XFFFF;
-//		int argument1 = arg1 & sizeMask;
-//		int argument2 = (arg2 + valueCarry) & sizeMask;
-//		
-//		
-//		int ans = (argument1 - argument2 ) & sizeMask;
-//
-//		mSign = (ans & signMask) == signMask;
-//		mZero = ans == 0;
-//		
-//
-//		String bits = Integer.toBinaryString(ans);
-//		bits = bits.replace("0", "");
-//		mParity = (bits.length() % 2) == 0;
-//
-//		boolean sign1 = (argument1 & signMask) == signMask;
-//		boolean sign2 = (arg2 & signMask) == signMask;
-//		boolean signAns = (ans & signMask) == signMask;
-//		
-//		
-//		mOverflow = false;
-//		if ((sign1 ^ sign2)) {
-//			mOverflow = sign2 == signAns;
-//		} // if
-//		
-//		// carry ?
-//		boolean halfCarry0 = ((arg2 & halfCarryMask) + valueCarry) > halfCarryMask;
-//		boolean carry0 = ((arg2 & sizeMask) + valueCarry) > sizeMask;
-//		arg2 = (arg2 + valueCarry);
-//		
-//		//Two's complement
-//		int notArg2 = ~arg2 & sizeMask;
-//		boolean halfCarry1 = ((notArg2 & halfCarryMask) + 1) > halfCarryMask;
-//		boolean carry1 = ((notArg2 & sizeMask) + 1) > sizeMask;
-//		
-//		notArg2 = (notArg2+1) & sizeMask;	// make the arg two's complement
-//		
-//		//Actual add
-//		boolean halfCarry2 = (((argument1 & halfCarryMask) + (notArg2 & halfCarryMask)) > halfCarryMask);
-//		boolean carry2 = (((argument1 & sizeMask) + (notArg2 & sizeMask) ) >  sizeMask);
-//		
-//		
-//		
-//		mHalfCarry = !(halfCarry0 | halfCarry1 | halfCarry2);
-//		mCarry = !(carry0 | carry1 | carry2);
-//
-//	}// fixFlags
-//
-//	private boolean mSign;
-//	private boolean mZero;
-//	private boolean mHalfCarry;
-//	private boolean mParity;
-//	private boolean mOverflow;
-//	private boolean mCarry;
-
-	private static final String BYTE_ARG = "ByteArg";
-	private static final String WORD_ARG = "WordArg";
 
 }// class AdderTest2

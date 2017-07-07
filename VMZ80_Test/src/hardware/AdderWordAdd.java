@@ -31,7 +31,7 @@ public class AdderWordAdd {
 		for (int i = 0; i < COUNT; i++) {
 			value1 = random.nextInt(0XFFFF);
 			value2 = random.nextInt(0XFFFF);
-			atu.fixFlagsADD(value1, value2, WORD_ARG, false);
+			atu.fixFlagsADD(value1, value2, AdderTestUtility.WORD_ARG, false);
 			int answer = ((value1 + value2) & 0XFFFF);
 			word1 = atu.loadWord(value1);
 			word2 = atu.loadWord(value2);
@@ -59,7 +59,7 @@ public class AdderWordAdd {
 			carryValue = carryState?1:0;
 			value1 = random.nextInt(0XFFFF);
 			value2 = random.nextInt(0XFFFF);
-			atu.fixFlagsADD(value1, value2, WORD_ARG, carryState);
+			atu.fixFlagsADD(value1, value2, AdderTestUtility.WORD_ARG, carryState);
 			int answer = ((value1 + value2 + carryValue) & 0XFFFF);
 			word1 = atu.loadWord(value1);
 			word2 = atu.loadWord(value2);
@@ -82,7 +82,7 @@ public class AdderWordAdd {
 		int COUNT = 8000;
 		for (int i = 0; i < COUNT; i++) {
 			value1 = random.nextInt(0XFFFF);
-			atu.fixFlagsADD(value1, 1, WORD_ARG, false);
+			atu.fixFlagsADD(value1, 1, AdderTestUtility.WORD_ARG, false);
 			int answer = ((value1 + 1) & 0XFFFF);
 			word1 = atu.loadWord(value1);
 			int ans = atu.getWordValue(adder.incrementWord(word1));
@@ -96,8 +96,5 @@ public class AdderWordAdd {
 
 		} // for val1
 	}// testWordIncrement
-	
-
-	private static final String WORD_ARG = "WordArg";
 
 }// class AdderTest2

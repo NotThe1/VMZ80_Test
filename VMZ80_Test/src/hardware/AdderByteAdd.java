@@ -26,7 +26,7 @@ public class AdderByteAdd {
 	public void testByteAdd() {
 		for (value1 = 0; value1 < 0XFF; value1++) {
 			for (value2 = 0; value2 < 0XFF; value2++) {
-				atu.fixFlagsADD(value1, value2, BYTE_ARG, false);
+				atu.fixFlagsADD(value1, value2, AdderTestUtility.BYTE_ARG, false);
 				byte answer = (byte) ((value1 + value2) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) value2;
@@ -45,7 +45,7 @@ public class AdderByteAdd {
 	public void testByteAddWithCarry() {
 		for (value1 = 0; value1 < 0XFF; value1++) {
 			for (value2 = 0; value2 < 0XFF; value2++) {
-				atu.fixFlagsADD(value1, value2, BYTE_ARG, false);
+				atu.fixFlagsADD(value1, value2, AdderTestUtility.BYTE_ARG, false);
 				byte answer = (byte) ((value1 + value2) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) value2;
@@ -59,7 +59,7 @@ public class AdderByteAdd {
 				assertThat("Full Add/WC Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
 				assertThat("Full Add/WC Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 
-				atu.fixFlagsADD(value1, value2, BYTE_ARG, true);
+				atu.fixFlagsADD(value1, value2, AdderTestUtility.BYTE_ARG, true);
 				answer = (byte) ((value1 + value2 + 1) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) value2;
@@ -81,7 +81,7 @@ public class AdderByteAdd {
 	@Test
 	public void testByteIncrement() {
 		for (value1 = 0; value1 < 0XFF; value1++) {
-			atu.fixFlagsADD(value1, 1, BYTE_ARG, false);
+			atu.fixFlagsADD(value1, 1, AdderTestUtility.BYTE_ARG, false);
 				byte answer = (byte) ((value1 + 1) & 0XFF);
 				bite1[0] = (byte) value1;
 				assertThat("Full INC:  " + value1, answer, equalTo(adder.increment(bite1)));
@@ -93,8 +93,5 @@ public class AdderByteAdd {
 				assertThat("Full INC Carry:  " + value1, atu.mCarry, equalTo(adder.hasCarry()));
 		} // for val1
 	}// testByteIncrement
-
-
-	private static final String BYTE_ARG = "ByteArg";
 
 }// class AdderTest2
