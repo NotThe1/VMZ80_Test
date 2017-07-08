@@ -10,6 +10,7 @@ public class AdderByteSubtract {
 	private static AdderTestUtility atu = AdderTestUtility.getInstance();
 	Adder adder = Adder.getInstance();
 	int value1, value2, answer;
+	byte aByte1,aByte2;
 	byte[] bite1 = new byte[] { (byte) 0X00 };
 	byte[] bite2 = new byte[] { (byte) 0X00 };
 	byte[] word1 = new byte[] { (byte) 0X00, (byte) 0X00 };
@@ -31,7 +32,12 @@ public class AdderByteSubtract {
 				byte answer = (byte) ((value1 - value2) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) value2;
-				assertThat("Full Sub:  " + value1 + " " + value2, answer, equalTo(adder.sub(bite1, bite2)));
+				
+				aByte1 = (byte) value1;
+				aByte2 = (byte) value2;
+				answer =  (byte) (value1 - value2);
+				
+				assertThat("Full Sub:  " + value1 + " " + value2, answer, equalTo(adder.sub(aByte1, aByte2)));
 				assertThat("Full Sub Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
 				assertThat("Full Sub Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
 				assertThat("Full Sub HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
@@ -51,7 +57,12 @@ public class AdderByteSubtract {
 				byte answer = (byte) ((value1 - (value2 +0)) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) value2;
-				assertThat("Full Sub/WCf:  " + value1 + " " + value2, answer, equalTo(adder.subWithCarry(bite1, bite2,false)));
+				
+				aByte1 = (byte) value1;
+				aByte2 = (byte) value2;
+				answer =  (byte) (value1 - value2);
+
+				assertThat("Full Sub/WCf:  " + value1 + " " + value2, answer, equalTo(adder.subWithCarry(aByte1, aByte2,false)));
 				assertThat("Full Sub/WCf Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
 				assertThat("Full Sub/WCf Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
 				assertThat("Full Sub/WCf HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
@@ -68,7 +79,11 @@ public class AdderByteSubtract {
 				byte answer = (byte) ((value1 - (value2 +1)) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) (value2 );
-				assertThat("Full Sub/WCt:  " + value1 + " " + value2, answer, equalTo(adder.subWithCarry(bite1, bite2,true)));
+				aByte1 = (byte) value1;
+				aByte2 = (byte) value2;
+				answer =  (byte) (value1 - (value2+1));
+
+				assertThat("Full Sub/WCt:  " + value1 + " " + value2, answer, equalTo(adder.subWithCarry(aByte1, aByte2,true)));
 				assertThat("Full Sub/WCt Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
 				assertThat("Full Sub/WCt Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
 				assertThat("Full Sub/WCt HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
@@ -86,7 +101,11 @@ public class AdderByteSubtract {
 				atu.fixFlagsSUB(value1, 1, AdderTestUtility.BYTE_ARG, false);
 				byte answer = (byte) ((value1 - 1) & 0XFF);
 				bite1[0] = (byte) value1;
-				assertThat("Full DEC:  " + value1, answer, equalTo(adder.decrement(bite1)));
+				
+				aByte1 = (byte) value1;
+				answer =  (byte) (value1 - 1);
+				
+				assertThat("Full DEC:  " + value1, answer, equalTo(adder.decrement(aByte1)));
 				assertThat("Full DEC Sign:  " + value1, atu.mSign, equalTo(adder.hasSign()));
 				assertThat("Full DEC Zero:  " + value1, atu.mZero, equalTo(adder.isZero()));
 				assertThat("Full DEC HalfCarry:  " + value1, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));

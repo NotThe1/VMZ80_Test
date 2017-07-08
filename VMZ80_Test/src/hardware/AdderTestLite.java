@@ -42,9 +42,9 @@ public class AdderTestLite {
 		byte[] bite1 = new byte[] { (byte) val1 };
 		byte[] bite2 = new byte[] { (byte) val2 };
 
-		int ans = adder.subWithCarry(bite1, bite2, hasCarry) & 0XFF;
+//		int ans = adder.subWithCarry(bite1, bite2, hasCarry) & 0XFF;
 
-		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
+//		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		atu.showFlagsV(adder);
 	}// checkFixedFlags2
 
@@ -81,17 +81,17 @@ public class AdderTestLite {
 		int val2 = 0XFF;
 		byte[] word1 = loadWord(val1);
 		byte[] word2 = loadWord(val2);
-		adder.compare(word1, word2);
-
-		System.out.printf("%02X compare %02X", val1, val2);
+//		adder.compare(word1, word2);
+//
+//		System.out.printf("%02X compare %02X", val1, val2);
 		atu.showFlagsV(adder);
 	}// checkCompare
 
 	private static void checkNeg() {
 		int val1 = 0X98;
 		byte[] word1 = loadWord(val1);
-		byte ans = adder.negate(word1);
-		System.out.printf("%02X -> %02X%n", val1, ans);
+//		byte ans = adder.negate(word1);
+//		System.out.printf("%02X -> %02X%n", val1, ans);
 	}// checkWordSignFlag
 
 	private static void checkSubWord() {
@@ -123,36 +123,36 @@ public class AdderTestLite {
 		int val2 = 0XFF;
 		byte[] bite1 = new byte[] { (byte) val1 };
 		byte[] bite2 = new byte[] { (byte) val2 };
-		byte ans = adder.subWithCarry(bite1, bite2, false);
+//		byte ans = adder.subWithCarry(bite1, bite2, false);
 
-		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
+//		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlags(adder);
 
 		val1 = 0X30;
 		val2 = 0X10;
 		bite1 = new byte[] { (byte) val1 };
 		bite2 = new byte[] { (byte) val2 };
-		ans = adder.sub(bite1, bite2);
+//		ans = adder.sub(bite1, bite2);
 
-		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
+//		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlags(adder);
 
 		val1 = 0X30;
 		val2 = 0X30;
 		bite1 = new byte[] { (byte) val1 };
 		bite2 = new byte[] { (byte) val2 };
-		ans = adder.sub(bite1, bite2);
+//		ans = adder.sub(bite1, bite2);
 
-		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
+//		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlags(adder);
 
 		val1 = 0X30;
 		val2 = 0X60;
 		bite1 = new byte[] { (byte) val1 };
 		bite2 = new byte[] { (byte) val2 };
-		ans = adder.sub(bite1, bite2);
+//		ans = adder.sub(bite1, bite2);
 
-		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
+//		System.out.printf("%02X - %02X = %02X", val1, val2, ans);
 		showFlags(adder);
 
 	}// checkSUB
@@ -168,9 +168,9 @@ public class AdderTestLite {
 		int val2 = 0XAA;
 		byte[] bite1 = new byte[] { (byte) val1 };
 		byte[] bite2 = new byte[] { (byte) val2 };
-		byte ans = adder.and(bite1, bite2);
-		System.out.printf("parity = %s,\tans[0] = %02X,\t val1 = %02X,\t val2 = %02X%n", adder.hasParity(), ans,
-				val1, val2);
+//		byte ans = adder.and(bite1, bite2);
+//		System.out.printf("parity = %s,\tans[0] = %02X,\t val1 = %02X,\t val2 = %02X%n", adder.hasParity(), ans,
+//				val1, val2);
 	}// checkAND
 
 	private static void checkOverFlow() {

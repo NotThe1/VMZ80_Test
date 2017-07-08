@@ -10,6 +10,7 @@ public class AdderByteAdd {
 	private static AdderTestUtility atu = AdderTestUtility.getInstance();
 	Adder adder = Adder.getInstance();
 	int value1, value2, answer;
+	byte aByte1,aByte2;
 	byte[] bite1 = new byte[] { (byte) 0X00 };
 	byte[] bite2 = new byte[] { (byte) 0X00 };
 	byte[] word1 = new byte[] { (byte) 0X00, (byte) 0X00 };
@@ -30,7 +31,12 @@ public class AdderByteAdd {
 				byte answer = (byte) ((value1 + value2) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) value2;
-				assertThat("Full Add:  " + value1 + " " + value2, answer, equalTo(adder.add(bite1, bite2)));
+				aByte1 = (byte) value1;
+				aByte2 = (byte) value2;
+				answer =  (byte) (value1 + value2);
+
+//				assertThat("Full Add:  " + value1 + " " + value2, answer, equalTo(adder.add(bite1, bite2)));
+				assertThat("Full Add:  " + value1 + " " + value2, answer, equalTo(adder.add(aByte1, aByte2)));
 				assertThat("Full Add Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
 				assertThat("Full Add Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
 				assertThat("Full Add HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
@@ -50,8 +56,14 @@ public class AdderByteAdd {
 				byte answer = (byte) ((value1 + value2) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) value2;
+				
+				aByte1 = (byte) value1;
+				aByte2 = (byte) value2;
+				answer =  (byte) (value1 + value2);
+//				assertThat("Full Add/WC:  " + value1 + " " + value2, answer,
+//						equalTo(adder.addWithCarry(bite1, bite2, false)));
 				assertThat("Full Add/WC:  " + value1 + " " + value2, answer,
-						equalTo(adder.addWithCarry(bite1, bite2, false)));
+						equalTo(adder.addWithCarry(aByte1, aByte2, false)));
 				assertThat("Full Add/WC Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
 				assertThat("Full Add/WC Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
 				assertThat("Full Add/WC HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry,
@@ -65,16 +77,21 @@ public class AdderByteAdd {
 				answer = (byte) ((value1 + value2 + 1) & 0XFF);
 				bite1[0] = (byte) value1;
 				bite2[0] = (byte) value2;
-				assertThat("Full Add/WC:  " + value1 + " " + value2, answer,
-						equalTo(adder.addWithCarry(bite1, bite2, true)));
-				assertThat("Full Add/WC Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
-				assertThat("Full Add/WC Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
-				assertThat("Full Add/WC HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry,
+				aByte1 = (byte) value1;
+				aByte2 = (byte) value2;
+				answer =  (byte) (value1 + value2+1);
+//				assertThat("Full Add/WC:  " + value1 + " " + value2, answer,
+//						equalTo(adder.addWithCarry(bite1, bite2, true)));
+				assertThat("Full Add/WCt:  " + value1 + " " + value2, answer,
+						equalTo(adder.addWithCarry(aByte1, aByte2, true)));
+				assertThat("Full Add/WCt Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
+				assertThat("Full Add/WCt Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
+				assertThat("Full Add/WCt HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry,
 						equalTo(adder.hasHalfCarry()));
-				assertThat("Full Add/WC Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
-				assertThat("Full Add/WC Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
-				assertThat("Full Add/WC nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
-				assertThat("Full Add/WC Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
+				assertThat("Full Add/WCt Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
+				assertThat("Full Add/WCt Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Add/WCt nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
+				assertThat("Full Add/WCt Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 
 			} // for val2
 		} // for val1
@@ -87,7 +104,10 @@ public class AdderByteAdd {
 			atu.fixFlagsADD(value1, 1, AdderTestUtility.BYTE_ARG, false);
 				byte answer = (byte) ((value1 + 1) & 0XFF);
 				bite1[0] = (byte) value1;
-				assertThat("Full INC:  " + value1, answer, equalTo(adder.increment(bite1)));
+				
+				aByte1 = (byte) value1;
+				answer = (byte) (aByte1 +1);
+				assertThat("Full INC:  " + value1, answer, equalTo(adder.increment(aByte1)));
 				assertThat("Full INC Sign:  " + value1, atu.mSign, equalTo(adder.hasSign()));
 				assertThat("Full INC Zero:  " + value1, atu.mZero, equalTo(adder.isZero()));
 				assertThat("Full INC HalfCarry:  " + value1, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
