@@ -37,6 +37,7 @@ public class AdderByteSubtract {
 				assertThat("Full Sub HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full Sub Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full Sub Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Sub nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full Sub Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1
@@ -56,6 +57,7 @@ public class AdderByteSubtract {
 				assertThat("Full Sub/WCf HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full Sub/WCf Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full Sub/WCf Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Sub/WCf nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full Sub/WCf Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1
@@ -72,6 +74,7 @@ public class AdderByteSubtract {
 				assertThat("Full Sub/WCt HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full Sub/WCt Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full Sub/WCt Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Sub/WCt nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full Sub/WCt Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1	
@@ -83,13 +86,14 @@ public class AdderByteSubtract {
 				atu.fixFlagsSUB(value1, 1, AdderTestUtility.BYTE_ARG, false);
 				byte answer = (byte) ((value1 - 1) & 0XFF);
 				bite1[0] = (byte) value1;
-				assertThat("Full INC:  " + value1, answer, equalTo(adder.decrement(bite1)));
-				assertThat("Full INC Sign:  " + value1, atu.mSign, equalTo(adder.hasSign()));
-				assertThat("Full INC Zero:  " + value1, atu.mZero, equalTo(adder.isZero()));
-				assertThat("Full INC HalfCarry:  " + value1, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
-				assertThat("Full INC Parity:  " + value1, atu.mParity, equalTo(adder.hasParity()));
-				assertThat("Full INC Overflow:  " + value1, atu.mOverflow, equalTo(adder.hasOverflow()));
-				assertThat("Full INC Carry:  " + value1, atu.mCarry, equalTo(adder.hasCarry()));
+				assertThat("Full DEC:  " + value1, answer, equalTo(adder.decrement(bite1)));
+				assertThat("Full DEC Sign:  " + value1, atu.mSign, equalTo(adder.hasSign()));
+				assertThat("Full DEC Zero:  " + value1, atu.mZero, equalTo(adder.isZero()));
+				assertThat("Full DEC HalfCarry:  " + value1, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
+				assertThat("Full DEC Parity:  " + value1, atu.mParity, equalTo(adder.hasParity()));
+				assertThat("Full DEC Overflow:  " + value1, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full DEC/WCf nFlag:  " + value1, atu.mNFlag, equalTo(adder.isNFlagSet()));
+				assertThat("Full DEC Carry:  " + value1, atu.mCarry, equalTo(adder.hasCarry()));
 		} // for val1
 	}// testByteIncrement
 

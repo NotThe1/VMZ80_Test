@@ -36,6 +36,7 @@ public class AdderByteAdd {
 				assertThat("Full Add HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full Add Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full Add Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Add nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full Add Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1
@@ -57,6 +58,7 @@ public class AdderByteAdd {
 						equalTo(adder.hasHalfCarry()));
 				assertThat("Full Add/WC Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full Add/WC Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Add/WC nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full Add/WC Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 
 				atu.fixFlagsADD(value1, value2, AdderTestUtility.BYTE_ARG, true);
@@ -71,6 +73,7 @@ public class AdderByteAdd {
 						equalTo(adder.hasHalfCarry()));
 				assertThat("Full Add/WC Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full Add/WC Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Add/WC nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full Add/WC Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 
 			} // for val2
@@ -90,6 +93,7 @@ public class AdderByteAdd {
 				assertThat("Full INC HalfCarry:  " + value1, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full INC Parity:  " + value1, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full INC Overflow:  " + value1, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full INC nFlag:  " + value1, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full INC Carry:  " + value1, atu.mCarry, equalTo(adder.hasCarry()));
 		} // for val1
 	}// testByteIncrement

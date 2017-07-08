@@ -33,7 +33,7 @@ public class AdderTestUtility {
 		bits = bits.replace("0", "");
 		mParity = (bits.length() % 2) == 0;
 
-		
+		mNFlag = false;
 		mCarry = false;
 
 	}// fixFlags
@@ -55,7 +55,7 @@ public class AdderTestUtility {
 		bits = bits.replace("0", "");
 		mParity = (bits.length() % 2) == 0;
 
-		
+		mNFlag = false;
 		mCarry = false;
 
 	}// fixFlags
@@ -77,7 +77,7 @@ public class AdderTestUtility {
 		bits = bits.replace("0", "");
 		mParity = (bits.length() % 2) == 0;
 
-		
+		mNFlag = false;
 		mCarry = false;
 
 	}// fixFlags
@@ -109,6 +109,7 @@ public class AdderTestUtility {
 		if (!(sign1 ^ sign2)) {
 			mOverflow = sign1 ^ signAns;
 		} // if
+		mNFlag = false;
 		mCarry = ((arg1 & sizeMask) + (arg2 & sizeMask) + valueCarry) > sizeMask;
 
 	}// fixFlags
@@ -160,6 +161,7 @@ public class AdderTestUtility {
 		boolean halfCarry2 = (((argument1 & halfCarryMask) + (notArg2 & halfCarryMask)) > halfCarryMask);
 		boolean carry2 = (((argument1 & sizeMask) + (notArg2 & sizeMask)) > sizeMask);
 
+		mNFlag= true;
 		mHalfCarry = !(halfCarry0 | halfCarry1 | halfCarry2);
 		mCarry = !(carry0 | carry1 | carry2);
 
@@ -172,7 +174,7 @@ public class AdderTestUtility {
 		String half = adder.hasHalfCarry() ? "H" : "h";
 		String bit3 = adder.hasSign() ? "." : ".";
 		String PV = adder.hasParity() ? "P" : "p";
-		String AS = adder.hasSign() ? "." : ".";
+		String AS = adder.isNFlagSet() ? "N" : "n";
 		String carry = adder.hasCarry() ? "C" : "c";
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFlags
@@ -184,7 +186,7 @@ public class AdderTestUtility {
 		String half = adder.hasHalfCarry() ? "H" : "h";
 		String bit3 = adder.hasSign() ? "." : ".";
 		String PV = adder.hasOverflow() ? "V" : "v";
-		String AS = adder.hasSign() ? "." : ".";
+		String AS = adder.isNFlagSet() ? "N" : "n";
 		String carry = adder.hasCarry() ? "C" : "c";
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFlags
@@ -196,7 +198,7 @@ public class AdderTestUtility {
 		String half = mHalfCarry ? "H" : "h";
 		String bit3 = ".";
 		String PV = mParity ? "P" : "p";
-		String AS = ".";
+		String AS = mNFlag ? "N" : "n";
 		String carry = mCarry ? "C" : "c";
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFixedFlags
@@ -208,7 +210,7 @@ public class AdderTestUtility {
 		String half = mHalfCarry ? "H" : "h";
 		String bit3 = ".";
 		String PV = mOverflow ? "V" : "v";
-		String AS = ".";
+		String AS = mNFlag ? "N" : "n";
 		String carry = mCarry ? "C" : "c";
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFixedFlags
@@ -219,6 +221,7 @@ public class AdderTestUtility {
 	public boolean mHalfCarry;
 	public boolean mParity;
 	public boolean mOverflow;
+	public boolean mNFlag;
 	public boolean mCarry;
 
 	public static final String BYTE_ARG = "ByteArg";

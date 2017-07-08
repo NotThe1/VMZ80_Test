@@ -47,6 +47,7 @@ public class AdderWordSubtract {
 			assertThat("Full SubWord/WC HalfCarry:  " + value1 + " " + value2, atu. mHalfCarry, equalTo(adder.hasHalfCarry()));
 			assertThat("Full SubWord/WC Parity:  " + value1 + " " + value2, atu. mParity, equalTo(adder.hasParity()));
 			assertThat("Full SubWord/WC Overflow:  " + value1 + " " + value2, atu. mOverflow, equalTo(adder.hasOverflow()));
+			assertThat("Full SubWord nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 			assertThat("Full SubWord/WC Carry:  " + value1 + " " + value2, atu. mCarry, equalTo(adder.hasCarry()));
 
 		} // for val1
@@ -60,13 +61,14 @@ public class AdderWordSubtract {
 			int answer = (value1 -1) & 0XFFFF;
 			word1 = atu.loadWord(value1);
 			int ans = atu.getWordValue(adder.decrementWord(word1));
-			assertThat("Full AddWord:  " + value1 + " " + value2, answer, equalTo(ans));
-			assertThat("Full AddWord Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
-			assertThat("Full AddWord Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
-			assertThat("Full AddWord HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
-			assertThat("Full AddWord Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
-			assertThat("Full AddWord Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
-			assertThat("Full AddWord Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
+			assertThat("Full DecWord:  " + value1, answer, equalTo(ans));
+			assertThat("Full DecWord Sign:  " + value1, atu.mSign, equalTo(adder.hasSign()));
+			assertThat("Full DecWord Zero:  " + value1, atu.mZero, equalTo(adder.isZero()));
+			assertThat("Full DecWord HalfCarry:  " + value1, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
+			assertThat("Full DecWord Parity:  " + value1, atu.mParity, equalTo(adder.hasParity()));
+			assertThat("Full DecWord Overflow:  " + value1, atu.mOverflow, equalTo(adder.hasOverflow()));
+			assertThat("Full DecWord nFlag:  " + value1, atu.mNFlag, equalTo(adder.isNFlagSet()));
+			assertThat("Full DecWord Carry:  " + value1, atu.mCarry, equalTo(adder.hasCarry()));
 
 		} // for val1
 	}// testWordAdd

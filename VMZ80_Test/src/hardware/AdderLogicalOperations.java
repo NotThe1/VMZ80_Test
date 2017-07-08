@@ -36,6 +36,7 @@ public class AdderLogicalOperations {
 				assertThat("Full And HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full And Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full And Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full And nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full And Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1
@@ -55,6 +56,7 @@ public class AdderLogicalOperations {
 				assertThat("Full Or HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full Or Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full Or Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full or nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full Or Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1
@@ -74,6 +76,7 @@ public class AdderLogicalOperations {
 				assertThat("Full Xor HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full Xor Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full Xor Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full Xor nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full Xor Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1
@@ -94,6 +97,7 @@ public class AdderLogicalOperations {
 				assertThat("Full CP HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
 				assertThat("Full CP Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
 				assertThat("Full CP Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full CP nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
 				assertThat("Full CP Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 			} // for val2
 		} // for val1
@@ -107,6 +111,7 @@ public class AdderLogicalOperations {
 				
 				assertThat("Full CPL:  " + value1 + " " + value2, answer, equalTo(adder.complement(bite1)[0]));	
 				assertThat("Full CPL HalfCarry:  " + value1 + " " + value2, true, equalTo(adder.hasHalfCarry()));
+				assertThat("Full CPL nFlag:  " + value1, true, equalTo(adder.isNFlagSet()));
 		} // for val1
 	}// testByteAdd
 
@@ -119,12 +124,13 @@ public class AdderLogicalOperations {
 				
 				assertThat("Full CPL:  " + value1 + " " + value2, answer, equalTo(adder.negate(bite1)));	
 
-				assertThat("Full CP Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
-				assertThat("Full CP Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
-				assertThat("Full CP HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
-				assertThat("Full CP Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
-				assertThat("Full CP Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
-				assertThat("Full CP Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
+				assertThat("Full NEG Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
+				assertThat("Full NEG Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
+				assertThat("Full NEG HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
+				assertThat("Full NEG Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
+				assertThat("Full NEG Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
+				assertThat("Full NEG nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
+				assertThat("Full NEG Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
 		} // for val1
 	}// testByteAdd
 	
