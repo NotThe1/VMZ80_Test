@@ -196,8 +196,8 @@ public class AdderTestLite {
 
 		byte[] bite1 = new byte[] { (byte) val1 };
 		byte[] bite2 = new byte[] { (byte) val2 };
-		adder.add(bite1, bite2);
-		System.out.printf("adder.hasOverflow() = %s%n", adder.hasOverflow());
+//		adder.add(bite1, bite2);
+//		System.out.printf("adder.hasOverflow() = %s%n", adder.hasOverflow());
 
 	}// checkOverFlow
 
@@ -210,7 +210,7 @@ public class AdderTestLite {
 
 		byte[] word1 = loadWord(val1);
 		byte[] word2 = loadWord(val2);
-		adder.add(word1, word2);
+//		adder.add(word1, word2);
 		boolean pf = adder.hasParity();
 		if (pf == parityFlag) {
 			int a = 1;
@@ -232,7 +232,7 @@ public class AdderTestLite {
 		byte[] bite1 = new byte[] { (byte) 0X4D };
 		byte[] bite2 = new byte[] { (byte) 0X33 };
 
-		adder.add(bite1, bite2);
+//		adder.add(bite1, bite2);
 		boolean zflag = adder.isZero();
 	}// addByte
 
