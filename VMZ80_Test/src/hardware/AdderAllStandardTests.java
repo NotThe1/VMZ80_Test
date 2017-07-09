@@ -10,6 +10,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	AdderWordAdd.class,
 	AdderWordSubtract.class,
 	AdderLogicalOperations.class })
-public class AdderAllTests {
+public class AdderAllStandardTests {
 
 }
