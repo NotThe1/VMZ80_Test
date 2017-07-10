@@ -6,6 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ AdderRotateLeft.class,
+	AdderShift.class,
 	AdderRotateRight.class })
 public class AdderAllRotates {
 

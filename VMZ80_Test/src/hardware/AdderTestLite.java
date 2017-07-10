@@ -12,8 +12,9 @@ public class AdderTestLite {
 	private static AdderTestUtility atu = AdderTestUtility.getInstance();
 
 	public static void main(String[] args) {
-		checkRotateRight();
-//		checkRotateLeft();
+		checkShiftRight();
+		// checkRotateRight();
+		// checkRotateLeft();
 		// checkFixedFlags2();
 		// checkFixedFlags1();
 		// checkFixedFlags0();
@@ -30,16 +31,24 @@ public class AdderTestLite {
 		// addByte();
 	}// main
 
+	public static void checkShiftRight() {
+		byte arg = (byte) 0Xff;
+//		byte ans = adder.shiftSRL(arg);
+//		byte ans = adder.shiftSRA(arg);
+		byte ans = adder.shiftSLA(arg);
+		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, adder.hasCarry());
+	}// checkRotateLeft
+	
 	public static void checkRotateRight() {
 		byte arg = (byte) 0X10;
 		byte ans = adder.rotateRight(arg);
-		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans,adder.hasCarry());
+		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, adder.hasCarry());
 	}// checkRotateLeft
-	
+
 	public static void checkRotateLeft() {
 		byte arg = (byte) 0X01;
 		byte ans = adder.rotateLeft(arg);
-		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans,adder.hasCarry());
+		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, adder.hasCarry());
 	}// checkRotateLeft
 
 	public static void checkFixedFlags2() {
