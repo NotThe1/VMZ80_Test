@@ -8,6 +8,7 @@ import org.junit.Test;
 
 public class AdderRotateLeft {
 	Adder adder = Adder.getInstance();
+	AdderTestUtility atu = AdderTestUtility.getInstance();
 	byte arg, ans;
 	boolean carryIn, orginalBit7;
 	byte bit7Mask = (byte) 0X80;
@@ -77,7 +78,7 @@ public class AdderRotateLeft {
 			ansWithoutCarry = (byte) (ans & bit0NotMask);
 			isZero = (ansWithoutCarry == 0);
 			hasSign = (ansWithoutCarry & signMask) == signMask;
-			hasParity = getParity(ansWithoutCarry);
+			hasParity = atu.getParity(ansWithoutCarry);
 //			System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
 			assertThat("RLA w/oc " + arg, ansWithoutCarry, equalTo(adder.rotateLeftThru(arg, false)));
 			assertThat("RLA  w/oc Carry " + arg, carryResult, equalTo(adder.hasCarry()));
@@ -88,7 +89,7 @@ public class AdderRotateLeft {
 			ansWithCarry = (byte) (ans | bit0Mask);
 			isZero = (ansWithCarry == 0);
 			hasSign = (ansWithCarry & signMask) == signMask;
-			hasParity = getParity(ansWithCarry);
+			hasParity = atu.getParity(ansWithCarry);
 			// System.out.printf("Arg = %02X, ans = %02X%n", arg, ansWithCarry);
 			assertThat("RLA with " + arg, ansWithCarry, equalTo(adder.rotateLeftThru(arg, true)));
 			assertThat("RLA  with Carry" + arg, carryResult, equalTo(adder.hasCarry()));
@@ -100,10 +101,5 @@ public class AdderRotateLeft {
 
 	}// testRLC
 
-	private boolean getParity(byte value) {
-		String s = Integer.toBinaryString(value);
-		s = s.replace("0", "");
-		return s.length() % 2 == 0;
-	}
 
 }// class AdderRotateLeft

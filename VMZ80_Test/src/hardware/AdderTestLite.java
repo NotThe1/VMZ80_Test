@@ -12,7 +12,8 @@ public class AdderTestLite {
 	private static AdderTestUtility atu = AdderTestUtility.getInstance();
 
 	public static void main(String[] args) {
-		checkRotateLeft();
+		checkRotateRight();
+//		checkRotateLeft();
 		// checkFixedFlags2();
 		// checkFixedFlags1();
 		// checkFixedFlags0();
@@ -29,6 +30,12 @@ public class AdderTestLite {
 		// addByte();
 	}// main
 
+	public static void checkRotateRight() {
+		byte arg = (byte) 0X10;
+		byte ans = adder.rotateRight(arg);
+		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans,adder.hasCarry());
+	}// checkRotateLeft
+	
 	public static void checkRotateLeft() {
 		byte arg = (byte) 0X01;
 		byte ans = adder.rotateLeft(arg);

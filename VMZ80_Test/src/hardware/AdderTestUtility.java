@@ -215,6 +215,13 @@ public class AdderTestUtility {
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFixedFlags
 	
+	public boolean getParity(byte value) {
+		String s = Integer.toBinaryString(value);
+		s = s.replace("0", "");
+		return s.length() % 2 == 0;
+	}//getParity
+
+	
 
 	public boolean mSign;
 	public boolean mZero;
