@@ -12,7 +12,8 @@ public class AdderTestLite {
 	private static AdderTestUtility atu = AdderTestUtility.getInstance();
 
 	public static void main(String[] args) {
-		checkShiftRight();
+		checkBits();
+		// checkShiftRight();
 		// checkRotateRight();
 		// checkRotateLeft();
 		// checkFixedFlags2();
@@ -31,14 +32,24 @@ public class AdderTestLite {
 		// addByte();
 	}// main
 
+	public static void checkBits() {
+		byte ans;
+		byte arg = (byte) 0XFF;
+		for (int bit = 0; bit < 8; bit++) {
+			byte mask = (byte) (1 << bit);
+			ans =adder.bitRes(arg, bit);
+			System.out.printf("Arg = %02X, bit  = %02X,ans = %02X, Zero = %s,%n", arg, bit,ans, adder.isZero());
+		}
+	}// checkBits
+
 	public static void checkShiftRight() {
 		byte arg = (byte) 0Xff;
-//		byte ans = adder.shiftSRL(arg);
-//		byte ans = adder.shiftSRA(arg);
+		// byte ans = adder.shiftSRL(arg);
+		// byte ans = adder.shiftSRA(arg);
 		byte ans = adder.shiftSLA(arg);
 		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, adder.hasCarry());
 	}// checkRotateLeft
-	
+
 	public static void checkRotateRight() {
 		byte arg = (byte) 0X10;
 		byte ans = adder.rotateRight(arg);
