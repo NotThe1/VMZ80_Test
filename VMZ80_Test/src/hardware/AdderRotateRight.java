@@ -37,7 +37,6 @@ public class AdderRotateRight {
 			assertThat("RRCA " + arg, ans, equalTo(adder.rotateRight(arg)));
 			assertThat("RRCA Cy" + arg, orginalBit0, equalTo(adder.hasCarry()));
 		} // for
-
 	}// testRRCA
 
 	@Test
@@ -53,16 +52,13 @@ public class AdderRotateRight {
 			carryResult = orginalBit0;
 			ansWithCarry = (byte) (ans | bit7Mask);
 			ansWithoutCarry = (byte) (ans & bit7NotMask);
-			
 //			System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
 			assertThat("RRA " + arg, ansWithCarry, equalTo(adder.rotateRightThru(arg,true)));
 			assertThat("RRA Cy" + arg, orginalBit0, equalTo(adder.hasCarry()));
-			
 //			System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
 			assertThat("RRA " + arg, ansWithoutCarry, equalTo(adder.rotateRightThru(arg,false)));
 			assertThat("RRA Cy" + arg, orginalBit0, equalTo(adder.hasCarry()));
 		} // for
-
 	}// testRLA
 
 	
@@ -83,23 +79,24 @@ public class AdderRotateRight {
 			carryResult = orginalBit0;
 			isZero = (ansWithoutCarry == 0);
 			hasSign = (ansWithoutCarry & signMask) == signMask;
-			hasParity = atu.getParity(ansWithoutCarry);
-
-			
+			hasParity = atu.getParity(ansWithoutCarry);	
 //			System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
 			assertThat("RRC " + arg, ansWithoutCarry, equalTo(adder.rotateRightThru(arg,false)));
-			assertThat("RRC Cy" + arg, orginalBit0, equalTo(adder.hasCarry()));
-			
+			assertThat("RRC w/oc Cy" + arg, orginalBit0, equalTo(adder.hasCarry()));
+			assertThat("RRC w/oc  Sign " + arg, hasSign, equalTo(adder.hasSign()));
+			assertThat("RRC w/oc Zero " + arg, isZero, equalTo(adder.isZero()));
+			assertThat("RRC w/oc Parity " + arg, hasParity, equalTo(adder.hasParity()));
+
 			ansWithCarry = (byte) (ans | bit7Mask);
 			isZero = (ansWithCarry == 0);
 			hasSign = (ansWithCarry & signMask) == signMask;
 			hasParity = atu.getParity(ansWithCarry);
-
 //			System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
 			assertThat("RRC " + arg, ansWithCarry, equalTo(adder.rotateRightThru(arg,true)));
-			assertThat("RRC Cy" + arg, orginalBit0, equalTo(adder.hasCarry()));
+			assertThat("RRC Cy carry " + arg, orginalBit0, equalTo(adder.hasCarry()));
+			assertThat("RRC Cy  Sign " + arg, hasSign, equalTo(adder.hasSign()));
+			assertThat("RRC Cy  Zero " + arg, isZero, equalTo(adder.isZero()));
+			assertThat("RRC Cy  Parity " + arg, hasParity, equalTo(adder.hasParity()));
 		} // for
-
 	}// testRLA
-
 }// class AdderRotateRight

@@ -37,7 +37,6 @@ public class AdderRotateLeft {
 			assertThat("RLCA " + arg, ans, equalTo(adder.rotateLeft(arg)));
 			assertThat("RLCA Cy" + arg, orginalBit7, equalTo(adder.hasCarry()));
 		} // for
-
 	}// testRLCA
 
 	@Test
@@ -59,7 +58,6 @@ public class AdderRotateLeft {
 			assertThat("RLA with Carry" + arg, ansWithCarry, equalTo(adder.rotateLeftThru(arg, true)));
 			assertThat("RLA  with Carry" + arg, carryResult, equalTo(adder.hasCarry()));
 		} // for
-
 	}// testRLA
 
 	@Test
@@ -96,10 +94,7 @@ public class AdderRotateLeft {
 			assertThat("RLA  with Sign " + arg, hasSign, equalTo(adder.hasSign()));
 			assertThat("RLA  with Zero " + arg, isZero, equalTo(adder.isZero()));
 			assertThat("RLA  with Parity " + arg, hasParity, equalTo(adder.hasParity()));
-
 		} // for
-
 	}// testRLC
-
 
 }// class AdderRotateLeft
