@@ -12,7 +12,8 @@ public class AdderTestLite {
 	private static AdderTestUtility atu = AdderTestUtility.getInstance();
 
 	public static void main(String[] args) {
-		checkBits();
+		checkDAA();
+		// checkBits();
 		// checkShiftRight();
 		// checkRotateRight();
 		// checkRotateLeft();
@@ -32,13 +33,79 @@ public class AdderTestLite {
 		// addByte();
 	}// main
 
+	public static void checkDAA() {
+		byte value = (byte) 0X8A;
+		boolean nFlag = false;
+		boolean cFlag = false;
+		boolean hFlag = false;
+		System.out.printf("Value: %02X, Subtract: %s, Carry: %s, Half: %s ", value, nFlag, cFlag, hFlag);
+		daa(value, nFlag, cFlag, hFlag);
+	}// checkDAA
+
+	public static int getHiNibble(byte value) {
+		return (value >>4) & 0X000f;
+	}// getHiNibble
+
+	public static int getLowNibble(byte value) {
+		return value & 0X000F;
+	}// getLowNibble
+
+	public static void daa(byte value, boolean nFlag, boolean cFlag, boolean hFlag) {
+		int hiNibble = getHiNibble(value);
+		int lowNibble = getLowNibble(value);
+		byte ans = -1;
+		byte fudge = -1;
+		boolean cResult = false;
+
+		if (!nFlag & !cFlag & !hFlag) { // nFlag = false, cFlag = false, hFlag = false
+			if ((hiNibble <= 9) && (lowNibble <= 9)) {
+				fudge = 0;
+			} else if ((hiNibble <= 8) && (lowNibble > 9)) {
+				fudge = 0X06;
+			} else if ((hiNibble > 9) && (lowNibble <= 9)) {
+				fudge = 0X60;
+			} else if ((hiNibble > 8) && (lowNibble > 9)) {
+				fudge = 0X66;
+			}//inner f
+
+		} else if (!nFlag & !cFlag & hFlag) { // nFlag = false, cFlag = false, hFlag = true
+
+		} else if (!nFlag & cFlag & !hFlag) { // nFlag = false, cFlag = true, hFlag = false
+
+		} else if (!nFlag & cFlag & hFlag) { // nFlag = false, cFlag = true, hFlag = true
+
+		} else if (nFlag & !cFlag & !hFlag) { // nFlag = true, cFlag = false, hFlag = false
+
+		} else if (nFlag & !cFlag & hFlag) { // nFlag = true, cFlag = false, hFlag = true
+
+		} else if (nFlag & cFlag & !hFlag) { // nFlag = true, cFlag = true, hFlag = false
+
+		} else if (nFlag & cFlag & hFlag) { // nFlag = true, cFlag = true, hFlag = true
+
+		} else {
+
+		}
+		
+		ans = (byte) (value + fudge);
+		
+		System.out.printf(" fudge = %02X, Ans = %02X%n", fudge,ans);
+	}// daa
+
+	private static boolean between0and8(int arg) {
+		return arg <= 8;
+	}// between0and9
+
+	private static boolean between0and9(int arg) {
+		return arg <= 9;
+	}// between0and9
+
 	public static void checkBits() {
 		byte ans;
 		byte arg = (byte) 0XFF;
 		for (int bit = 0; bit < 8; bit++) {
 			byte mask = (byte) (1 << bit);
-			ans =adder.bitRes(arg, bit);
-			System.out.printf("Arg = %02X, bit  = %02X,ans = %02X, Zero = %s,%n", arg, bit,ans, adder.isZero());
+			ans = adder.bitRes(arg, bit);
+			System.out.printf("Arg = %02X, bit  = %02X,ans = %02X, Zero = %s,%n", arg, bit, ans, adder.isZero());
 		}
 	}// checkBits
 
