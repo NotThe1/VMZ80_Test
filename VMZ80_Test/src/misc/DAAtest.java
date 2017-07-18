@@ -5,7 +5,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import hardware.Adder;
+import hardware.AdderTestUtility;
+
 public class DAAtest {
+
+	Adder adder = Adder.getInstance();
+	AdderTestUtility atu = AdderTestUtility.getInstance();
+
 	public static void main(String[] args) {
 		new DAAtest().doit();
 	}// main
@@ -18,31 +25,35 @@ public class DAAtest {
 
 			int iMax = 100;
 			int jMax = 100;
-			byte binaryA, binaryB, binarySum;
+			byte binaryA, binaryB, binarySum, adderSum;
 			int intSum;
 			Integer aTens = null;
 			Integer aUnits = null;
 			Integer bTens = null;
 			Integer bUnits = null;
 			String aLine = null;
+			int cFlag, hFlag;
 			for (int i = 0; i < iMax; i++) {
 				aTens = Integer.valueOf(i / 10);
 				aUnits = Integer.valueOf(i % 10);
 				binaryA = makeBinaryComposite(aTens, aUnits);
 
-				for (int j = 0; j < jMax; j++) {
+				for (int j = i; j < jMax; j++) {
 					bTens = Integer.valueOf(j / 10);
 					bUnits = Integer.valueOf(j % 10);
 					binaryB = makeBinaryComposite(bTens, bUnits);
 					binarySum = (byte) (binaryA + binaryB);
 					intSum = i + j;
-//					aLine = String.format("binaryA = %02X, binaryB = %02X, binarySum = %02X, int sum =%d", binaryA,
-//							binaryB, binarySum, intSum);
-					aLine = String.format("%02X\t%02X\t%02X\t%d", binaryA,
-							binaryB, binarySum, intSum);
+					adderSum = adder.add(binaryA, binaryB);
+					cFlag = adder.hasCarry()?1:0;
+					hFlag = adder.hasHalfCarry()?1:0;
+					if (adderSum != binarySum) {
+						System.err.printf("binaryA = %02X, binaryB = %02X, binarySum = %02X, adderSum =%02X%n", binaryA,
+								binaryB, binarySum, adderSum);
+					}
+					aLine = String.format("%02X\t%02X\t%d\t%d\t%02X\t%d", binaryA, binaryB, cFlag,hFlag,adderSum,  intSum);
 					pw.println(aLine);
-					// System.out.printf("i = %02d, tens = %d, units = %d ", i, aTens, aUnits);
-					// System.out.printf("j = %02d, tens = %d, units = %d%n", j, bTens, bUnits);
+
 				} // for
 			} // for
 			pw.close();
@@ -53,6 +64,8 @@ public class DAAtest {
 		}
 
 		// ------------------------------------
+		// aLine = String.format("binaryA = %02X, binaryB = %02X, binarySum = %02X, int sum =%d", binaryA,
+		// binaryB, binarySum, intSum);
 
 	}// doit1
 
