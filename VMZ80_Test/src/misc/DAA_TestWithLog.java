@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Scanner;
 import java.util.prefs.Preferences;
 
@@ -90,7 +91,29 @@ int intDiff;
 	}//getValue
 
 	private void doBtnTwo(){
-		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/daaSubOriginal.txt");
+			Scanner scanner = new Scanner(inputStream);
+			while (scanner.hasNextLine()){
+				arg1 = scanner.nextByte();
+				arg2 = scanner.nextByte();
+				
+				diff = getValue(scanner.next());
+				CY= getState(scanner.nextInt());
+				HC= getState(scanner.nextInt());
+				daa = getValue(scanner.next());
+
+				CY1= getState(scanner.nextInt());
+				HC1= getState(scanner.nextInt());
+				intDiff = scanner.nextInt();
+				
+				System.out.printf("%X  %X %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
+			}
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}//doBtnTwo
 	
 	private void doBtnThree(){
