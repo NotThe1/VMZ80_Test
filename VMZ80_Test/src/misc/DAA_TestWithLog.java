@@ -29,11 +29,13 @@ import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
+import hardware.Adder;
+
 
 
 public class DAA_TestWithLog {
 AppLogger log = AppLogger.getInstance();
-
+Adder adder = Adder.getInstance();
 byte arg1,arg2,diff,daa;
 boolean CY,HC,CY1,HC1;
 int intDiff;
@@ -91,8 +93,10 @@ int intDiff;
 	}//getValue
 
 	private void doBtnTwo(){
+		String msg;
 		try {
-			InputStream inputStream = this.getClass().getResourceAsStream("/daaSubOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaSubOriginal.txt");
+		InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
 			Scanner scanner = new Scanner(inputStream);
 			while (scanner.hasNextLine()){
 				arg1 = scanner.nextByte();
@@ -107,17 +111,23 @@ int intDiff;
 				HC1= getState(scanner.nextInt());
 				intDiff = scanner.nextInt();
 				
-				System.out.printf("%X  %X %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
+//				System.out.printf("%d  %d %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
+				msg = String.format("%d  %d %2X %s %s %02X %s %s %d",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
+				log.addInfo(msg);
 			}
 			scanner.close();
 			inputStream.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.addError(e.getMessage());
 		}
 	}//doBtnTwo
 	
 	private void doBtnThree(){
-		
+		byte ans = (byte) 0X01;
+		CY = false;
+		HC= false;
+		byte result = adder.daa(ans, true, CY, HC);
+		int a = 0;
 	}//doBtnThree
 	
 	private void doBtnFour(){
