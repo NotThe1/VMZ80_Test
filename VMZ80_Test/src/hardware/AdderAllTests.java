@@ -7,7 +7,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ AdderAllRotates.class,
 	AdderAllStandardTests.class,
-	AdderBits.class })
+	AdderBits.class,
+	AdderDAATest.class})
 public class AdderAllTests {
 
 }
