@@ -11,21 +11,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AdderByteSubtract {
+	Adder adder = Adder.getInstance();
+	
 	byte arg1,arg2,diff,ans;
 	boolean sign,zero,halfCarry,overflow,nFlag,carry;
 	boolean carryState;
 	String flags,message;
 	
-	
-	private static AdderTestUtility atu = AdderTestUtility.getInstance();
-	Adder adder = Adder.getInstance();
-	int value1, value2, answer;
-	byte aByte1,aByte2;
-	byte[] bite1 = new byte[] { (byte) 0X00 };
-	byte[] bite2 = new byte[] { (byte) 0X00 };
-	byte[] word1 = new byte[] { (byte) 0X00, (byte) 0X00 };
-	byte[] word2 = new byte[] { (byte) 0X00, (byte) 0X00 };
-
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
@@ -182,7 +174,7 @@ public class AdderByteSubtract {
 			System.out.println(e.getMessage());
 			fail(e.getMessage());
 		}//try
-	}//testSUBfile
+	}//testDECfile
 	
 	private byte getValue(String value){
 		int tempInt;
