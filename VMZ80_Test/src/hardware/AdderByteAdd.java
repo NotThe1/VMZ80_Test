@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AdderByteAdd {
+	Adder adder = Adder.getInstance();
 	
 	byte arg1,arg2,sum,ans;
 	boolean sign,zero,halfCarry,overflow,nFlag,carry;
@@ -19,7 +20,6 @@ public class AdderByteAdd {
 
 	
 	private static AdderTestUtility atu = AdderTestUtility.getInstance();
-	Adder adder = Adder.getInstance();
 	int value1, value2, answer;
 	byte aByte1,aByte2;
 	byte[] bite1 = new byte[] { (byte) 0X00 };
