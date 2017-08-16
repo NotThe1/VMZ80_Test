@@ -2,15 +2,24 @@ package hardware;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
-import java.util.Random;
+import java.io.InputStream;
+import java.util.Scanner;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class AdderWordAdd {
-	private static AdderTestUtility atu = AdderTestUtility.getInstance();
 	Adder adder = Adder.getInstance();
+	byte[] arg1,arg2,sum,ans;
+	String sArg1,sArg2,sSum;
+	
+	boolean sign,zero,halfCarry,overflow,nFlag,carry;
+	boolean carryState;
+	String flags,message;
+	
+
 	int value1, value2, answer;
 	byte[] bite1 = new byte[] { (byte) 0X00 };
 	byte[] bite2 = new byte[] { (byte) 0X00 };
@@ -21,80 +30,184 @@ public class AdderWordAdd {
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
 		adder = Adder.getInstance();
-		// adder.clearSets();
 	}// setUp
-
-	@Test
-	public void testWordAdd() {
-		Random random = new Random();
-		int COUNT = 8000;
-		for (int i = 0; i < COUNT; i++) {
-			value1 = random.nextInt(0XFFFF);
-			value2 = random.nextInt(0XFFFF);
-			atu.fixFlagsADD(value1, value2, AdderTestUtility.WORD_ARG, false);
-			int answer = ((value1 + value2) & 0XFFFF);
-			word1 = atu.loadWord(value1);
-			word2 = atu.loadWord(value2);
-			// byte[] result = adder.addWord(word1, word2);
-			int ans = atu.getWordValue(adder.addWord(word1, word2));
-			assertThat("Full AddWord:  " + value1 + " " + value2, answer, equalTo(ans));
-			assertThat("Full AddWord Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
-			assertThat("Full AddWord Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
-			assertThat("Full AddWord HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
-			assertThat("Full AddWord Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
-			assertThat("Full AddWord Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
-			assertThat("Full AddWord nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
-			assertThat("Full AddWord Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
-
-		} // for val1
-	}// testWordAdd
-
-	@Test
-	public void testWordAddWithCarry() {
-		Random random = new Random();
-		boolean carryState;
-		int carryValue;
-		int COUNT = 8000;
-		for (int i = 0; i < COUNT; i++) {
-			carryState = random.nextBoolean();
-			carryValue = carryState?1:0;
-			value1 = random.nextInt(0XFFFF);
-			value2 = random.nextInt(0XFFFF);
-			atu.fixFlagsADD(value1, value2, AdderTestUtility.WORD_ARG, carryState);
-			int answer = ((value1 + value2 + carryValue) & 0XFFFF);
-			word1 = atu.loadWord(value1);
-			word2 = atu.loadWord(value2);
-			// byte[] result = adder.addWord(word1, word2);
-			int ans = atu.getWordValue(adder.addWordWithCarry(word1, word2,carryState));
-			assertThat("Full AddWord/WC:  " + value1 + " " + value2, answer, equalTo(ans));
-			assertThat("Full AddWord/WC Sign:  " + value1 + " " + value2, atu.mSign, equalTo(adder.hasSign()));
-			assertThat("Full AddWord/WC Zero:  " + value1 + " " + value2, atu.mZero, equalTo(adder.isZero()));
-			assertThat("Full AddWord/WC HalfCarry:  " + value1 + " " + value2, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
-			assertThat("Full AddWord/WC Parity:  " + value1 + " " + value2, atu.mParity, equalTo(adder.hasParity()));
-			assertThat("Full AddWord/WC Overflow:  " + value1 + " " + value2, atu.mOverflow, equalTo(adder.hasOverflow()));
-			assertThat("Full AddWord/WC nFlag:  " + value1 + " " + value2, atu.mNFlag, equalTo(adder.isNFlagSet()));
-			assertThat("Full AddWord/WC Carry:  " + value1 + " " + value2, atu.mCarry, equalTo(adder.hasCarry()));
-
-		} // for val1
-	}// testWordAddWithCarry
+//AddAdcWordOriginal.txt
 	
 	@Test
-	public void testWordIncrement() {
-			for (value1 = 0; value1 < 0XFFFF; value1++) {
-			atu.fixFlagsADD(value1, 1, AdderTestUtility.WORD_ARG, false);
-			int answer = ((value1 + 1) & 0XFFFF);
-			word1 = atu.loadWord(value1);
-			int ans = atu.getWordValue(adder.incrementWord(word1));
-			assertThat("Full WordIncrement:  " + value1, answer, equalTo(ans));
-			assertThat("Full WordIncrement Sign:  " + value1, atu.mSign, equalTo(adder.hasSign()));
-			assertThat("Full WordIncrement Zero:  " + value1, atu.mZero, equalTo(adder.isZero()));
-			assertThat("Full WordIncrement HalfCarry:  " + value1, atu.mHalfCarry, equalTo(adder.hasHalfCarry()));
-			assertThat("Full WordIncrement Parity:  " + value1, atu.mParity, equalTo(adder.hasParity()));
-			assertThat("Full WordIncrement Overflow:  " + value1, atu.mOverflow, equalTo(adder.hasOverflow()));
-			assertThat("Full WordIncrement nFlag:  " + value1, atu.mNFlag, equalTo(adder.isNFlagSet()));
-			assertThat("Full WordIncrement Carry:  " + value1, atu.mCarry, equalTo(adder.hasCarry()));
+	public void testWordADDfile() {
+		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/AddAdcWordOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()){
+				sArg1 = scanner.next();
+				arg1 = getValue(sArg1);
+				sArg2 = scanner.next();
+				arg2 = getValue(sArg2);
+				
+				sSum = scanner.next();
+				sum = getValue(sSum);
+				flags = scanner.next();
+				
+				scanner.next();//	skip sum ADC CY = 0
+				scanner.next();//	skip flags ADC CY = 0
+				scanner.next();//	skip sum ADC CY = 1
+				scanner.next();//	skip flags ADC CY = 1
 
-		} // for val1
-	}// testWordIncrement
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				overflow = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+
+//				System.out.printf("%s %s %s %s ",sArg1,sArg2,sSum,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+						
+				message = String.format("file WORD ADD -> %s - %s = %s", sArg1,sArg2,sSum);
+				assertThat("sum: " + message,sum,equalTo(adder.addWord(arg1, arg2)));
+//				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+//				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+//				assertThat("overFlow: " +  message,overflow,equalTo(adder.hasOverflow()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+				
+				//---------------------------------------------------------------------------------
+				
+			}//while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		}//try
+	}//testWordSBCfile
+	
+	@Test
+	public void testWordADC_NCfile() {
+		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/AddAdcWordOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()){
+				sArg1 = scanner.next();
+				arg1 = getValue(sArg1);
+				sArg2 = scanner.next();
+				arg2 = getValue(sArg2);
+				
+				scanner.next();//	skip sum ADD
+				scanner.next();//	skip flags ADD
+				
+				sSum = scanner.next();
+				sum = getValue(sSum);
+				flags = scanner.next();
+				
+				scanner.next();//	skip sum ADC CY = 1
+				scanner.next();//	skip flags ADC CY = 1
+				
+				
+				carryState = false;
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				overflow = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+
+//				System.out.printf("%s %s %s %s ",sArg1,sArg2,sSum,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+						
+				message = String.format("file WORD ADC CY=0 -> %s - %s = %s", sArg1,sArg2,sSum);
+				assertThat("sum: " + message,sum,equalTo(adder.addWordWithCarry(arg1, arg2,carryState)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("overFlow: " +  message,overflow,equalTo(adder.hasOverflow()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+				
+				//---------------------------------------------------------------------------------
+				
+			}//while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		}//try
+	}//testWordADC_NCfile
+	
+	@Test
+	public void testWordADC_CYfile() {
+		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/AddAdcWordOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()){
+				sArg1 = scanner.next();
+				arg1 = getValue(sArg1);
+				sArg2 = scanner.next();
+				arg2 = getValue(sArg2);
+				
+				scanner.next();//	skip sum ADD
+				scanner.next();//	skip flags ADD
+				scanner.next();//	skip sum ADC CY = 0
+				scanner.next();//	skip flags ADC CY = 0
+				
+				sSum = scanner.next();
+				sum = getValue(sSum);
+				flags = scanner.next();
+				
+				
+				
+				carryState = true;
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				overflow = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+
+//				System.out.printf("%s %s %s %s ",sArg1,sArg2,sSum,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+						
+				message = String.format("file WORD ADC CY=0 -> %s - %s = %s", sArg1,sArg2,sSum);
+				assertThat("sum: " + message,sum,equalTo(adder.addWordWithCarry(arg1, arg2,carryState)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("overFlow: " +  message,overflow,equalTo(adder.hasOverflow()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+				
+				//---------------------------------------------------------------------------------
+				
+			}//while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		}//try
+	}//testWordADC_CYfile
+	
+	
+	private byte[] getValue(String value){
+		int workingValue  = Integer.valueOf(value,16);
+		byte msb = (byte) ((workingValue & 0XFF00)>>8);
+		byte lsb = (byte) ((byte) workingValue & 0X00FF);
+		return  new byte[] {lsb,msb};
+	}//getValue
+	
 
 }// class AdderTest2

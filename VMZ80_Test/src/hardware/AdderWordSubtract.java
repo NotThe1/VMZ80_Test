@@ -22,18 +22,11 @@ public class AdderWordSubtract {
 
 
 	
-	private static AdderTestUtility atu = AdderTestUtility.getInstance();
-//	int value1, value2, answer;
-//	byte[] bite1 = new byte[] { (byte) 0X00 };
-//	byte[] bite2 = new byte[] { (byte) 0X00 };
-//	byte[] word1 = new byte[] { (byte) 0X00, (byte) 0X00 };
-//	byte[] word2 = new byte[] { (byte) 0X00, (byte) 0X00 };
 
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
 		adder = Adder.getInstance();
-		// adder.clearSets();
 	}// setUp
 	
 	@Test
