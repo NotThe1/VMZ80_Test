@@ -2,18 +2,21 @@ package hardware;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.io.InputStream;
+import java.util.Scanner;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class AdderRotateLeft {
 	Adder adder = Adder.getInstance();
-	AdderTestUtility atu = AdderTestUtility.getInstance();
-	byte arg, ans;
-	boolean carryIn, orginalBit7;
-	byte bit7Mask = (byte) 0X80;
-	byte bit0Mask = (byte) 0X01;
-	byte bit0NotMask = (byte) 0XFE;
+	
+	byte arg1,arg2,result,ans;
+	boolean sign,zero,halfCarry,overflow,parity,nFlag,carry;
+	boolean carryState;
+	String flags,message;
 
 	@Before
 	public void setUp() throws Exception {
@@ -21,80 +24,127 @@ public class AdderRotateLeft {
 		adder = Adder.getInstance();
 		// adder.clearSets();
 	}// setUp
-
+	
 	@Test
-	public void testRLCA() {
-		for (int i = 0; i < 0XFF; i++) {
-			arg = (byte) i;
-			orginalBit7 = (arg & bit7Mask) == bit7Mask;
-			ans = (byte) (arg << 1);
-			if (orginalBit7) {
-				ans = (byte) (ans | bit0Mask);
-			} else {
-				ans = (byte) (ans & bit0NotMask);
-			} // if bit7
-				// System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
-			assertThat("RLCA " + arg, ans, equalTo(adder.rotateLeft(arg)));
-			assertThat("RLCA Cy" + arg, orginalBit7, equalTo(adder.hasCarry()));
-		} // for
-	}// testRLCA
+	public void testRL_file() {
+		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/RotateLeftOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()){
+				arg1 = getValue(scanner.next());
+// Carry = False
+				result = getValue(scanner.next());
+				flags = scanner.next();
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+				
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+						
+				message = String.format("file RLA NC -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.rotateLeftThru(arg1, false)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+// Carry = True				
+				result = getValue(scanner.next());
+				flags = scanner.next();
+						
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+						
+				scanner.next();//	RLCA_CY result
+				scanner.next();//	RLCA_CY flags
 
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+
+				message = String.format("file RLA CY -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.rotateLeftThru(arg1, true)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+				
+			}//while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		}//try
+	}//testRL_file
 	@Test
-	public void testRLA() {
-		boolean carryResult;
-		byte ansWithCarry = 00;
-		byte ansWithoutCarry = 00;
-		for (int i = 0; i < 0XFF; i++) {
-			arg = (byte) i;
-			orginalBit7 = (arg & bit7Mask) == bit7Mask;
-			ans = (byte) (arg << 1);
-			carryResult = orginalBit7;
-			ansWithCarry = (byte) (ans | bit0Mask);
-			ansWithoutCarry = (byte) (ans & bit0NotMask);
-			// System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
-			assertThat("RLA w/0 Carry" + arg, ansWithoutCarry, equalTo(adder.rotateLeftThru(arg, false)));
-			assertThat("RLA  w/0 Carry" + arg, carryResult, equalTo(adder.hasCarry()));
-			// System.out.printf("Arg = %02X, ans = %02X%n", arg, ansWithCarry);
-			assertThat("RLA with Carry" + arg, ansWithCarry, equalTo(adder.rotateLeftThru(arg, true)));
-			assertThat("RLA  with Carry" + arg, carryResult, equalTo(adder.hasCarry()));
-		} // for
-	}// testRLA
-
-	@Test
-	public void testRLC() {
-		boolean carryResult;
-		byte ansWithCarry = 00;
-		byte ansWithoutCarry = 00;
-		boolean isZero, hasSign, hasParity;
-		byte signMask = (byte) 0X80;
-
-		for (int i = 0; i < 0XFF; i++) {
-			arg = (byte) i;
-			orginalBit7 = (arg & bit7Mask) == bit7Mask;
-			ans = (byte) (arg << 1);
-			carryResult = orginalBit7;
-			ansWithoutCarry = (byte) (ans & bit0NotMask);
-			isZero = (ansWithoutCarry == 0);
-			hasSign = (ansWithoutCarry & signMask) == signMask;
-			hasParity = atu.getParity(ansWithoutCarry);
-//			System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
-			assertThat("RLA w/oc " + arg, ansWithoutCarry, equalTo(adder.rotateLeftThru(arg, false)));
-			assertThat("RLA  w/oc Carry " + arg, carryResult, equalTo(adder.hasCarry()));
-			assertThat("RLA  w/oc Sign " + arg, hasSign, equalTo(adder.hasSign()));
-			assertThat("RLA  w/oc Zero " + arg, isZero, equalTo(adder.isZero()));
-			assertThat("RLA  w/oc Parity " + arg, hasParity, equalTo(adder.hasParity()));
-
-			ansWithCarry = (byte) (ans | bit0Mask);
-			isZero = (ansWithCarry == 0);
-			hasSign = (ansWithCarry & signMask) == signMask;
-			hasParity = atu.getParity(ansWithCarry);
-			// System.out.printf("Arg = %02X, ans = %02X%n", arg, ansWithCarry);
-			assertThat("RLA with " + arg, ansWithCarry, equalTo(adder.rotateLeftThru(arg, true)));
-			assertThat("RLA  with Carry" + arg, carryResult, equalTo(adder.hasCarry()));
-			assertThat("RLA  with Sign " + arg, hasSign, equalTo(adder.hasSign()));
-			assertThat("RLA  with Zero " + arg, isZero, equalTo(adder.isZero()));
-			assertThat("RLA  with Parity " + arg, hasParity, equalTo(adder.hasParity()));
-		} // for
-	}// testRLC
+	public void testRLC_file() {
+		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/RotateLeftOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()){
+				arg1 = getValue(scanner.next());
+// Carry = False
+				
+				scanner.next();//	RL_NC result
+				scanner.next();//	RL_NC flags
+				
+				scanner.next();//	RL_CY result
+				scanner.next();//	RL_CY flags
+				
+				result = getValue(scanner.next());
+				flags = scanner.next();
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+				
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+						
+				message = String.format("file RLC -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.rotateLeft(arg1)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+							
+			}//while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		}//try
+	}//testRLC_file
+	
+	private byte getValue(String value){
+		int tempInt;
+		tempInt = Integer.valueOf(value,16);
+		return(byte)tempInt;
+	}//getValue
+	
 
 }// class AdderRotateLeft
