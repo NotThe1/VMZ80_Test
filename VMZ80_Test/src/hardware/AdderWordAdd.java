@@ -133,7 +133,6 @@ public class AdderWordAdd {
 				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
 				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
 				
-				//---------------------------------------------------------------------------------
 				
 			}//while
 			scanner.close();
@@ -190,8 +189,6 @@ public class AdderWordAdd {
 				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
 				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
 				
-				//---------------------------------------------------------------------------------
-				
 			}//while
 			scanner.close();
 			inputStream.close();
@@ -208,6 +205,31 @@ public class AdderWordAdd {
 		byte lsb = (byte) ((byte) workingValue & 0X00FF);
 		return  new byte[] {lsb,msb};
 	}//getValue
+	
+	@Test
+	public void testWordIncrement() {
+		// no flags are affected
+		byte[] word1;
+		for (int value1 = 0; value1 <0XFFFF ; value1++) {
+			
+			int answer = (value1 +1) & 0XFFFF;
+			word1 = loadWord(value1);
+			int ans = getWordValue(adder.incrementWord(word1));
+			assertThat("Full IncWord:  " + value1, answer, equalTo(ans));
+
+		} // for val1
+	}// testWordIncrement
+
+	public byte[] loadWord(int value) {
+		return new byte[] { (byte) (value & 0XFF), (byte) ((value & 0XFF00) >> 8) };
+	}// loadWord
+	
+	public int getWordValue(byte[] word) {
+		return ((word[1] << 8) & 0XFF00) + (word[0] & 0X00FF);
+	}// getWordValue
+
+
+
 	
 
 }// class AdderTest2
