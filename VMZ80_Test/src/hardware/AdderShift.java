@@ -2,21 +2,22 @@ package hardware;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.io.InputStream;
+import java.util.Scanner;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class AdderShift {
 	Adder adder = Adder.getInstance();
-	AdderTestUtility atu = AdderTestUtility.getInstance();
-	boolean isZero, hasSign, hasParity;
-	byte arg, ans;
-	boolean carryIn, orginalBit7;
-	byte bit0Mask = (byte) 0X01;
-	byte bit0NotMask = (byte) 0XFE;
-	byte bit7Mask = (byte) 0X80;
-	byte bit7NotMask = (byte) 0X7F;
-	byte signMask = (byte) 0X80;
+	
+	byte arg1,arg2,result,ans;
+	boolean sign,zero,halfCarry,overflow,parity,nFlag,carry;
+	boolean carryState;
+	String flags,message;
+
 
 	@Before
 	public void setUp() throws Exception {
@@ -24,68 +25,254 @@ public class AdderShift {
 		adder = Adder.getInstance();
 		// adder.clearSets();
 	}// setUp
-
+	
 	@Test
-	public void testSRL() {
-		for (int i = 0; i < 0XFF; i++) {
-			arg = (byte) i;
-			boolean orginalBit0 = (arg & bit0Mask) == bit0Mask;
-			ans = (byte) (arg >> 1);
-			ans = (byte) (ans & bit7NotMask);
-			isZero = (ans == 0);
-			hasSign = (ans & signMask) == signMask;
-			hasParity = atu.getParity(ans);
-			// System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
-			assertThat("SRL " + arg, ans, equalTo(adder.shiftSRL(arg)));
-			assertThat("SRL Carryy" + arg, orginalBit0, equalTo(adder.hasCarry()));
-			assertThat("SRL Sign " + arg, hasSign, equalTo(adder.hasSign()));
-			assertThat("SRL Zero " + arg, isZero, equalTo(adder.isZero()));
-			assertThat("SRL Parity " + arg, hasParity, equalTo(adder.hasParity()));
-		} // for
-	}// testSRL
+	public void testSLA_file() {
+		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/ShiftOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()){
+				arg1 = getValue(scanner.next());
+// Carry = False
+				result = getValue(scanner.next());
+				flags = scanner.next();
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+				
 
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+						
+				message = String.format("file SLA NC -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.shiftSLA(arg1)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+// Carry = True				
+				result = getValue(scanner.next());
+				flags = scanner.next();
+						
+				scanner.next();//	SRA_NC result
+				scanner.next();//	SRA_NC flags
+				scanner.next();//	SRA_CY result
+				scanner.next();//	SRA_CY flags
+				
+				scanner.next();//	SRL_NC result
+				scanner.next();//	SRL_NC flags
+				scanner.next();//	SRL_NC result
+				scanner.next();//	SRL_NC flags
+			
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+
+				message = String.format("file SLA CY -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.shiftSLA(arg1)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+				
+			}//while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		}//try
+	}//testSLA_file
+	
 	@Test
-	public void testSRA() {
-		for (int i = 0; i < 0XFF; i++) {
-			arg = (byte) i;
-			boolean orginalBit0 = (arg & bit0Mask) == bit0Mask;
-			boolean orginalBit7 = (arg & bit7Mask) == bit7Mask;
-			ans = (byte) (arg >> 1);
+	public void testSRA_file() {
+		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/ShiftOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()){
+				arg1 = getValue(scanner.next());
+// Carry = False
+				
+				
+				scanner.next();//	SLA_NC result
+				scanner.next();//	SLA_NC flags
+				scanner.next();//	SLA_NC result
+				scanner.next();//	SLA_NC flags
+				
 
-			if (orginalBit7) {
-				ans = (byte) (ans | bit7Mask);
-			} else {
-				ans = (byte) (ans & bit7NotMask);
-			} // if
-			isZero = (ans == 0);
-			hasSign = (ans & signMask) == signMask;
-			hasParity = atu.getParity(ans);
-			// System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
-			assertThat("SRL " + arg, ans, equalTo(adder.shiftSRA(arg)));
-			assertThat("SRL Carryy" + arg, orginalBit0, equalTo(adder.hasCarry()));
-			assertThat("SRL Sign " + arg, hasSign, equalTo(adder.hasSign()));
-			assertThat("SRL Zero " + arg, isZero, equalTo(adder.isZero()));
-			assertThat("SRL Parity " + arg, hasParity, equalTo(adder.hasParity()));
-		} // for
-	}// testSRA
+				result = getValue(scanner.next());
+				flags = scanner.next();
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+				
 
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+						
+				message = String.format("file SRA NC -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.shiftSRA(arg1)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+// Carry = True	
+				result = getValue(scanner.next());
+				flags = scanner.next();
+				
+//				scanner.next();//	SLA_CY result
+//				scanner.next();//	SLA_CY flags
+				
+				scanner.next();//	SRL_NC result
+				scanner.next();//	SRL_NC flags
+				scanner.next();//	SRL_NC result
+				scanner.next();//	SRL_NC flags
+
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+
+				message = String.format("file SRA CY -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.shiftSRA(arg1)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+				
+			}//while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		}//try
+	}//testSRA_file
+	
 	@Test
-	public void testSLA() {
-		for (int i = 0; i < 0XFF; i++) {
-			arg = (byte) i;
-			boolean orginalBit7 = (arg & bit7Mask) == bit7Mask;
-			ans = (byte) (arg << 1);
+	public void testSRL_file() {
+		
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/ShiftOriginal.txt");
+//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()){
+				arg1 = getValue(scanner.next());
+// Carry = False
+				
+				
+				scanner.next();//	SRA_NC result
+				scanner.next();//	SRA_NC flags
+				scanner.next();//	SRA_NC result
+				scanner.next();//	SRA_NC flags
+				
+				scanner.next();//	SRL_NC result
+				scanner.next();//	SRL_NC flags
+				scanner.next();//	SRL_NC result
+				scanner.next();//	SRL_NC flags
 
-			ans = (byte) (ans & bit0NotMask);
-			isZero = (ans == 0);
-			hasSign = (ans & signMask) == signMask;
-			hasParity = atu.getParity(ans);
-			// System.out.printf("Arg = %02X, ans = %02X%n", arg, ans);
-			assertThat("SRL " + arg, ans, equalTo(adder.shiftSLA(arg)));
-			assertThat("SRL Cy" + arg, orginalBit7, equalTo(adder.hasCarry()));
-			assertThat("SRL Sign " + arg, hasSign, equalTo(adder.hasSign()));
-			assertThat("SRL Zero " + arg, isZero, equalTo(adder.isZero()));
-			assertThat("SRL Parity " + arg, hasParity, equalTo(adder.hasParity()));
-		} // for
-	}// testSLA
+
+				
+
+				result = getValue(scanner.next());
+				flags = scanner.next();
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+				
+
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+						
+				message = String.format("file SRL NC -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.shiftSRL(arg1)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+// Carry = True	
+				result = getValue(scanner.next());
+				flags = scanner.next();
+				
+//				scanner.next();//	SLA_CY result
+//				scanner.next();//	SLA_CY flags
+				
+				
+				sign = flags.subSequence(0, 1).equals("1")?true:false;
+				zero = flags.subSequence(1, 2).equals("1")?true:false;
+				halfCarry = flags.subSequence(2, 3).equals("1")?true:false;
+				parity = flags.subSequence(3, 4).equals("1")?true:false;
+				nFlag = flags.subSequence(4, 5).equals("1")?true:false;
+				carry = flags.subSequence(5, 6).equals("1")?true:false;
+
+//				System.out.printf("%02X  %02X %s ",arg1,result,flags);
+//				System.out.printf("  %s %s %s   %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+
+				message = String.format("file SRL CY -> %d  = %02X", arg1,result);
+				assertThat("ans: " + message,result,equalTo(adder.shiftSRL(arg1)));
+				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
+				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(adder.hasHalfCarry()));
+				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
+				assertThat("nFlag: " +  message,nFlag,equalTo(adder.isNFlagSet()));
+				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));
+				
+			}//while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		}//try
+	}//testSRL_file
+	
+	
+	
+	private byte getValue(String value){
+		int tempInt;
+		tempInt = Integer.valueOf(value,16);
+		return(byte)tempInt;
+	}//getValue
+	
 }// class AdderShift
