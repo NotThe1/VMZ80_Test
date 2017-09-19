@@ -226,8 +226,8 @@ public class TestED {
 	
 	private void setUpMemory(int location, byte[] newValues) {
 		wrs.setProgramCounter(location);
-		int size = newValues.length;
+//		int size = newValues.length;
 		ioBuss.writeDMA(location, newValues);
-	}//loadMemory
+	}//setUpMemory
 	
 }//class TestED
