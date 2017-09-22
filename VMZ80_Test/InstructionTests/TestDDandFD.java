@@ -24,17 +24,19 @@ public class TestDDandFD {
 	@Test
 	public void testPage3() {// DD (E1,E5,E9 and E3,F9)
 		int location = 0000;
+		/* @formatter:off */
 		values = new byte[] { (byte) 0XDD, (byte) 0XE1,
-							(byte) 0XDD, (byte) 0XE5,
-							(byte) 0XDD, (byte) 0XE9,
-							(byte) 0XDD, (byte) 0XE3,
-							(byte) 0XDD, (byte) 0XF9,
-							(byte) 0XFD, (byte) 0XE1,
-							(byte) 0XFD, (byte) 0XE5,
-							(byte) 0XFD, (byte) 0XE9,
-							(byte) 0XFD, (byte) 0XE3,
-							(byte) 0XFD, (byte) 0XF9
+							  (byte) 0XDD, (byte) 0XE5,
+							  (byte) 0XDD, (byte) 0XE9,
+							  (byte) 0XDD, (byte) 0XE3,
+							  (byte) 0XDD, (byte) 0XF9,
+							  (byte) 0XFD, (byte) 0XE1,
+							  (byte) 0XFD, (byte) 0XE5,
+							  (byte) 0XFD, (byte) 0XE9,
+							  (byte) 0XFD, (byte) 0XE3,
+							  (byte) 0XFD, (byte) 0XF9
 				  };
+		/* @formatter:on  */
 		setUpMemory(location, values);
 		
 		instruction = new Instruction();
@@ -50,13 +52,13 @@ public class TestDDandFD {
 
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
-		assertThat("EX (SP),IX", Z80.Register.IX, equalTo(instruction.getDoubleRegister1()));
-		assertThat("EX (SP),IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister2()));
+		assertThat("EX (SP),IX", Z80.Register.IX, equalTo(instruction.getDoubleRegister2()));
+		assertThat("EX (SP),IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister1()));
 
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
-		assertThat("LD SP,IX", Z80.Register.IX, equalTo(instruction.getDoubleRegister1()));
-		assertThat("LD SP,IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister2()));
+		assertThat("LD SP,IX", Z80.Register.IX, equalTo(instruction.getDoubleRegister2()));
+		assertThat("LD SP,IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister1()));
 		
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
@@ -72,28 +74,30 @@ public class TestDDandFD {
 
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
-		assertThat("EX (SP),IY", Z80.Register.IY, equalTo(instruction.getDoubleRegister1()));
-		assertThat("EX (SP),IY", Z80.Register.SP, equalTo(instruction.getDoubleRegister2()));
+		assertThat("EX (SP),IY", Z80.Register.IY, equalTo(instruction.getDoubleRegister2()));
+		assertThat("EX (SP),IY", Z80.Register.SP, equalTo(instruction.getDoubleRegister1()));
 
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
-		assertThat("LD SP,IY", Z80.Register.IY, equalTo(instruction.getDoubleRegister1()));
-		assertThat("LD SP,IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister2()));
+		assertThat("LD SP,IY", Z80.Register.IY, equalTo(instruction.getDoubleRegister2()));
+		assertThat("LD SP,IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister1()));
 
 	}//testPage3
 	
 	@Test
 	public void testLogical() {// DD 36
 		int location = 0000;
+		/* @formatter:off */
 		values = new byte[] { (byte) 0XDD, (byte) 0X86, (byte) 0X01,
-							(byte) 0XDD, (byte) 0X8E, (byte) 0X23,
-							(byte) 0XDD, (byte) 0X96, (byte) 0X45,
-							(byte) 0XDD, (byte) 0X9E, (byte) 0X67,
-							(byte) 0XDD, (byte) 0XA6, (byte) 0X89,
-							(byte) 0XDD, (byte) 0XAE, (byte) 0XAB,
-							(byte) 0XDD, (byte) 0XB6, (byte) 0XCD,
-							(byte) 0XDD, (byte) 0XBE, (byte) 0XEF
+							  (byte) 0XDD, (byte) 0X8E, (byte) 0X23,
+							  (byte) 0XDD, (byte) 0X96, (byte) 0X45,
+							  (byte) 0XDD, (byte) 0X9E, (byte) 0X67,
+							  (byte) 0XDD, (byte) 0XA6, (byte) 0X89,
+							  (byte) 0XDD, (byte) 0XAE, (byte) 0XAB,
+							  (byte) 0XDD, (byte) 0XB6, (byte) 0XCD,
+							  (byte) 0XDD, (byte) 0XBE, (byte) 0XEF
 				  };
+		/* @formatter:on  */
 		setUpMemory(location, values);
 		
 		instruction = new Instruction();
@@ -204,21 +208,23 @@ public class TestDDandFD {
 	@Test
 	public void testDisplacementAndSingleRegister() {// DD 36
 		int location = 0000;
+		/* @formatter:off */
 		values = new byte[] { (byte) 0XDD, (byte) 0X46, (byte) 0X01,
-				(byte) 0XDD, (byte) 0X4E, (byte) 0X23,
-				(byte) 0XDD, (byte) 0X56, (byte) 0X45,
-				(byte) 0XDD, (byte) 0X5E, (byte) 0X67,
-				(byte) 0XDD, (byte) 0X66, (byte) 0X89,
-				(byte) 0XDD, (byte) 0X6E, (byte) 0XAB,
-				(byte) 0XDD, (byte) 0X7E, (byte) 0XCD,
-				 (byte) 0XDD, (byte) 0X70, (byte) 0X01,
-					(byte) 0XDD, (byte) 0X71, (byte) 0X23,
-					(byte) 0XDD, (byte) 0X72, (byte) 0X45,
-					(byte) 0XDD, (byte) 0X73, (byte) 0X67,
-					(byte) 0XDD, (byte) 0X74, (byte) 0X89,
-					(byte) 0XDD, (byte) 0X75, (byte) 0XAB,
-					(byte) 0XDD, (byte) 0X77, (byte) 0XCD
+							  (byte) 0XDD, (byte) 0X4E, (byte) 0X23,
+							  (byte) 0XDD, (byte) 0X56, (byte) 0X45,
+							  (byte) 0XDD, (byte) 0X5E, (byte) 0X67,
+							  (byte) 0XDD, (byte) 0X66, (byte) 0X89,
+							  (byte) 0XDD, (byte) 0X6E, (byte) 0XAB,
+							  (byte) 0XDD, (byte) 0X7E, (byte) 0XCD,
+							  (byte) 0XDD, (byte) 0X70, (byte) 0X01,
+							  (byte) 0XDD, (byte) 0X71, (byte) 0X23,
+							  (byte) 0XDD, (byte) 0X72, (byte) 0X45,
+							  (byte) 0XDD, (byte) 0X73, (byte) 0X67,
+							  (byte) 0XDD, (byte) 0X74, (byte) 0X89,
+							  (byte) 0XDD, (byte) 0X75, (byte) 0XAB,
+							  (byte) 0XDD, (byte) 0X77, (byte) 0XCD
 				  };
+		/* @formatter:on  */
 		setUpMemory(location, values);
 		
 		instruction = new Instruction();
@@ -403,8 +409,10 @@ public class TestDDandFD {
 	@Test
 	public void testDisplacementAndByte() {// DD 36
 		int location = 0000;
+		/* @formatter:off */
 		values = new byte[] { (byte) 0XDD, (byte) 0X36, (byte) 0X12, (byte) 0X34,
-				 (byte) 0XFD, (byte) 0X36, (byte) 0XCD, (byte) 0XEF};
+				 			  (byte) 0XFD, (byte) 0X36, (byte) 0XCD, (byte) 0XEF};
+		/* @formatter:on  */
 		setUpMemory(location, values);
 		
 		instruction = new Instruction();
@@ -424,9 +432,16 @@ public class TestDDandFD {
 	@Test
 	public void testIncDec() {// DD (34,35) nn and DD 23,2B
 		int location = 0000;
-		values = new byte[] { (byte) 0XDD, (byte) 0X34, (byte) 0X12, (byte) 0XDD, (byte) 0X35, (byte) 0XAA, (byte) 0XFD,
-				(byte) 0X34, (byte) 0X34, (byte) 0XFD, (byte) 0X35, (byte) 0X55, (byte) 0XDD, (byte) 0X23, (byte) 0XDD,
-				(byte) 0X2B, (byte) 0XFD, (byte) 0X23, (byte) 0XFD, (byte) 0X2B, };
+		/* @formatter:off */
+		values = new byte[] { (byte) 0XDD, (byte) 0X34, (byte) 0X12,
+				 			  (byte) 0XDD, (byte) 0X35, (byte) 0XAA,
+				 			  (byte) 0XFD, (byte) 0X34, (byte) 0X34,
+				 			  (byte) 0XFD, (byte) 0X35, (byte) 0X55,
+				 			  (byte) 0XDD, (byte) 0X23,
+				 			  (byte) 0XDD, (byte) 0X2B,
+				 			  (byte) 0XFD, (byte) 0X23,
+				 			  (byte) 0XFD, (byte) 0X2B, };
+		/* @formatter:on  */
 		setUpMemory(location, values);
 
 		instruction = new Instruction();
@@ -468,8 +483,11 @@ public class TestDDandFD {
 	@Test
 	public void testImmediateWord() {// DD (21,22,2A) nn
 		int location = 0000;
-		values = new byte[] { (byte) 0XDD, (byte) 0X21, (byte) 0X34, (byte) 0X12, (byte) 0XDD, (byte) 0X22, (byte) 0XAA,
-				(byte) 0X55, (byte) 0XDD, (byte) 0X2A, (byte) 0XEF, (byte) 0XCD };
+		/* @formatter:off */
+		values = new byte[] { (byte) 0XDD, (byte) 0X21, (byte) 0X34, (byte) 0X12,
+				              (byte) 0XDD, (byte) 0X22, (byte) 0XAA, (byte) 0X55,
+				              (byte) 0XDD, (byte) 0X2A, (byte) 0XEF, (byte) 0XCD };
+		/* @formatter:on  */
 		setUpMemory(location, values);
 
 		instruction = new Instruction();
@@ -512,8 +530,12 @@ public class TestDDandFD {
 	@Test
 	public void testADD() {// DD (09,19,29,39)
 		int location = 0000;
-		values = new byte[] { (byte) 0XDD, (byte) 0X09, (byte) 0XDD, (byte) 0X19, (byte) 0XDD, (byte) 0X29, (byte) 0XDD,
-				(byte) 0X39, };
+		/* @formatter:off */
+		values = new byte[] { (byte) 0XDD, (byte) 0X09,
+				              (byte) 0XDD, (byte) 0X19,
+				              (byte) 0XDD, (byte) 0X29,
+				              (byte) 0XDD, (byte) 0X39, };
+		/* @formatter:on  */
 		setUpMemory(location, values);
 
 		instruction = new Instruction();
@@ -565,10 +587,15 @@ public class TestDDandFD {
 	@Test
 	public void testBitsShifts() {// DD CB xx (06,0E,16,1E,26,2E,3E)
 		int location = 0000;
-		values = new byte[] { (byte) 0XDD, (byte) 0XCB, (byte) 0X00, (byte) 0X06, (byte) 0XDD, (byte) 0XCB, (byte) 0X01,
-				(byte) 0X0E, (byte) 0XDD, (byte) 0XCB, (byte) 0X10, (byte) 0X16, (byte) 0XDD, (byte) 0XCB, (byte) 0X08,
-				(byte) 0X1E, (byte) 0XDD, (byte) 0XCB, (byte) 0X80, (byte) 0X26, (byte) 0XDD, (byte) 0XCB, (byte) 0X55,
-				(byte) 0X2E, (byte) 0XDD, (byte) 0XCB, (byte) 0XAA, (byte) 0X3E };
+		/* @formatter:off */
+		values = new byte[] { (byte) 0XDD, (byte) 0XCB, (byte) 0X00, (byte) 0X06,
+				              (byte) 0XDD, (byte) 0XCB, (byte) 0X01, (byte) 0X0E,
+				              (byte) 0XDD, (byte) 0XCB, (byte) 0X10, (byte) 0X16,
+				              (byte) 0XDD, (byte) 0XCB, (byte) 0X08, (byte) 0X1E,
+				              (byte) 0XDD, (byte) 0XCB, (byte) 0X80, (byte) 0X26,
+				              (byte) 0XDD, (byte) 0XCB, (byte) 0X55, (byte) 0X2E,
+				              (byte) 0XDD, (byte) 0XCB, (byte) 0XAA, (byte) 0X3E };
+		/* @formatter:on  */
 		setUpMemory(location, values);
 
 		instruction = new Instruction();
