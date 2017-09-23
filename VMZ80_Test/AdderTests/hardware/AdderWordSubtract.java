@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AdderWordSubtract {
-	Adder adder = Adder.getInstance();
+	ArithmeticUnit adder = ArithmeticUnit.getInstance();
 	byte[] arg1,arg2,diff,ans;
 	String sArg1,sArg2,sDiff;
 	
@@ -26,7 +26,7 @@ public class AdderWordSubtract {
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
-		adder = Adder.getInstance();
+		adder = ArithmeticUnit.getInstance();
 	}// setUp
 	
 	@Test

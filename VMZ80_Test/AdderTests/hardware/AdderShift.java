@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AdderShift {
-	Adder adder = Adder.getInstance();
+	ArithmeticUnit adder = ArithmeticUnit.getInstance();
 	
 	byte arg1,arg2,result,ans;
 	boolean sign,zero,halfCarry,overflow,parity,nFlag,carry;
@@ -22,7 +22,7 @@ public class AdderShift {
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
-		adder = Adder.getInstance();
+		adder = ArithmeticUnit.getInstance();
 		// adder.clearSets();
 	}// setUp
 	

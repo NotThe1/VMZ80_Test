@@ -1,7 +1,7 @@
 package hardware;
 
 public class AdderTestLite {
-	static Adder adder = Adder.getInstance();
+	static ArithmeticUnit adder = ArithmeticUnit.getInstance();
 
 	private static boolean mSign;
 	private static boolean mZero;
@@ -345,7 +345,7 @@ public class AdderTestLite {
 		return ((word[1] << 8) & 0XFF00) + (word[0] & 0X00FF);
 	}// getWordValue
 
-	private static void showFlags(Adder adder) {
+	private static void showFlags(ArithmeticUnit adder) {
 		String sign = adder.hasSign() ? "S" : "s";
 		String zero = adder.isZero() ? "Z" : "z";
 		String bit5 = adder.hasSign() ? "." : ".";

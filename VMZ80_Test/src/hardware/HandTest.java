@@ -3,7 +3,7 @@ package hardware;
 public class HandTest {
 
 	public static void main(String[] args) {
-		Adder adder = Adder.getInstance();
+		ArithmeticUnit adder = ArithmeticUnit.getInstance();
 
 		// byte[] arg1 = new byte[] {(byte) 0XFF,(byte) 0X0F};
 		// byte[] arg2 = new byte[] {(byte) 0XFF,(byte) 0X0F};

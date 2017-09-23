@@ -7,14 +7,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AdderBits {
-	Adder adder = Adder.getInstance();
+	ArithmeticUnit adder = ArithmeticUnit.getInstance();
 	AdderTestUtility atu = AdderTestUtility.getInstance();
 	byte arg;
 
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
-		adder = Adder.getInstance();
+		adder = ArithmeticUnit.getInstance();
 		// adder.clearSets();
 	}// setUp
 

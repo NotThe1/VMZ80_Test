@@ -167,7 +167,7 @@ public class AdderTestUtility {
 
 	}// fixFlags
 
-	public void showFlags(Adder adder) {
+	public void showFlags(ArithmeticUnit adder) {
 		String sign = adder.hasSign() ? "S" : "s";
 		String zero = adder.isZero() ? "Z" : "z";
 		String bit5 = adder.hasSign() ? "." : ".";
@@ -179,7 +179,7 @@ public class AdderTestUtility {
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFlags
 
-	public void showFlagsV(Adder adder) {
+	public void showFlagsV(ArithmeticUnit adder) {
 		String sign = adder.hasSign() ? "S" : "s";
 		String zero = adder.isZero() ? "Z" : "z";
 		String bit5 = adder.hasSign() ? "." : ".";

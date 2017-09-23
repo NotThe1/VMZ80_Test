@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AdderByteAdd {
-	Adder adder = Adder.getInstance();
+	ArithmeticUnit adder = ArithmeticUnit.getInstance();
 	
 	byte arg1,arg2,sum,ans;
 	boolean sign,zero,halfCarry,overflow,nFlag,carry;
@@ -30,7 +30,7 @@ public class AdderByteAdd {
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
-		adder = Adder.getInstance();
+		adder = ArithmeticUnit.getInstance();
 		// adder.clearSets();
 	}// setUp
 	

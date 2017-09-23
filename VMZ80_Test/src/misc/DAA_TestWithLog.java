@@ -29,13 +29,13 @@ import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
-import hardware.Adder;
+import hardware.ArithmeticUnit;
 
 
 
 public class DAA_TestWithLog {
 AppLogger log = AppLogger.getInstance();
-Adder adder = Adder.getInstance();
+ArithmeticUnit adder = ArithmeticUnit.getInstance();
 byte arg1,arg2,diff,daa;
 boolean CY,HC,CY1,HC1;
 int intDiff;

@@ -5,12 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import hardware.Adder;
+import hardware.ArithmeticUnit;
 import hardware.AdderTestUtility;
 
 public class DAAtest {
 
-	Adder adder = Adder.getInstance();
+	ArithmeticUnit adder = ArithmeticUnit.getInstance();
 	AdderTestUtility atu = AdderTestUtility.getInstance();
 
 	public static void main(String[] args) {

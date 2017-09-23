@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AdderDAATest {
-	Adder adder = Adder.getInstance();
+	ArithmeticUnit adder = ArithmeticUnit.getInstance();
 
 	byte arg1,arg2,diff,sum,daa,ans;
 	boolean CY,HC,CY1,HC1;
@@ -20,7 +20,7 @@ public class AdderDAATest {
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
-		adder = Adder.getInstance();
+		adder = ArithmeticUnit.getInstance();
 	}// setUp
 
 	@Test
