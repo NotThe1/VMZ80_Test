@@ -123,11 +123,7 @@ public class WorkingRegisterSetTest {
 			assertThat(value + " PC(valueArray) ", value, equalTo(wrs.getProgramCounter()));
 			assertThat(value + " IX(valueArray) ", value, equalTo(wrs.getIX()));
 			assertThat(value + " IY(valueArray) ", value, equalTo(wrs.getIY()));
-
-
 			
-			
-
 		} // outer for
 	}// testWordRegistersByteByte
 
