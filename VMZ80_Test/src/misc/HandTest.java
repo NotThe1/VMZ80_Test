@@ -1,4 +1,6 @@
-package hardware;
+package misc;
+
+import hardware.ArithmeticUnit;
 
 public class HandTest {
 
