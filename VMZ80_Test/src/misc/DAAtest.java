@@ -6,12 +6,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import hardware.ArithmeticUnit;
-import hardware.AdderTestUtility;
+import hardware.arithmeticUnit.TestUtilityArithmeticUnit;
 
 public class DAAtest {
 
 	ArithmeticUnit adder = ArithmeticUnit.getInstance();
-	AdderTestUtility atu = AdderTestUtility.getInstance();
+	 
+	TestUtilityArithmeticUnit testUtility = TestUtilityArithmeticUnit.getInstance();
 
 	public static void main(String[] args) {
 		new DAAtest().doit();
