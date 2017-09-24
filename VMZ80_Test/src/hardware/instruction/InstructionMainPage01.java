@@ -1,3 +1,4 @@
+package hardware.instruction;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -9,7 +10,7 @@ import hardware.Instruction;
 import hardware.WorkingRegisterSet;
 import memory.IoBuss;
 
-public class TestMainInstructionsPage01 {
+public class InstructionMainPage01 {
 	IoBuss ioBuss = IoBuss.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
 	Instruction instruction;
