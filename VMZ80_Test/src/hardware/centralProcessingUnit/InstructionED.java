@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import codeSupport.Z80;
+import codeSupport.Z80.Register;
 import hardware.CentralProcessingUnit;
 import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
@@ -23,6 +24,9 @@ public class InstructionED {
 	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
 	IoBuss ioBuss = IoBuss.getInstance();
 
+	Register[] registers = new Register[] {Z80.Register.BC,Z80.Register.DE,Z80.Register.SP};
+
+	
 	int arg1, arg2, ans;
 	int sumADD, sumADCnc, sumADCcy;
 
@@ -46,7 +50,9 @@ public class InstructionED {
 	}// setUp
 
 	@Test
-	public void testWordADC_NCfile() {
+	public void testWordADDs_NCfile() {
+		//Not testing ADD HL,HL ADC HL,HL the data source does not support.
+		
 		/* @formatter:off */
 		/*
 0001: 0000         ; testCodesAddAdc.asm
@@ -59,20 +65,14 @@ public class InstructionED {
 0008: 0006 ED 5A                  ADC    HL,DE                
 0009: 0008 ED 5A                  ADC    HL,DE                
 0010: 000A                                             
-0011: 000A 29                     ADD    HL,HL                
-0012: 000B ED 6A                  ADC    HL,HL                
-0013: 000D ED 6A                  ADC    HL,HL                
-0014: 000F                                             
-0015: 000F 39                     ADD    HL,SP                
-0016: 0010 ED 7A                  ADC    HL,SP                
-0017: 0012 ED 7A                  ADC    HL,SP         
+0011: 000A 39                     ADD    HL,SP                
+0012: 000B ED 7A                  ADC    HL,SP                
+0013: 000D ED 7A                  ADC    HL,SP       
 		/* @formatter:on  */
 		int location = 0000;
 		values = new byte[] { (byte) 0X09, (byte) 0XED, (byte) 0X4A, (byte) 0XED, (byte) 0X4A,
 
 				(byte) 0X19, (byte) 0XED, (byte) 0X5A, (byte) 0XED, (byte) 0X5A,
-
-				(byte) 0X29, (byte) 0XED, (byte) 0X6A, (byte) 0XED, (byte) 0X6A,
 
 				(byte) 0X39, (byte) 0XED, (byte) 0X7A, (byte) 0XED, (byte) 0X7A, };
 
@@ -113,8 +113,8 @@ public class InstructionED {
 				nFlag = flagsADD.subSequence(4, 5).equals("1") ? true : false;
 				carry = flagsADD.subSequence(5, 6).equals("1") ? true : false;
 
-				System.out.printf("wrs.getProgramCounter(): %04X %n", wrs.getProgramCounter());
-				System.out.printf("%s %s %s %s  %n ", sArg1, sArg2, sSumADD, flagsADD);
+				System.out.printf("wrs.getProgramCounter(): %04X %s - ", wrs.getProgramCounter(),registers[registerIndex].toString());
+				System.out.printf("%s %s %s %s  %n", sArg1, sArg2, sSumADD, flagsADD);
 				// System.out.printf(" %s %s %s %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
 
 				aArg1 = getValueArray(sArg1);
@@ -126,8 +126,8 @@ public class InstructionED {
 				setUpWordRegisters(registerIndex, aArg1, aArg2, false);
 				assertThat(message, aSumADD, equalTo(wrs.getDoubleRegArray(Z80.Register.HL)));
 
-				System.out.printf("wrs.getProgramCounter(): %04X %n", wrs.getProgramCounter());
-				System.out.printf("%s %s %s %s  %n ", sArg1, sArg2, sSumADCnc, flagsADCnc);
+				System.out.printf("wrs.getProgramCounter(): %04X %s - ", wrs.getProgramCounter(),registers[registerIndex].toString());
+				System.out.printf("%s %s %s %s  %n", sArg1, sArg2, sSumADCnc, flagsADCnc);
 
 				aSumADCnc = getValueArray(sSumADCnc);
 				message = String.format("file WORD ADCnc %s + %s = %s", sArg1, sArg2, sSumADCnc);
@@ -135,7 +135,7 @@ public class InstructionED {
 				setUpWordRegisters(registerIndex, aArg1, aArg2, false);
 				assertThat(message, aSumADCnc, equalTo(wrs.getDoubleRegArray(Z80.Register.HL)));
 
-				System.out.printf("wrs.getProgramCounter(): %04X %n", wrs.getProgramCounter());
+				System.out.printf("wrs.getProgramCounter(): %04X %s - ", wrs.getProgramCounter(),registers[registerIndex].toString());
 				System.out.printf("%s %s %s %s  %n", sArg1, sArg2, sSumADCcy, flagsADCcy);
 
 				aSumADCcy = getValueArray(sSumADCcy);
@@ -145,7 +145,8 @@ public class InstructionED {
 				assertThat(message, aSumADCcy, equalTo(wrs.getDoubleRegArray(Z80.Register.HL)));
 
 				registerIndex++;
-				if ((wrs.getProgramCounter() % 0X14) == 0) {
+				
+				if ((wrs.getProgramCounter() % 0X0F) == 0) {
 					registerIndex = 0;
 					wrs.setProgramCounter(0X00);
 				} // if
@@ -171,7 +172,7 @@ public class InstructionED {
 
 	private void setUpWordRegisters(int registerIndex, byte[] arg1, byte[] arg2, boolean carryState) {
 		wrs.setDoubleReg(Z80.Register.HL, arg1); // Set HL
-		wrs.setDoubleReg(Z80.doubleRegisters1[registerIndex], arg2);// Set rr
+		wrs.setDoubleReg(registers[registerIndex], arg2);// Set rr
 		ccr.setCarryFlag(carryState);
 		cpu.executeInstruction(wrs.getProgramCounter());// do the ADCcy
 	}// setUpWordRegisters
