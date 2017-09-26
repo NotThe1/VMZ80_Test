@@ -54,8 +54,10 @@ public class WorkingRegisterSetTest {
 		for (int value = 0; value < 65535; value++) {
 			hi = (byte) ((value >> 8) & Z80.BYTE_MASK);
 			lo = (byte) (value & Z80.BYTE_MASK);
-			valueArray[0] = hi;
-			valueArray[1] = lo;
+			valueArray[0] = lo;
+			valueArray[1] = hi;
+			
+			System.out.printf("Value = %04X (%,d)%n", value,value);
 
 			for (Register r : wordRegisters) {
 				wrs.setDoubleReg(r, value);
@@ -86,8 +88,8 @@ public class WorkingRegisterSetTest {
 		for (int value = 0; value < 65536; value++) {
 			hi = (byte) ((value >> 8) & Z80.BYTE_MASK);
 			lo = (byte) (value & Z80.BYTE_MASK);
-			valueArray[0] = hi;
-			valueArray[1] = lo;
+			valueArray[0] = lo;
+			valueArray[1] = hi;
 			
 			wrs.setStackPointer(value);
 			wrs.setProgramCounter(value);
