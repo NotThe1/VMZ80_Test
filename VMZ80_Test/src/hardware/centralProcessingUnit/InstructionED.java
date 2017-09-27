@@ -18,6 +18,8 @@ import hardware.WorkingRegisterSet;
 import memory.IoBuss;
 
 public class InstructionED {
+	// Also Word Add 09,19,29,39 ADD HL,DE[,HL],SP
+	
 	// ArithmeticUnit au = ArithmeticUnit.getInstance();
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
@@ -106,43 +108,60 @@ public class InstructionED {
 				sSumADCcy = scanner.next();
 				flagsADCcy = scanner.next();
 
-				sign = flagsADD.subSequence(0, 1).equals("1") ? true : false;
-				zero = flagsADD.subSequence(1, 2).equals("1") ? true : false;
-				halfCarry = flagsADD.subSequence(2, 3).equals("1") ? true : false;
-				overflow = flagsADD.subSequence(3, 4).equals("1") ? true : false;
-				nFlag = flagsADD.subSequence(4, 5).equals("1") ? true : false;
-				carry = flagsADD.subSequence(5, 6).equals("1") ? true : false;
+//				sign = flagsADD.subSequence(0, 1).equals("1") ? true : false;
+//				zero = flagsADD.subSequence(1, 2).equals("1") ? true : false;
+//				halfCarry = flagsADD.subSequence(2, 3).equals("1") ? true : false;
+//				overflow = flagsADD.subSequence(3, 4).equals("1") ? true : false;
+//				nFlag = flagsADD.subSequence(4, 5).equals("1") ? true : false;
+//				carry = flagsADD.subSequence(5, 6).equals("1") ? true : false;
 
-				System.out.printf("wrs.getProgramCounter(): %04X %s - ", wrs.getProgramCounter(),registers[registerIndex].toString());
-				System.out.printf("%s %s %s %s  %n", sArg1, sArg2, sSumADD, flagsADD);
-				// System.out.printf(" %s %s %s %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+//				 System.out.printf("wrs.getProgramCounter(): %04X %s - ", wrs.getProgramCounter(),registers[registerIndex].toString());
+//				 System.out.printf("%s %s %s %s  %n", sArg1, sArg2, sSumADD, flagsADD);
+//				 System.out.printf(" %s %s %s %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
 
 				aArg1 = getValueArray(sArg1);
 				aArg2 = getValueArray(sArg2);
-
 				aSumADD = getValueArray(sSumADD);
-				message = String.format("file WORD ADD  %s + %s = %s", sArg1, sArg2, sSumADD);
-
 				setUpWordRegisters(registerIndex, aArg1, aArg2, false);
+				message = String.format("file WORD ADD  %s + %s = %s", sArg1, sArg2, sSumADD);				
 				assertThat(message, aSumADD, equalTo(wrs.getDoubleRegArray(Z80.Register.HL)));
+				
+				nFlag = flagsADD.subSequence(4, 5).equals("1") ? true : false;
+				halfCarry = flagsADD.subSequence(2, 3).equals("1") ? true : false;
+				carry = flagsADD.subSequence(5, 6).equals("1") ? true : false;
+				message = String.format("file Word ADD - N: %s,HC: %s,CY: %s",nFlag,halfCarry,carry);
+				assertThat(message, nFlag, equalTo(ccr.isNFlagSet()));
+				assertThat(message, halfCarry, equalTo(ccr.isHFlagSet()));
+				assertThat(message, carry, equalTo(ccr.isCarryFlagSet()));
 
-				System.out.printf("wrs.getProgramCounter(): %04X %s - ", wrs.getProgramCounter(),registers[registerIndex].toString());
-				System.out.printf("%s %s %s %s  %n", sArg1, sArg2, sSumADCnc, flagsADCnc);
 
 				aSumADCnc = getValueArray(sSumADCnc);
-				message = String.format("file WORD ADCnc %s + %s = %s", sArg1, sArg2, sSumADCnc);
-
 				setUpWordRegisters(registerIndex, aArg1, aArg2, false);
+				message = String.format("file WORD ADCnc %s + %s = %s", sArg1, sArg2, sSumADCnc);
 				assertThat(message, aSumADCnc, equalTo(wrs.getDoubleRegArray(Z80.Register.HL)));
-
-				System.out.printf("wrs.getProgramCounter(): %04X %s - ", wrs.getProgramCounter(),registers[registerIndex].toString());
-				System.out.printf("%s %s %s %s  %n", sArg1, sArg2, sSumADCcy, flagsADCcy);
-
+				
+				nFlag = flagsADCnc.subSequence(4, 5).equals("1") ? true : false;
+				halfCarry = flagsADCnc.subSequence(2, 3).equals("1") ? true : false;
+				carry = flagsADCnc.subSequence(5, 6).equals("1") ? true : false;
+				message = String.format("file Word ADD - N: %s,HC: %s,CY: %s",nFlag,halfCarry,carry);
+				assertThat(message, nFlag, equalTo(ccr.isNFlagSet()));
+				assertThat(message, halfCarry, equalTo(ccr.isHFlagSet()));
+				assertThat(message, carry, equalTo(ccr.isCarryFlagSet()));
+				
+				
 				aSumADCcy = getValueArray(sSumADCcy);
-				message = String.format("file WORD ADCcy %s + %s = %s", sArg1, sArg2, sSumADCcy);
-
 				setUpWordRegisters(registerIndex, aArg1, aArg2, true);
+				message = String.format("file WORD ADCcy %s + %s = %s", sArg1, sArg2, sSumADCcy);
 				assertThat(message, aSumADCcy, equalTo(wrs.getDoubleRegArray(Z80.Register.HL)));
+				
+				nFlag = flagsADCcy.subSequence(4, 5).equals("1") ? true : false;
+				halfCarry = flagsADCcy.subSequence(2, 3).equals("1") ? true : false;
+				carry = flagsADCcy.subSequence(5, 6).equals("1") ? true : false;
+				message = String.format("file Word ADD - N: %s,HC: %s,CY: %s",nFlag,halfCarry,carry);
+				assertThat(message, nFlag, equalTo(ccr.isNFlagSet()));
+				assertThat(message, halfCarry, equalTo(ccr.isHFlagSet()));
+				assertThat(message, carry, equalTo(ccr.isCarryFlagSet()));
+
 
 				registerIndex++;
 				
