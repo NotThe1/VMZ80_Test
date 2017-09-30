@@ -1,5 +1,4 @@
 package misc;
-import java.util.Random;
 
 public class ZZ {
 
@@ -14,15 +13,15 @@ public class ZZ {
 //		System.out.printf("%02X <-> %02X : %02X%n", Z80.BIT_N, Z80.MASK_N, Z80.BIT_N^ Z80.MASK_N);
 //		System.out.printf("%02X <-> %02X : %02X%n", Z80.BIT_CARRY, Z80.MASK_CARRY, Z80.BIT_CARRY^ Z80.MASK_CARRY);
 
-		Random random = new Random();
-		byte[] values = new byte[8];
-		for ( int i= 0; i < 10; i++){
-			 random.nextBytes(values);
-			for ( int j = 0; j < values.length; j++) {
-				System.out.printf("%02X ", values[j]);
-			}//for j
-			System.out.println();
-		}//for i
+		byte memBefore = (byte) 0X34;
+		byte accBefore = (byte) 0X12;
+		byte accResult =  (byte) (accBefore & 0XF0);
+		accResult = (byte) (accResult | ((memBefore >> 4) &0X0F));
+		 
+		byte memResult = (byte) ((memBefore << 4) & 0XF0);
+		 memResult = (byte) (memResult | (accBefore & 0X0F));
+
+
 	}// main
 
 }

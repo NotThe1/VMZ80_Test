@@ -8,6 +8,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	            InstructionED.class,
 	            InstructionDDandFD.class,
 	            InstructionMain.class })
-public class AllTestsIntruction {
+public class AllTests {
 
 }

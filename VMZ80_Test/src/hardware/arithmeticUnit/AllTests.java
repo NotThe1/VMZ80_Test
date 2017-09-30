@@ -9,6 +9,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	AllStandardTestsArithmeticUnit.class,
 	BitsArithmeticUnit.class,
 	DAATestArithmeticUnit.class})
-public class AllTestsArithmeticUnit {
+public class AllTests {
 
 }

@@ -2,10 +2,8 @@ package misc;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
-import java.io.InputStream;
-import java.util.Scanner;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,74 +29,57 @@ public class YY {
 	}// setUp
 
 	@Test
-	public void testNEGfile() {
+	public void testRLD() {
+		byte accBefore,memBefore,accAfter,memAfter;
+		int limit = 0X0500;
+		int memBase = 0x0100;
+		Random random = new Random();
+		byte[] accValues = new byte[limit];
+		random.nextBytes(accValues);
+
+		byte[] memValues = new byte[limit];
+		random.nextBytes(memValues);
+		setUpMemory(memBase, memValues);
+
 		int location = 0X0000;
-		byte arg1, result;
-		String flags, sArg1;
-		boolean sign, zero, halfCarry, parity, nFlag, carry;
-		byte[] instruction = new byte[] { (byte) 0XED, (byte) 0X44 };
-		for (int i = 0; i < 0X110; i++) {
-			ioBuss.writeDMA(i * 2, instruction);
-		} // for
-
-		wrs.setProgramCounter(location);
-
-		try {
-			 InputStream inputStream = this.getClass().getResourceAsStream("/LogicOriginal1.txt");
-//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
-			Scanner scanner = new Scanner(inputStream);
-			scanner.nextLine(); // skip header
-			while (scanner.hasNextLine()) {
-				sArg1 = scanner.next();
-				if (sArg1.startsWith(";")) {
-					scanner.nextLine();
-					continue;
-				} // check for comment line
-				arg1 = getValue(sArg1);
-
-				scanner.next();// Skip CPL result
-				scanner.next();// Skip CPL flags
-
-				result = getValue(scanner.next());
-				flags = scanner.next();
-
-				sign = flags.subSequence(0, 1).equals("1") ? true : false;
-				zero = flags.subSequence(1, 2).equals("1") ? true : false;
-				halfCarry = flags.subSequence(2, 3).equals("1") ? true : false;
-				parity = flags.subSequence(3, 4).equals("1") ? true : false;
-				nFlag = flags.subSequence(4, 5).equals("1") ? true : false;
-				carry = flags.subSequence(5, 6).equals("1") ? true : false;
-
-				// System.out.printf("%02X %02X %s ",arg1,arg2,flags);
-				// System.out.printf(" %s %s %s %s %s %s %n", sign,zero,halfCarry,parity,nFlag,carry);
-
-				message = String.format("file NEG -> %02X NEG -> %02X", arg1, result);
-
-				wrs.setReg(Z80.Register.A, arg1);
-				cpu.executeInstruction(wrs.getProgramCounter());
+		byte[] opCode = new byte[] { (byte) 0XED, (byte) 0X6F };
+		setUpMemory(location, opCode);
+		
+		byte n1,n2,n3,n4;
+		for( int i = 0; i < limit;i++) {
+			memBefore = ioBuss.read(i + memBase);
+			accBefore = accValues[i];
+			n1 = (byte) (accBefore & 0XF0);
+			n2 = (byte) (accBefore & 0X0F);
+			n3 = (byte) (memBefore & 0XF0);
+			n4 = (byte) (memBefore & 0X0F);
+			
+			accAfter = (byte) (n1 | ((n3>>4) & 0X0F));
+			memAfter = (byte) (((n4 <<4) & 0XF0) | n2);
+			
+			message = String.format("acc - mem : %02X, %02X, - %02X, %02X", accBefore,memBefore,accAfter,memAfter);
+//			System.out.println(message);
+			wrs.setProgramCounter(location);
+			wrs.setDoubleReg(Z80.Register.HL, i + memBase);
+			wrs.setAcc(accBefore);
+			cpu.executeInstruction(wrs.getProgramCounter());
+			
+//			System.out.printf("Acc -> %02X :", wrs.getAcc());
+//			System.out.printf("Mem -> %02X %n",ioBuss.read(i + memBase) );
+			assertThat(message,accAfter,equalTo(wrs.getAcc()));
+			assertThat(message,memAfter,equalTo(ioBuss.read(i + memBase)));
 				
-				
-				assertThat("result: " + message, result, equalTo(wrs.getAcc()));
-				 assertThat("sign: " + message,sign,equalTo(ccr.isSignFlagSet()));
-				 assertThat("zero: " + message,zero,equalTo(ccr.isZeroFlagSet()));
-				 assertThat("halfCarry: " + message,halfCarry,equalTo(ccr.isHFlagSet()));
-				 assertThat("parity: " + message,parity,equalTo(ccr.isPvFlagSet()));
-				 assertThat("nFlag: " + message,nFlag,equalTo(ccr.isNFlagSet()));
-				 assertThat("carry: " + message,carry,equalTo(ccr.isCarryFlagSet()));
-			} // while
-			scanner.close();
-			inputStream.close();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			fail(e.getMessage());
-		} // try
-	}// testNEGfile
+		}//for
+		
+	}// testRRD
 
-	private byte getValue(String value) {
-		int tempInt;
-		tempInt = Integer.valueOf(value, 16);
-		return (byte) tempInt;
-	}// getValue
+	///////////////////////////////////////////////////////////////////////////////
+
+	// private byte getValue(String value) {
+	// int tempInt;
+	// tempInt = Integer.valueOf(value, 16);
+	// return (byte) tempInt;
+	// }// getValue
 
 	// private void setUpWordRegisters(int registerIndex, byte[] arg1, byte[] arg2, boolean carryState) {
 	// wrs.setDoubleReg(Z80.Register.HL, arg1); // Set HL
@@ -107,17 +88,17 @@ public class YY {
 	// cpu.executeInstruction(wrs.getProgramCounter());// do the ADCcy
 	// }// setUpWordRegisters
 	//
-	// private void setUpMemory(int location, byte[] newValues) {
-	// wrs.setProgramCounter(location);
-	// // int size = newValues.length;
-	// ioBuss.writeDMA(location, newValues);
-	// }// setUpMemory
-	//
-	// private byte[] getValueArray(String value) {
-	// int workingValue = Integer.valueOf(value, 16);
-	// byte msb = (byte) ((workingValue & 0XFF00) >> 8);
-	// byte lsb = (byte) ((byte) workingValue & 0X00FF);
-	// return new byte[] { lsb, msb };
-	// }// getValueArray
+	private void setUpMemory(int location, byte[] newValues) {
+		wrs.setProgramCounter(location);
+		// int size = newValues.length;
+		ioBuss.writeDMA(location, newValues);
+	}// setUpMemory
+		//
+		// private byte[] getValueArray(String value) {
+		// int workingValue = Integer.valueOf(value, 16);
+		// byte msb = (byte) ((workingValue & 0XFF00) >> 8);
+		// byte lsb = (byte) ((byte) workingValue & 0X00FF);
+		// return new byte[] { lsb, msb };
+		// }// getValueArray
 
 }// class YY
