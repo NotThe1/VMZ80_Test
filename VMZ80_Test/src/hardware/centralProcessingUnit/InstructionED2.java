@@ -21,6 +21,7 @@ public class InstructionED2 {
 	IoBuss ioBuss = IoBuss.getInstance();
 
 	String message;
+	boolean sign, zero, parity;
 
 	@Before
 	public void setUp() throws Exception {
@@ -35,7 +36,7 @@ public class InstructionED2 {
 		byte[] regValues = new byte[limit * 2];
 		random.nextBytes(regValues);
 		boolean iFF2;
-		boolean iSign,iZero,rSign,rZero;
+		boolean iSign, iZero, rSign, rZero;
 		/* @formatter:off */
 		/*
 0001: 0000         ; testIandR.asm
@@ -71,39 +72,38 @@ public class InstructionED2 {
 			cpu.executeInstruction(wrs.getProgramCounter()); // LD I,A
 			wrs.setReg(Z80.Register.A, rValue);
 			cpu.executeInstruction(wrs.getProgramCounter()); // LD R,A
-			
+
 			iFF2 = random.nextBoolean();
 			wrs.setIFF2(iFF2);
-			cpu.executeInstruction(wrs.getProgramCounter());  // LD A,I
+			cpu.executeInstruction(wrs.getProgramCounter()); // LD A,I
 			message = String.format("  iValue = %02X", iValue);
 			assertThat(message, iValue, equalTo(wrs.getAcc()));
-			
+
 			assertThat("signFlag" + message, iSign, equalTo(ccr.isSignFlagSet()));
-			assertThat("zeroFlag" + message, iZero, equalTo(ccr.isZeroFlagSet()));			
+			assertThat("zeroFlag" + message, iZero, equalTo(ccr.isZeroFlagSet()));
 			assertThat("hFlag" + message, false, equalTo(ccr.isHFlagSet()));
 			assertThat("IFF2" + message, iFF2, equalTo(ccr.isPvFlagSet()));
 			assertThat("nFlag" + message, false, equalTo(ccr.isNFlagSet()));
 
 			iFF2 = random.nextBoolean();
-			wrs.setIFF2(iFF2);			
-			cpu.executeInstruction(wrs.getProgramCounter());  // LD A,R
+			wrs.setIFF2(iFF2);
+			cpu.executeInstruction(wrs.getProgramCounter()); // LD A,R
 			message = String.format("rValue = %02X", rValue);
 			assertThat(message, rValue, equalTo(wrs.getAcc()));
-			
+
 			assertThat("signFlag" + message, rSign, equalTo(ccr.isSignFlagSet()));
-			assertThat("zeroFlag" + message, rZero, equalTo(ccr.isZeroFlagSet()));			
+			assertThat("zeroFlag" + message, rZero, equalTo(ccr.isZeroFlagSet()));
 			assertThat("hFlag" + message, false, equalTo(ccr.isHFlagSet()));
 			assertThat("IFF2" + message, iFF2, equalTo(ccr.isPvFlagSet()));
 			assertThat("nFlag" + message, false, equalTo(ccr.isNFlagSet()));
 
-		}// for limit
+		} // for limit
 
 	}// testRegistersIandR
-	
-	
+
 	@Test
 	public void testRRD() {
-		byte accBefore,memBefore,accAfter,memAfter;
+		byte accBefore, memBefore, accAfter, memAfter;
 		int limit = 0X0500;
 		int memBase = 0x0100;
 		Random random = new Random();
@@ -117,38 +117,48 @@ public class InstructionED2 {
 		int location = 0X0000;
 		byte[] opCode = new byte[] { (byte) 0XED, (byte) 0X67 };
 		setUpMemory(location, opCode);
-		
-		byte n1,n2,n3,n4;
-		for( int i = 0; i < limit;i++) {
+
+		byte n1, n2, n3, n4;
+		for (int i = 0; i < limit; i++) {
 			memBefore = ioBuss.read(i + memBase);
 			accBefore = accValues[i];
 			n1 = (byte) (accBefore & 0XF0);
 			n2 = (byte) (accBefore & 0X0F);
 			n3 = (byte) (memBefore & 0XF0);
 			n4 = (byte) (memBefore & 0X0F);
-			
+
 			accAfter = (byte) (n1 | n4);
-			memAfter = (byte) (((n2 <<4) & 0XF0) | ((n3 >> 4) & 0X0F));
-			
-			message = String.format("acc - mem : %02X, %02X, - %02X, %02X", accBefore,memBefore,accAfter,memAfter);
-//			System.out.println(message);
+			memAfter = (byte) (((n2 << 4) & 0XF0) | ((n3 >> 4) & 0X0F));
+
+			message = String.format("acc - mem : %02X, %02X, - %02X, %02X", accBefore, memBefore, accAfter, memAfter);
+			// System.out.println(message);
 			wrs.setProgramCounter(location);
 			wrs.setDoubleReg(Z80.Register.HL, i + memBase);
 			wrs.setAcc(accBefore);
 			cpu.executeInstruction(wrs.getProgramCounter());
+
+			// System.out.printf("Acc -> %02X :", wrs.getAcc());
+			// System.out.printf("Mem -> %02X %n",ioBuss.read(i + memBase) );
+			assertThat(message, accAfter, equalTo(wrs.getAcc()));
+			assertThat(message, memAfter, equalTo(ioBuss.read(i + memBase)));
 			
-//			System.out.printf("Acc -> %02X :", wrs.getAcc());
-//			System.out.printf("Mem -> %02X %n",ioBuss.read(i + memBase) );
-			assertThat(message,accAfter,equalTo(wrs.getAcc()));
-			assertThat(message,memAfter,equalTo(ioBuss.read(i + memBase)));
-				
-		}//for
-		
+			sign = (accAfter & Z80.BIT_7) == Z80.BIT_7;
+			zero = accAfter == 0;
+			parity = Integer.bitCount(accAfter) % 2 == 0;
+
+			assertThat("sign: " + message, sign, equalTo(ccr.isSignFlagSet()));
+			assertThat("zero: " + message, zero, equalTo(ccr.isZeroFlagSet()));
+			assertThat("halfCarry: " + message, false, equalTo(ccr.isHFlagSet()));
+			assertThat("parity: " + message, parity, equalTo(ccr.isPvFlagSet()));
+			assertThat("nFlag: " + message, false, equalTo(ccr.isNFlagSet()));
+
+		} // for
+
 	}// testRRD
 
 	@Test
 	public void testRLD() {
-		byte accBefore,memBefore,accAfter,memAfter;
+		byte accBefore, memBefore, accAfter, memAfter;
 		int limit = 0X0500;
 		int memBase = 0x0100;
 		Random random = new Random();
@@ -162,36 +172,44 @@ public class InstructionED2 {
 		int location = 0X0000;
 		byte[] opCode = new byte[] { (byte) 0XED, (byte) 0X6F };
 		setUpMemory(location, opCode);
-		
-		byte n1,n2,n3,n4;
-		for( int i = 0; i < limit;i++) {
+
+		byte n1, n2, n3, n4;
+		for (int i = 0; i < limit; i++) {
 			memBefore = ioBuss.read(i + memBase);
 			accBefore = accValues[i];
 			n1 = (byte) (accBefore & 0XF0);
 			n2 = (byte) (accBefore & 0X0F);
 			n3 = (byte) (memBefore & 0XF0);
 			n4 = (byte) (memBefore & 0X0F);
-			
-			accAfter = (byte) (n1 | ((n3>>4) & 0X0F));
-			memAfter = (byte) (((n4 <<4) & 0XF0) | n2);
-			
-			message = String.format("acc - mem : %02X, %02X, - %02X, %02X", accBefore,memBefore,accAfter,memAfter);
-//			System.out.println(message);
+
+			accAfter = (byte) (n1 | ((n3 >> 4) & 0X0F));
+			memAfter = (byte) (((n4 << 4) & 0XF0) | n2);
+
+			message = String.format("acc - mem : %02X, %02X, - %02X, %02X", accBefore, memBefore, accAfter, memAfter);
+			// System.out.println(message);
 			wrs.setProgramCounter(location);
 			wrs.setDoubleReg(Z80.Register.HL, i + memBase);
 			wrs.setAcc(accBefore);
 			cpu.executeInstruction(wrs.getProgramCounter());
-			
-//			System.out.printf("Acc -> %02X :", wrs.getAcc());
-//			System.out.printf("Mem -> %02X %n",ioBuss.read(i + memBase) );
-			assertThat(message,accAfter,equalTo(wrs.getAcc()));
-			assertThat(message,memAfter,equalTo(ioBuss.read(i + memBase)));
-				
-		}//for
-		
+
+			// System.out.printf("Acc -> %02X :", wrs.getAcc());
+			// System.out.printf("Mem -> %02X %n",ioBuss.read(i + memBase) );
+			assertThat(message, accAfter, equalTo(wrs.getAcc()));
+			assertThat(message, memAfter, equalTo(ioBuss.read(i + memBase)));
+
+			sign = (accAfter & Z80.BIT_7) == Z80.BIT_7;
+			zero = accAfter == 0;
+			parity = Integer.bitCount(accAfter) % 2 == 0;
+
+			assertThat("sign: " + message, sign, equalTo(ccr.isSignFlagSet()));
+			assertThat("zero: " + message, zero, equalTo(ccr.isZeroFlagSet()));
+			assertThat("halfCarry: " + message, false, equalTo(ccr.isHFlagSet()));
+			assertThat("parity: " + message, parity, equalTo(ccr.isPvFlagSet()));
+			assertThat("nFlag: " + message, false, equalTo(ccr.isNFlagSet()));
+
+		} // for
+
 	}// testRRD
-
-
 
 	// -----------------------------------------------------
 
