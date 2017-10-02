@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import codeSupport.Z80;
+import codeSupport.Z80.Register;
 import hardware.CentralProcessingUnit;
 import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
@@ -210,6 +211,181 @@ public class InstructionED2 {
 		} // for
 
 	}// testRRD
+	
+	
+	
+	@Test
+	public void testLDIandLDIR() {
+		int limit = 0X05;
+		
+		int numberOfBytes = 0X500;
+		
+		Register bc = Z80.Register.BC;
+		Register de = Z80.Register.DE;
+		Register hl = Z80.Register.HL;
+		
+		Random random = new Random();
+		
+		int hlBase = 0x1000;
+		byte[] hlValues = new byte[numberOfBytes];
+		random.nextBytes(hlValues);
+		setUpMemory(hlBase, hlValues);
+		
+		int deBase = 0x2000;
+		byte[] deValues = new byte[numberOfBytes];
+		random.nextBytes(deValues);
+		setUpMemory(deBase, deValues);
+
+		int location = 0X0000;
+		byte[] opCode = new byte[] { (byte) 0XED, (byte) 0XA0 };//LDI
+		setUpMemory(location, opCode);
+		
+		wrs.setDoubleReg(hl, hlBase);	// Set HL
+		wrs.setDoubleReg(de, deBase);	// Set DE
+		wrs.setDoubleReg(bc, numberOfBytes+1);// Set BC
+		
+//		boolean bcIsZero;
+		int bcCount;
+		for (int i = 0;i <numberOfBytes;i++) {
+			wrs.setProgramCounter(location);
+			cpu.executeInstruction(location);
+
+			assertThat("LDI ",location + 2,equalTo(wrs.getProgramCounter()));
+			assertThat(i + ": LDI - value",hlValues[i],equalTo(ioBuss.read(deBase+i)));
+			assertThat(i + ": LDI - HL",hlBase + i+1,equalTo(wrs.getDoubleReg(hl)));
+			assertThat(i + ": LDI - DE",deBase + i+1,equalTo(wrs.getDoubleReg(de)));
+			
+			bcCount =wrs.getDoubleReg(bc);
+			assertThat(i + ": LDI - BC",numberOfBytes-i,equalTo(bcCount));
+			assertThat(i + ": LDI - p/vFlag",bcCount!=0,equalTo(ccr.isPvFlagSet()));
+			assertThat(i + ": LDI - hFlag",false,equalTo(ccr.isHFlagSet()));
+			assertThat(i + ": LDI - nFlag",false,equalTo(ccr.isNFlagSet()));
+			
+			assertThat(i + ": LDI - zero",bcCount!=0,equalTo(ccr.isPvFlagSet()));
+			
+			
+//			System.out.printf("BC = %04X, DE = %04X, HL = %04X%n",
+//					wrs.getDoubleReg(bc),wrs.getDoubleReg(de),wrs.getDoubleReg(hl));
+		}//for
+		
+		//----------LDIR--------------------
+		
+		 numberOfBytes = 0X500;
+
+		opCode = new byte[] { (byte) 0XED, (byte) 0XB0 };//LDIR
+		setUpMemory(location, opCode);
+		
+		random.nextBytes(hlValues);
+		setUpMemory(hlBase, hlValues);
+
+		random.nextBytes(deValues);
+		setUpMemory(deBase, deValues);
+		
+		wrs.setDoubleReg(hl, hlBase);	// Set HL
+		wrs.setDoubleReg(de, deBase);	// Set DE
+		wrs.setDoubleReg(bc, numberOfBytes);// Set BC
+		
+		wrs.setProgramCounter(location);
+		cpu.executeInstruction(wrs.getProgramCounter());
+		assertThat("LDIR values ",hlValues,equalTo(ioBuss.readDMA(deBase, numberOfBytes)));
+		assertThat("LDIR Program Counter ",location + 2,equalTo(wrs.getProgramCounter()));
+		
+		assertThat("LDIR - BC ",0,equalTo(wrs.getDoubleReg(bc)));
+		assertThat("LDIR - DE ",deBase + numberOfBytes,equalTo(wrs.getDoubleReg(de)));
+		assertThat("LDIR - HL ",hlBase + numberOfBytes,equalTo(wrs.getDoubleReg(hl)));
+		
+		
+//		System.out.printf("BC = %04X, DE = %04X, HL = %04X%n",
+//		wrs.getDoubleReg(bc),wrs.getDoubleReg(de),wrs.getDoubleReg(hl));
+
+	}//testLDIandLDIR
+	
+	
+	@Test
+	public void testLDDandLDDR() {
+		int limit = 0X05;
+		
+		int numberOfBytes = 0X500;
+		
+		Register bc = Z80.Register.BC;
+		Register de = Z80.Register.DE;
+		Register hl = Z80.Register.HL;
+		
+		Random random = new Random();
+		
+		int hlBase = 0x1000;
+		byte[] hlValues = new byte[numberOfBytes];
+		random.nextBytes(hlValues);
+		setUpMemory(hlBase, hlValues);
+		
+		int deBase = 0x2000;
+		byte[] deValues = new byte[numberOfBytes];
+		random.nextBytes(deValues);
+		setUpMemory(deBase, deValues);
+
+		int location = 0X0000;
+		byte[] opCode = new byte[] { (byte) 0XED, (byte) 0XA8 };//LDD
+		setUpMemory(location, opCode);
+		
+		wrs.setDoubleReg(hl, hlBase + numberOfBytes- 1);	// Set HL
+		wrs.setDoubleReg(de, deBase + numberOfBytes -1);	// Set DE
+		wrs.setDoubleReg(bc, numberOfBytes);// Set BC
+		
+//		boolean bcIsZero;
+		int bcCount;
+		for (int i = numberOfBytes -1;i >=0;i--) {
+			wrs.setProgramCounter(location);
+			cpu.executeInstruction(location);
+
+			assertThat("LDD ",location + 2,equalTo(wrs.getProgramCounter()));
+//			System.out.printf(" hlValues[%04X] = %04X, ", i,hlValues[i]);
+//			System.out.printf("deBase = %04X, ioBuss.read(%04X) = %02X%n", deBase,deBase+i,ioBuss.read(deBase+i));
+			assertThat(i + ": LDD - value",hlValues[i],equalTo(ioBuss.read(deBase+i)));
+			
+			
+			assertThat(i + ": LDD - HL",hlBase + i-1,equalTo(wrs.getDoubleReg(hl)));
+			assertThat(i + ": LDD - DE",deBase + i-1,equalTo(wrs.getDoubleReg(de)));
+			
+			bcCount =wrs.getDoubleReg(bc);
+			assertThat(i + ": LDD - BC",i,equalTo(bcCount));
+			assertThat(i + ": LDD - zero",bcCount!=0,equalTo(ccr.isPvFlagSet()));
+			
+//			System.out.printf("BC = %04X, DE = %04X, HL = %04X%n",
+//					wrs.getDoubleReg(bc),wrs.getDoubleReg(de),wrs.getDoubleReg(hl));
+		}//for
+		
+		//----------LDDR--------------------
+		
+		 numberOfBytes = 0X500;
+
+		opCode = new byte[] { (byte) 0XED, (byte) 0XB8 };//LDDR
+		setUpMemory(location, opCode);
+		
+		random.nextBytes(hlValues);
+		setUpMemory(hlBase, hlValues);
+
+		random.nextBytes(deValues);
+		setUpMemory(deBase, deValues);
+		
+		wrs.setDoubleReg(hl, hlBase + numberOfBytes- 1);	// Set HL
+		wrs.setDoubleReg(de, deBase + numberOfBytes- 1);	// Set DE
+		wrs.setDoubleReg(bc, numberOfBytes);// Set BC
+		
+		wrs.setProgramCounter(location);
+		cpu.executeInstruction(wrs.getProgramCounter());
+		assertThat("LDDR values ",hlValues,equalTo(ioBuss.readDMA(deBase, numberOfBytes)));
+		assertThat("LDDR Program Counter ",location + 2,equalTo(wrs.getProgramCounter()));
+		assertThat("LDDR p/vFlag ",false,equalTo(ccr.isPvFlagSet()));
+		
+		assertThat("LDDR - BC ",0,equalTo(wrs.getDoubleReg(bc)));
+		assertThat("LDIR - DE ",deBase - 1,equalTo(wrs.getDoubleReg(de)));
+		assertThat("LDDR - HL ",hlBase  - 1,equalTo(wrs.getDoubleReg(hl)));
+		
+		
+//		System.out.printf("BC = %04X, DE = %04X, HL = %04X%n",
+//		wrs.getDoubleReg(bc),wrs.getDoubleReg(de),wrs.getDoubleReg(hl));
+
+	}//testLDDandLDDR
 
 	// -----------------------------------------------------
 

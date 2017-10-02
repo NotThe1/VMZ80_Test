@@ -57,7 +57,7 @@ public class WorkingRegisterSetTest {
 			valueArray[0] = lo;
 			valueArray[1] = hi;
 			
-			System.out.printf("Value = %04X (%,d)%n", value,value);
+//			System.out.printf("Value = %04X (%,d)%n", value,value);
 
 			for (Register r : wordRegisters) {
 				wrs.setDoubleReg(r, value);
