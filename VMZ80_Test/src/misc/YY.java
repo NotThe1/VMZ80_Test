@@ -25,14 +25,14 @@ public class YY {
 		assertThat("keep imports", 1, equalTo(1));
 	}// setUp
 
+
 	@Test
-	public void testCPIR() {
+	public void testCPDR() {
 		byte arg1;
-		boolean  zero,  pvFlag;
 		int memoryBase = 0X1000;
 		int memoryCount = 0X100;
 		byte opcode1 = (byte) 0XED;
-		byte opcode2 = (byte) 0XB1;
+		byte opcode2 = (byte) 0XB9;
 		for (int i = 0; i < memoryCount; i++) {
 			ioBuss.write(i * 2, opcode1); // write the instruction
 			ioBuss.write((i * 2) + 1, opcode2);
@@ -41,14 +41,14 @@ public class YY {
 		} // for set Instructions & memory
 
 		arg1 = (byte) 0X7F;
-		setAcc(arg1,memoryBase,memoryCount);
+		setAcc(arg1,memoryBase+memoryCount-1,memoryCount);
 		cpu.executeInstruction(wrs.getProgramCounter());
 //		System.out.printf("HL : %04X, ", wrs.getDoubleReg(Register.HL));
 //		System.out.printf("BC : %04X, ", wrs.getDoubleReg(Register.BC));
 //		System.out.printf("Acc : %02X%n", wrs.getAcc());
 		
 		assertThat("Sign: arg1 = " + arg1,true,equalTo(ccr.isZeroFlagSet()));
-		assertThat("Value: arg1 = " + arg1,arg1,equalTo(ioBuss.read(wrs.getDoubleReg(Register.HL)-1)));
+		assertThat("Value: arg1 = " + arg1,arg1,equalTo(ioBuss.read(wrs.getDoubleReg(Register.HL)+1)));
 
 		arg1 = (byte) 0XFF;
 		setAcc(arg1,memoryBase,memoryCount);
@@ -56,13 +56,17 @@ public class YY {
 		
 		cpu.executeInstruction(wrs.getProgramCounter());
 		assertThat("BC: arg1 = " + arg1,00,equalTo(wrs.getDoubleReg(Register.BC)));
-		
-//		System.out.printf("HL : %04X, ", wrs.getDoubleReg(Register.HL));
-//		System.out.printf("BC : %04X, ", wrs.getDoubleReg(Register.BC));
-//		System.out.printf("Acc : %02X%n", wrs.getAcc());
-		
+			
+	}// testCPDR
+	
+	
+	private byte getValue(String value) {
+		int tempInt;
+		tempInt = Integer.valueOf(value, 16);
+		return (byte) tempInt;
+	}// getValue
 
-	}// testCPIR
+
 	
 	private void setAcc(byte value,int memoryBase,int memoryCount) {
 		wrs.setAcc(value);

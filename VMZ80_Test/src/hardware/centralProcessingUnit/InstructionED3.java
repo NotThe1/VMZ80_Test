@@ -138,13 +138,128 @@ public class InstructionED3 {
 		assertThat("Value: arg1 = " + arg1,arg1,equalTo(ioBuss.read(wrs.getDoubleReg(Register.HL)-1)));
 
 		arg1 = (byte) 0XFF;
+		setAcc(arg1,memoryBase,0X10);
+		
+		cpu.executeInstruction(wrs.getProgramCounter());
+		assertThat("BC: arg1 = " + arg1,00,equalTo(wrs.getDoubleReg(Register.BC)));
+			
+	}// testCPIR
+	
+
+	@Test
+	public void testCPDR() {
+		byte arg1;
+		int memoryBase = 0X1000;
+		int memoryCount = 0X100;
+		byte opcode1 = (byte) 0XED;
+		byte opcode2 = (byte) 0XB9;
+		for (int i = 0; i < memoryCount; i++) {
+			ioBuss.write(i * 2, opcode1); // write the instruction
+			ioBuss.write((i * 2) + 1, opcode2);
+
+			ioBuss.write(i + memoryBase, (byte) i);// write data
+		} // for set Instructions & memory
+
+		arg1 = (byte) 0X7F;
+		setAcc(arg1,memoryBase+memoryCount-1,memoryCount);
+		cpu.executeInstruction(wrs.getProgramCounter());
+//		System.out.printf("HL : %04X, ", wrs.getDoubleReg(Register.HL));
+//		System.out.printf("BC : %04X, ", wrs.getDoubleReg(Register.BC));
+//		System.out.printf("Acc : %02X%n", wrs.getAcc());
+		
+		assertThat("Sign: arg1 = " + arg1,true,equalTo(ccr.isZeroFlagSet()));
+		assertThat("Value: arg1 = " + arg1,arg1,equalTo(ioBuss.read(wrs.getDoubleReg(Register.HL)+1)));
+
+		arg1 = (byte) 0XFF;
 		setAcc(arg1,memoryBase,memoryCount);
 		wrs.setDoubleReg(Register.BC, 0X10);
 		
 		cpu.executeInstruction(wrs.getProgramCounter());
 		assertThat("BC: arg1 = " + arg1,00,equalTo(wrs.getDoubleReg(Register.BC)));
 			
-	}// testCPIR	
+	}// testCPDR
+	
+	/////////
+	
+
+	@Test
+	public void testCPDfile() {
+		byte arg1, arg2;
+		String sArg0, flags, message;
+		boolean sign, zero, halfCarry, pvFlag;
+		int memoryBase = 0X1000;
+		int memoryCount = 0X100;
+		int offset = 0;
+
+		for (int i = 0; i < memoryCount; i++) {
+			ioBuss.write((i * 2), (byte) 0XED); // write the instruction
+			ioBuss.write((i * 2) + 1, (byte) 0XA9);
+		} // for set Instructions & memory
+
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/CpOriginal.txt");
+//			 InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()) {
+				sArg0 = scanner.next();
+				if (sArg0.startsWith(";")) {
+					scanner.nextLine();
+					continue;
+				} // skip line starting with semicolon
+				arg2 = getValue(sArg0);
+				arg1 = getValue(scanner.next());
+				flags = scanner.next();
+
+				sign = flags.subSequence(0, 1).equals("1") ? true : false;
+				zero = flags.subSequence(1, 2).equals("1") ? true : false;
+				halfCarry = flags.subSequence(2, 3).equals("1") ? true : false;
+
+//				 System.out.printf("arg1 = %02X,arg2 = %02X %s ", arg1, arg2, flags);
+//				 System.out.printf(" %s %s %s :", sign, zero, halfCarry);
+
+				wrs.setAcc(arg1);
+
+				if (arg1 == (byte) 0X00) {
+					wrs.setProgramCounter(0);
+					wrs.setDoubleReg(Register.HL, memoryBase + memoryCount-1);
+					wrs.setDoubleReg(Register.BC, memoryCount-1);
+					
+					offset = 0;
+
+					for (int i = 0; i < memoryCount; i++) {
+						ioBuss.write(i + memoryBase, (byte) arg2);// write data
+					} // for set memory
+
+				} // inner loop
+				
+				offset++;
+
+				message = String.format("file CPI -> %02X <-> %02X", arg1, arg2);
+				cpu.executeInstruction(wrs.getProgramCounter());
+				
+//				System.out.printf("\tHL = %04X, BC = %04X%n", wrs.getDoubleReg(Register.HL),wrs.getDoubleReg(Register.BC));
+				
+				assertThat("HL: " + message,memoryBase+memoryCount-(offset+1),equalTo(wrs.getDoubleReg(Register.HL)));
+				
+				int bcCount = (memoryCount-(offset+1)) & Z80.WORD_MASK;
+				assertThat("BC: " + message,bcCount ,equalTo(wrs.getDoubleReg(Register.BC)));		
+				assertThat("sign: " + message, sign, equalTo(ccr.isSignFlagSet()));
+				assertThat("zero: " + message, zero, equalTo(ccr.isZeroFlagSet()));
+				assertThat("halfCarry: " + message, halfCarry, equalTo(ccr.isHFlagSet()));
+				pvFlag = wrs.getDoubleReg(Register.BC) != 0 ? true : false;
+				assertThat("P/V: " + message, pvFlag, equalTo(ccr.isPvFlagSet()));
+				assertThat("nFlag: " + message, true, equalTo(ccr.isNFlagSet()));
+
+
+			} // while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		} // try
+	}// testCPDfile
 
 	//---------------------------------------------------------------------------------
 	
