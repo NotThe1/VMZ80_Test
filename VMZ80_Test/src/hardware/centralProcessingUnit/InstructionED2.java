@@ -216,7 +216,7 @@ public class InstructionED2 {
 	
 	@Test
 	public void testLDIandLDIR() {
-		int limit = 0X05;
+//		int limit = 0X05;
 		
 		int numberOfBytes = 0X500;
 		
@@ -303,7 +303,7 @@ public class InstructionED2 {
 	
 	@Test
 	public void testLDDandLDDR() {
-		int limit = 0X05;
+//		int limit = 0X05;
 		
 		int numberOfBytes = 0X500;
 		

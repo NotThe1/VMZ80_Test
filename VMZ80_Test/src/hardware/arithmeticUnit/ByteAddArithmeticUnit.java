@@ -20,8 +20,7 @@ public class ByteAddArithmeticUnit {
 	boolean carryState;
 	String flags,message;
 
-	
-	private static TestUtilityArithmeticUnit atu = TestUtilityArithmeticUnit.getInstance();
+		
 	int value1, value2, answer;
 	byte aByte1,aByte2;
 	byte[] bite1 = new byte[] { (byte) 0X00 };

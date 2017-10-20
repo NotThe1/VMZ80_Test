@@ -309,7 +309,6 @@ public class InstructionED1 {
 		Random random = new Random();
 		byte[] values = new byte[10];
 
-		int randomLimit = 0XFFFF;
 		registers = new Register[] { Z80.Register.HL, Z80.Register.BC, Z80.Register.DE, Z80.Register.HL,
 				Z80.Register.SP };
 		int regSize = registers.length;

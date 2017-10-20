@@ -115,7 +115,7 @@ public class InstructionED3 {
 	@Test
 	public void testCPIR() {
 		byte arg1;
-		boolean  zero,  pvFlag;
+//		boolean  zero,  pvFlag;
 		int memoryBase = 0X1000;
 		int memoryCount = 0X100;
 		byte opcode1 = (byte) 0XED;

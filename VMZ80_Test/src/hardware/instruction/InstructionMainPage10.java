@@ -29,7 +29,7 @@ public class InstructionMainPage10 {
 	public void testInstructionsFrom80ToBF() {
 		int start = 0X80;
 		int end = 0XBF;
-		int source, destination;
+		int source;
 
 		for (int i = start; i < end; i++) {
 			ioBuss.write(i, (byte) (i & 0XFF));

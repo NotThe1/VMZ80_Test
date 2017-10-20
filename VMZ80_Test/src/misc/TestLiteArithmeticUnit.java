@@ -1,38 +1,39 @@
-package hardware.arithmeticUnit;
+package misc;
 
 import hardware.ArithmeticUnit;
+import hardware.arithmeticUnit.TestUtilityArithmeticUnit;
 
 public class TestLiteArithmeticUnit {
 	static ArithmeticUnit au = ArithmeticUnit.getInstance();
 
-	private static boolean mSign;
-	private static boolean mZero;
-	private static boolean mHalfCarry;
-	private static boolean mParity;
-	private static boolean mOverflow;
-	private static boolean mCarry;
+//	private static boolean mSign;
+//	private static boolean mZero;
+//	private static boolean mHalfCarry;
+//	private static boolean mParity;
+//	private static boolean mOverflow;
+//	private static boolean mCarry;
 	private static TestUtilityArithmeticUnit atu = TestUtilityArithmeticUnit.getInstance();
 
 	public static void main(String[] args) {
 		checkDAA();
-		// checkBits();
-		// checkShiftRight();
-		// checkRotateRight();
-		// checkRotateLeft();
-		// checkFixedFlags2();
-		// checkFixedFlags1();
-		// checkFixedFlags0();
-		// checkCompare();
-		// checkNeg();
-		// checkSubWord();
-		// checkWordSignFlag();
-		// checkSUB();
-		// checkNOT();
-		// checkAND();
-		// checkOverFlow();
-		// checkParity();
-		// addWord();
-		// addByte();
+		 checkBits();
+		 checkShiftRight();
+		 checkRotateRight();
+		 checkRotateLeft();
+		 checkFixedFlags2();
+		 checkFixedFlags1();
+		 checkFixedFlags0();
+		 checkCompare();
+		 checkNeg();
+		 checkSubWord();
+		 checkWordSignFlag();
+		 checkSUB();
+		 checkNOT();
+		 checkAND();
+		 checkOverFlow();
+		 checkParity();
+		 addWord();
+		 addByte();
 	}// main
 
 	public static void checkDAA() {
@@ -57,7 +58,7 @@ public class TestLiteArithmeticUnit {
 		int lowNibble = getLowNibble(value);
 		byte ans = -1;
 		byte fudge = -1;
-		boolean cResult = false;
+//		boolean cResult = false;
 
 		if (!nFlag & !cFlag & !hFlag) { // nFlag = false, cFlag = false, hFlag = false
 			if ((hiNibble <= 9) && (lowNibble <= 9)) {
@@ -105,7 +106,7 @@ public class TestLiteArithmeticUnit {
 		byte ans;
 		byte arg = (byte) 0XFF;
 		for (int bit = 0; bit < 8; bit++) {
-			byte mask = (byte) (1 << bit);
+//			byte mask = (byte) (1 << bit);
 			ans = au.bitRes(arg, bit);
 			System.out.printf("Arg = %02X, bit  = %02X,ans = %02X, Zero = %s,%n", arg, bit, ans, au.isZero());
 		}
@@ -140,10 +141,10 @@ public class TestLiteArithmeticUnit {
 		atu.fixFlagsSUB(arg1, arg2, WORD_ARG, hasCarry);
 		atu.showFixedFlagsV();
 
-		int val1 = arg1;
-		int val2 = arg2;
-		byte[] bite1 = new byte[] { (byte) val1 };
-		byte[] bite2 = new byte[] { (byte) val2 };
+//		int val1 = arg1;
+//		int val2 = arg2;
+////		byte[] bite1 = new byte[] { (byte) val1 };
+//		byte[] bite2 = new byte[] { (byte) val2 };
 
 		// int ans = adder.subWithCarry(bite1, bite2, hasCarry) & 0XFF;
 
@@ -160,8 +161,8 @@ public class TestLiteArithmeticUnit {
 
 		int val1 = arg1;
 		int val2 = arg2;
-		byte[] bite1 = new byte[] { (byte) val1 };
-		byte[] bite2 = new byte[] { (byte) val2 };
+//		byte[] bite1 = new byte[] { (byte) val1 };
+//		byte[] bite2 = new byte[] { (byte) val2 };
 		byte[] word1 = loadWord(val1);
 		byte[] word2 = loadWord(val2);
 
