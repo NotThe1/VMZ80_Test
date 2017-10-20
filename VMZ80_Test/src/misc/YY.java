@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import codeSupport.Z80;
 import codeSupport.Z80.Register;
 import hardware.CentralProcessingUnit;
 import hardware.ConditionCodeRegister;
@@ -18,8 +17,8 @@ public class YY {
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
 	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
 	IoBuss ioBuss = IoBuss.getInstance();
-	Register[] registers = new Register[] { Z80.Register.BC, Z80.Register.DE, Z80.Register.SP };
-	String message;
+//	Register[] registers = new Register[] { Z80.Register.BC, Z80.Register.DE, Z80.Register.SP };
+//	String message;
 
 	@Before
 	public void setUp() throws Exception {
@@ -27,91 +26,58 @@ public class YY {
 	}// setUp
 
 	@Test
-	public void testCPIandCPIR() {
-		int numberOfBytes = 0X03;
+	public void testCPIR() {
+		byte arg1;
+		boolean  zero,  pvFlag;
+		int memoryBase = 0X1000;
+		int memoryCount = 0X100;
+		byte opcode1 = (byte) 0XED;
+		byte opcode2 = (byte) 0XB1;
+		for (int i = 0; i < memoryCount; i++) {
+			ioBuss.write(i * 2, opcode1); // write the instruction
+			ioBuss.write((i * 2) + 1, opcode2);
 
-		Register bc = Z80.Register.BC;
-		Register hl = Z80.Register.HL;
+			ioBuss.write(i + memoryBase, (byte) i);// write data
+		} // for set Instructions & memory
 
-		int memoryBase = 0x1000;
-		byte[] memoryValues = new byte[] { (byte) 0X00, (byte) 0X7F, (byte) 0XFF };
-		setUpMemory(memoryBase, memoryValues);
-
-		int instructionLocation = 0X0000;
-		byte[] opCode = new byte[] { (byte) 0XED, (byte) 0XA1, (byte) 0XED, (byte) 0XA1, (byte) 0XED, (byte) 0XA1 };// CPI
-
-		setUpMemory(instructionLocation, opCode);
-
-		wrs.setDoubleReg(hl, memoryBase); // Set HL - 1000
-		wrs.setDoubleReg(bc, numberOfBytes);// Set BC
-
-		byte accValue = (byte) 0X7F;
-
-		int i = 0;
-
-		wrs.setProgramCounter(instructionLocation);
-		wrs.setAcc(accValue);
+		arg1 = (byte) 0X7F;
+		setAcc(arg1,memoryBase,memoryCount);
+		cpu.executeInstruction(wrs.getProgramCounter());
+//		System.out.printf("HL : %04X, ", wrs.getDoubleReg(Register.HL));
+//		System.out.printf("BC : %04X, ", wrs.getDoubleReg(Register.BC));
+//		System.out.printf("Acc : %02X%n", wrs.getAcc());
 		
-		cpu.executeInstruction(instructionLocation);
+		assertThat("Sign: arg1 = " + arg1,true,equalTo(ccr.isZeroFlagSet()));
+		assertThat("Value: arg1 = " + arg1,arg1,equalTo(ioBuss.read(wrs.getDoubleReg(Register.HL)-1)));
 
-//		System.out.printf("bc = %04X,hl = %04X,memValue = %02X accValue = %02X%n", wrs.getDoubleReg(Register.BC),
-//				wrs.getDoubleReg(Register.HL), memoryValues[i], accValue);
+		arg1 = (byte) 0XFF;
+		setAcc(arg1,memoryBase,memoryCount);
+		wrs.setDoubleReg(Register.BC, 0X10);
+		
+		cpu.executeInstruction(wrs.getProgramCounter());
+		assertThat("BC: arg1 = " + arg1,00,equalTo(wrs.getDoubleReg(Register.BC)));
+		
+//		System.out.printf("HL : %04X, ", wrs.getDoubleReg(Register.HL));
+//		System.out.printf("BC : %04X, ", wrs.getDoubleReg(Register.BC));
+//		System.out.printf("Acc : %02X%n", wrs.getAcc());
+		
 
-		assertThat(i + ": CPI ", instructionLocation + 2, equalTo(wrs.getProgramCounter()));
-		assertThat(i + ": CPI - HL", memoryBase + i + 1, equalTo(wrs.getDoubleReg(hl)));
-		assertThat(i + ": CPI - BC", numberOfBytes - i - 1, equalTo(wrs.getDoubleReg(bc)));
+	}// testCPIR
 	
-		assertThat(i + ": CPI - Sign", false, equalTo(ccr.isSignFlagSet()));
-		assertThat(i + ": CPI - Zero", false, equalTo(ccr.isZeroFlagSet()));
-		assertThat(i + ": CPI - Half Carry", false, equalTo(ccr.isHFlagSet()));
-		assertThat(i + ": CPI - P/V", true, equalTo(ccr.isPvFlagSet()));
-		assertThat(i + ": CPI - N flag", true, equalTo(ccr.isNFlagSet()));
-		i++;
-		
+	private void setAcc(byte value,int memoryBase,int memoryCount) {
+		wrs.setAcc(value);
+		wrs.setProgramCounter(0);
+		wrs.setDoubleReg(Register.HL, memoryBase);
+		wrs.setDoubleReg(Register.BC, memoryCount - 1);	
+	}//setAcc
 
-		System.out.printf("%s\tSign%n", ccr.isSignFlagSet());
-		System.out.printf("%s\tZero%n", ccr.isZeroFlagSet());
-		System.out.printf("%s\tHalf Carry%n", ccr.isHFlagSet());
-		System.out.printf("%s\tP/V%n", ccr.isPvFlagSet());
-		System.out.printf("%s\tN flag%n", ccr.isNFlagSet());
-		
-		
-		cpu.executeInstruction(instructionLocation);
-		assertThat(i + ": CPI ", instructionLocation + 4 , equalTo(wrs.getProgramCounter()));
-		assertThat(i + ": CPI - HL", memoryBase + i + 1, equalTo(wrs.getDoubleReg(hl)));
-		assertThat(i + ": CPI - BC", numberOfBytes - i - 1, equalTo(wrs.getDoubleReg(bc)));
-	
-		assertThat(i + ": CPI - Sign", false, equalTo(ccr.isSignFlagSet()));
-		assertThat(i + ": CPI - Zero", true, equalTo(ccr.isZeroFlagSet()));
-		assertThat(i + ": CPI - Half Carry", false, equalTo(ccr.isHFlagSet()));
-		assertThat(i + ": CPI - P/V", true, equalTo(ccr.isPvFlagSet()));
-		assertThat(i + ": CPI - N flag", true, equalTo(ccr.isNFlagSet()));
-		i++;
+	//////////////////////////////////////////////////////////////////////////////////////
 
-
-		cpu.executeInstruction(instructionLocation);
-		assertThat(i + ": CPI ", instructionLocation + 6 , equalTo(wrs.getProgramCounter()));
-		assertThat(i + ": CPI - HL", memoryBase + i + 1, equalTo(wrs.getDoubleReg(hl)));
-		assertThat(i + ": CPI - BC", numberOfBytes - i - 1, equalTo(wrs.getDoubleReg(bc)));
-	
-		assertThat(i + ": CPI - Sign", true, equalTo(ccr.isSignFlagSet()));
-		assertThat(i + ": CPI - Zero", false, equalTo(ccr.isZeroFlagSet()));
-		assertThat(i + ": CPI - Half Carry", false, equalTo(ccr.isHFlagSet()));
-		assertThat(i + ": CPI - P/V", false, equalTo(ccr.isPvFlagSet()));
-		assertThat(i + ": CPI - N flag", true, equalTo(ccr.isNFlagSet()));
-
-
-		///////////////////////////////////////////////////////////////////////////////
-		
-		
-
-	}// testCPIandCPIR
-
-	// private byte getValue(String value) {
-	// int tempInt;
-	// tempInt = Integer.valueOf(value, 16);
-	// return (byte) tempInt;
-	// }// getValue
+//	private byte getValue(String value) {
+//		int tempInt;
+//		tempInt = Integer.valueOf(value, 16);
+//		return (byte) tempInt;
+//	}// getValue
 
 	// private void setUpWordRegisters(int registerIndex, byte[] arg1, byte[] arg2, boolean carryState) {
 	// wrs.setDoubleReg(Z80.Register.HL, arg1); // Set HL
@@ -120,11 +86,11 @@ public class YY {
 	// cpu.executeInstruction(wrs.getProgramCounter());// do the ADCcy
 	// }// setUpWordRegisters
 	//
-	private void setUpMemory(int location, byte[] newValues) {
-		wrs.setProgramCounter(location);
-		// int size = newValues.length;
-		ioBuss.writeDMA(location, newValues);
-	}// setUpMemory
+//	private void setUpMemory(int location, byte[] newValues) {
+//		wrs.setProgramCounter(location);
+//		// int size = newValues.length;
+//		ioBuss.writeDMA(location, newValues);
+//	}// setUpMemory
 		//
 		// private byte[] getValueArray(String value) {
 		// int workingValue = Integer.valueOf(value, 16);

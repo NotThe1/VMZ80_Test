@@ -1,4 +1,4 @@
-CP		arg1	arg2	S	Z	H	P/V	N	C				P/V	->	overflow
+CP		arg2	arg1	S	Z	H	P/V	N	C				P/V	->	overflow
 00	00	010010
 00	01	000010
 00	02	000010
