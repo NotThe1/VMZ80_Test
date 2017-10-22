@@ -19,22 +19,20 @@ import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
 import memory.IoBuss;
 
-public class InstructionCB1 {
+public class InstructionCB2 {
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
 	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
 	IoBuss ioBuss = IoBuss.getInstance();
-	// Register[] registers = new Register[] { Z80.Register.BC, Z80.Register.DE, Z80.Register.SP };
-	// String message;
 
 	String sSource;
 	byte source, result;
 	String flags, message;
 	boolean sign, zero, halfCarry, overflow, parity, nFlag, carry;
-	HashMap<Byte, FileFlag> mapRLC = new HashMap<>();
-	HashMap<Byte, FileFlag> mapRLcy = new HashMap<>();
-	HashMap<Byte, FileFlag> mapRLnc = new HashMap<>();
-	FileFlag ffRLC, ffRLcy, ffRLnc;
+	HashMap<Byte, FileFlag> mapRRC = new HashMap<>();
+	HashMap<Byte, FileFlag> mapRRcy = new HashMap<>();
+	HashMap<Byte, FileFlag> mapRRnc = new HashMap<>();
+	FileFlag ffRRC, ffRRcy, ffRRnc;
 	int instructioBase = 0X1000;
 	int hlRegisterValue = 0X0100; // (HL) - m
 
@@ -44,7 +42,7 @@ public class InstructionCB1 {
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
 		try {
-			InputStream inputStream = this.getClass().getResourceAsStream("/RotateLeftOriginal.txt");
+			InputStream inputStream = this.getClass().getResourceAsStream("/RotateRightOriginal.txt");
 			// InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
 			Scanner scanner = new Scanner(inputStream);
 			scanner.nextLine(); // skip header
@@ -56,7 +54,7 @@ public class InstructionCB1 {
 				} // if skip line
 				source = getValue(sSource);
 
-				// RC(cy = 0)
+				// RR(cy = 0)
 				result = getValue(scanner.next());
 				flags = scanner.next();
 
@@ -66,9 +64,9 @@ public class InstructionCB1 {
 				parity = flags.subSequence(3, 4).equals("1") ? true : false;
 				nFlag = flags.subSequence(4, 5).equals("1") ? true : false;
 				carry = flags.subSequence(5, 6).equals("1") ? true : false;
-				mapRLnc.put(source, new FileFlag(source, result, sign, zero, halfCarry, parity, nFlag, carry));
+				mapRRnc.put(source, new FileFlag(source, result, sign, zero, halfCarry, parity, nFlag, carry));
 
-				// RC(cy = 1)
+				// RR(cy = 1)
 				result = getValue(scanner.next());
 				flags = scanner.next();
 
@@ -78,9 +76,9 @@ public class InstructionCB1 {
 				parity = flags.subSequence(3, 4).equals("1") ? true : false;
 				nFlag = flags.subSequence(4, 5).equals("1") ? true : false;
 				carry = flags.subSequence(5, 6).equals("1") ? true : false;
-				mapRLcy.put(source, new FileFlag(source, result, sign, zero, halfCarry, parity, nFlag, carry));
+				mapRRcy.put(source, new FileFlag(source, result, sign, zero, halfCarry, parity, nFlag, carry));
 
-				// RLC
+				// RRC
 				result = getValue(scanner.next());
 				flags = scanner.next();
 
@@ -90,7 +88,7 @@ public class InstructionCB1 {
 				parity = flags.subSequence(3, 4).equals("1") ? true : false;
 				nFlag = flags.subSequence(4, 5).equals("1") ? true : false;
 				carry = flags.subSequence(5, 6).equals("1") ? true : false;
-				mapRLC.put(source, new FileFlag(source, result, sign, zero, halfCarry, parity, nFlag, carry));
+				mapRRC.put(source, new FileFlag(source, result, sign, zero, halfCarry, parity, nFlag, carry));
 
 			} // while
 			scanner.close();
@@ -103,13 +101,13 @@ public class InstructionCB1 {
 	}// setUp
 
 	@Test
-	public void testRLC_file() {
-		byte[] instruction2 = new byte[] { (byte) 0X00, (byte) 0X01, (byte) 0X02, (byte) 0X03, (byte) 0X04, (byte) 0X05,
-				(byte) 0X06, (byte) 0X07 };
+	public void testRRC_file() {
+		byte[] instruction2 = new byte[] { (byte) 0X08, (byte) 0X09, (byte) 0X0A, (byte) 0X0B, (byte) 0X0C, (byte) 0X0D,
+				(byte) 0X0E, (byte) 0X0F };
 
 		wrs.setDoubleReg(Z80.Register.HL, hlRegisterValue); // (HL) - m
 		
-		Collection<FileFlag> valuesRLC = mapRLC.values();
+		Collection<FileFlag> valuesRLC = mapRRC.values();
 		
 		for (int r = 0; r < 8; r++) {
 			thisRegister = Z80.singleRegisters[r];
@@ -120,28 +118,28 @@ public class InstructionCB1 {
 //				 System.out.printf("source %02X <-> result %02X%n", ff.getSource(),ff.getResult());
 				wrs.setReg(thisRegister, ff.getSource());
 				cpu.executeInstruction(wrs.getProgramCounter());
-				assertThat("RLC :" + ff.getSource(), ff.getResult(), equalTo(wrs.getReg(thisRegister)));
-				assertThat("RLC sign :" + ff.getSource(), ff.sign, equalTo(ccr.isSignFlagSet()));
-				assertThat("RLC Zero :" + ff.getSource(), ff.zero, equalTo(ccr.isZeroFlagSet()));
-				assertThat("RLC halfFlag :" + ff.getSource(), ff.halfCarry, equalTo(ccr.isHFlagSet()));
-				assertThat("RLC parity :" + ff.getSource(), ff.parity, equalTo(ccr.isPvFlagSet()));
-				assertThat("RLC nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
-				assertThat("RLC carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
+				assertThat("RRC :" + ff.getSource(), ff.getResult(), equalTo(wrs.getReg(thisRegister)));
+				assertThat("RRC sign :" + ff.getSource(), ff.sign, equalTo(ccr.isSignFlagSet()));
+				assertThat("RRC Zero :" + ff.getSource(), ff.zero, equalTo(ccr.isZeroFlagSet()));
+				assertThat("RRC halfFlag :" + ff.getSource(), ff.halfCarry, equalTo(ccr.isHFlagSet()));
+				assertThat("RRC parity :" + ff.getSource(), ff.parity, equalTo(ccr.isPvFlagSet()));
+				assertThat("RRC nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
+				assertThat("RRC carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
 			} // for each result set		
 //			System.out.printf("index = %d, Register = %s%n", r,thisRegister);
 		} // for each register
 
-	}// testRLC_file
+	}// testRRC_file
 	
 
 	@Test
-	public void testRLnc_file() {
-		byte[] instruction2 = new byte[] { (byte) 0X10, (byte) 0X11, (byte) 0X12, (byte) 0X13, (byte) 0X14, (byte) 0X15,
-				(byte) 0X16, (byte) 0X17 };
+	public void testRRnc_file() {
+		byte[] instruction2 = new byte[] { (byte) 0X18, (byte) 0X19, (byte) 0X1A, (byte) 0X1B, (byte) 0X1C, (byte) 0X1D,
+				(byte) 0X1E, (byte) 0X1F };
 
 		wrs.setDoubleReg(Z80.Register.HL, hlRegisterValue); // (HL) - m
 		
-		Collection<FileFlag> valuesRLnc = mapRLnc.values();
+		Collection<FileFlag> valuesRLnc = mapRRnc.values();
 		
 		for (int r = 0; r < 8; r++) {
 			thisRegister = Z80.singleRegisters[r];
@@ -153,28 +151,28 @@ public class InstructionCB1 {
 				wrs.setReg(thisRegister, ff.getSource());
 				ccr.setCarryFlag(false);
 				cpu.executeInstruction(wrs.getProgramCounter());
-				assertThat("RL cy = 0 :" + ff.getSource(), ff.getResult(), equalTo(wrs.getReg(thisRegister)));
-				assertThat("RL cy = 0 sign :" + ff.getSource(), ff.sign, equalTo(ccr.isSignFlagSet()));
-				assertThat("RL cy = 0 Zero :" + ff.getSource(), ff.zero, equalTo(ccr.isZeroFlagSet()));
-				assertThat("RL cy = 0 halfFlag :" + ff.getSource(), ff.halfCarry, equalTo(ccr.isHFlagSet()));
-				assertThat("RL cy = 0 parity :" + ff.getSource() + thisRegister, ff.parity, equalTo(ccr.isPvFlagSet()));
-				assertThat("RL cy = 0 nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
-				assertThat("RL cy = 0 carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
+				assertThat("RR cy = 0 :" + ff.getSource(), ff.getResult(), equalTo(wrs.getReg(thisRegister)));
+				assertThat("RR cy = 0  sign :" + ff.getSource(), ff.sign, equalTo(ccr.isSignFlagSet()));
+				assertThat("RR cy = 0  Zero :" + ff.getSource(), ff.zero, equalTo(ccr.isZeroFlagSet()));
+				assertThat("RR cy = 0  halfFlag :" + ff.getSource(), ff.halfCarry, equalTo(ccr.isHFlagSet()));
+				assertThat("RR cy = 0  parity :" + ff.getSource() + thisRegister, ff.parity, equalTo(ccr.isPvFlagSet()));
+				assertThat("RR cy = 0  nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
+				assertThat("RR cy = 0  carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
 			} // for each result set		
 //			System.out.printf("index = %d, Register = %s%n", r,thisRegister);
 		} // for each register
 
-	}// testRLnc_file
+	}// testRRnc_file
 
 
 	@Test
-	public void testRLcy_file() {
-		byte[] instruction2 = new byte[] { (byte) 0X10, (byte) 0X11, (byte) 0X12, (byte) 0X13, (byte) 0X14, (byte) 0X15,
-				(byte) 0X16, (byte) 0X17 };
+	public void testRRcy_file() {
+		byte[] instruction2 = new byte[] { (byte) 0X18, (byte) 0X19, (byte) 0X1A, (byte) 0X1B, (byte) 0X1C, (byte) 0X1D,
+				(byte) 0X1E, (byte) 0X1F };
 
 		wrs.setDoubleReg(Z80.Register.HL, hlRegisterValue); // (HL) - m
 		
-		Collection<FileFlag> valuesRLcy = mapRLcy.values();
+		Collection<FileFlag> valuesRLcy = mapRRcy.values();
 		
 		for (int r = 0; r < 8; r++) {
 			thisRegister = Z80.singleRegisters[r];
@@ -186,18 +184,18 @@ public class InstructionCB1 {
 				wrs.setReg(thisRegister, ff.getSource());
 				ccr.setCarryFlag(true);
 				cpu.executeInstruction(wrs.getProgramCounter());
-				assertThat("RL cy = 1 :" + ff.getSource(), ff.getResult(), equalTo(wrs.getReg(thisRegister)));
-				assertThat("RL cy = 1 sign :" + ff.getSource(), ff.sign, equalTo(ccr.isSignFlagSet()));
-				assertThat("RL cy = 1 Zero :" + ff.getSource(), ff.zero, equalTo(ccr.isZeroFlagSet()));
-				assertThat("RL cy = 1 halfFlag :" + ff.getSource(), ff.halfCarry, equalTo(ccr.isHFlagSet()));
-				assertThat("RL cy = 1 parity :" + ff.getSource() + thisRegister, ff.parity, equalTo(ccr.isPvFlagSet()));
-				assertThat("RL cy = 1 nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
-				assertThat("RL cy = 1 carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
+				assertThat("RR cy = 1  :" + ff.getSource(), ff.getResult(), equalTo(wrs.getReg(thisRegister)));
+				assertThat("RR cy = 1   sign :" + ff.getSource(), ff.sign, equalTo(ccr.isSignFlagSet()));
+				assertThat("RR cy = 1   Zero :" + ff.getSource(), ff.zero, equalTo(ccr.isZeroFlagSet()));
+				assertThat("RR cy = 1   halfFlag :" + ff.getSource(), ff.halfCarry, equalTo(ccr.isHFlagSet()));
+				assertThat("RR cy = 1   parity :" + ff.getSource() + thisRegister, ff.parity, equalTo(ccr.isPvFlagSet()));
+				assertThat("RR cy = 1   nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
+				assertThat("RR cy = 1   carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
 			} // for each result set		
 //			System.out.printf("index = %d, Register = %s%n", r,thisRegister);
 		} // for each register
 
-	}// testRLcy_file
+	}// testRRcy_file
 
 
 
@@ -216,37 +214,4 @@ public class InstructionCB1 {
 		} // for
 	}// loadInstructionCB
 
-	////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
-
-//	class FileFlag {
-//		public boolean sign, zero, halfCarry, parity, nFlag, carry;
-//		private byte source, result;
-//
-//		public FileFlag(byte source, byte result) {
-//			this.source = source;
-//			this.result = result;
-//		}// Constructor
-//
-//		public FileFlag(byte source, byte result, boolean sign, boolean zero, boolean halfCarry, boolean parity,
-//				boolean nFlag, boolean carry) {
-//			this.source = source;
-//			this.result = result;
-//			this.sign = sign;
-//			this.zero = zero;
-//			this.halfCarry = halfCarry;
-//			this.parity = parity;
-//			this.nFlag = nFlag;
-//			this.carry = carry;
-//		}// Constructor
-//
-//		public byte getSource() {
-//			return this.source;
-//		}// getSource
-//
-//		public byte getResult() {
-//			return this.result;
-//		}// getSource
-//	}// FileFlag
-
-}// class InstructionCB1
+}//class Instruction2
