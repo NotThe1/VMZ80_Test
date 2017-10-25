@@ -91,7 +91,6 @@ public class InstructionCB1 {
 				nFlag = flags.subSequence(4, 5).equals("1") ? true : false;
 				carry = flags.subSequence(5, 6).equals("1") ? true : false;
 				mapRLC.put(source, new FileFlag(source, result, sign, zero, halfCarry, parity, nFlag, carry));
-
 			} // while
 			scanner.close();
 			inputStream.close();
@@ -117,7 +116,6 @@ public class InstructionCB1 {
 			
 			wrs.setProgramCounter(instructioBase);
 			for (FileFlag ff : valuesRLC) {
-//				 System.out.printf("source %02X <-> result %02X%n", ff.getSource(),ff.getResult());
 				wrs.setReg(thisRegister, ff.getSource());
 				cpu.executeInstruction(wrs.getProgramCounter());
 				assertThat("RLC :" + ff.getSource(), ff.getResult(), equalTo(wrs.getReg(thisRegister)));
