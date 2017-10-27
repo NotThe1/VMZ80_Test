@@ -37,9 +37,9 @@ public class InstructionDD_IXY1 {
 	boolean sign, zero, halfCarry, parity, nFlag, carry;
 	int instructionBase = 0X1000;
 	
-	int testSize = 0X1000;
+	int testSize = 0X01000;
     int ixValueBase =	instructionBase+ 0X0100;	
-    int iyValueBase =	instructionBase + (2 * testSize) + 0X0100;;	
+    int iyValueBase =	ixValueBase + (2 * testSize) + 0X0100;;	
 
 	// int hlRegisterValue = 0X0100; // (HL) - m
 
@@ -89,8 +89,47 @@ public class InstructionDD_IXY1 {
 	
 	@Test
 	public void testLDIXYaa(){	// LD IXY,(nn)
+		String message;
+		Register regIX = Z80.Register.IX;
+		Register regIY = Z80.Register.IY;
+		IntStream intStream = new Random().ints((long)testSize,0X0000,0X10000);
+		int[] ixValues= intStream.toArray();
+		 intStream = new Random((long)testSize).ints((long)testSize,0X0000,0X10000);
+		loadMemory(ixValueBase,ixValues);
+		int[] iyValues= intStream.toArray();
+		loadMemory(iyValueBase,iyValues);
+		loadInstructions1(testSize);
+		
+		int xMem,yMem;
+		for ( int i = 0; i < ixValues.length;i ++){
+			//IX
+			xMem = ixValueBase + (2* i);
+			message = String.format("ixValues[%d] = %04X \t: mem[%04x] = %04X",
+					i,ixValues[i],xMem,cpuBuss.readWordReversed(xMem));
+//			System.out.printf(message);
+			cpu.executeInstruction(wrs.getProgramCounter());
+			assertThat(message,ixValues[i],equalTo(wrs.getDoubleReg(regIX)));
+//			System.out.printf("\tReg IX = %04X%n",wrs.getDoubleReg(regIX));
+			//IY
+			yMem = iyValueBase + (2* i);
+			message = String.format("iyValues[%d] = %04X \t: mem[%04x] = %04X",
+					i,iyValues[i],yMem,cpuBuss.readWordReversed(yMem));
+			cpu.executeInstruction(wrs.getProgramCounter());
+			assertThat(message,iyValues[i],equalTo(wrs.getDoubleReg(regIY)));
+		
+		}//for
 		
 	}//testLDIXYaa
+	
+	private void loadMemory(int base, int[] intValues){
+		byte[] values;
+		int location;
+		for (int i = 0; i < intValues.length;i++){
+			location = base + (2 * i);
+			values = intToByteArray(intValues[i]);
+			cpuBuss.writeWord(location, values[0], values[1]);
+		}//for i
+	}//loadMemory
 	
 	@Test
 	public void testLDnnIXY(){ // LD (nn),IXY
@@ -199,7 +238,45 @@ public class InstructionDD_IXY1 {
 		wrs.setProgramCounter(instructionBase);
 	}//loadInstructions
 	
-	private byte[] intToByteArray(int value){
+	
+	private void loadInstructions1(int testSize){
+		byte dd = (byte) 0XDD;
+		byte fd = (byte) 0XFD;
+		byte code =(byte) 0X02A;
+		byte[] values;
+		int locationX,locationY,locationInstruction;
+		int opcodeBase = iyValueBase + (2 * testSize) + 0X0100;
+		for (int i = 0; i < testSize;i ++){
+			locationInstruction = opcodeBase +( 8 * i);
+			locationX = ixValueBase + ( 2*i);
+			locationY = iyValueBase + ( 2*i);
+			//IX
+			ioBuss.write(locationInstruction++, dd);
+			ioBuss.write(locationInstruction++, code);
+			values = intToByteArray(locationX);
+			cpuBuss.writeWord(locationInstruction++, values[0], values[1]);
+			locationInstruction++;
+			//IY
+			ioBuss.write(locationInstruction++, fd);
+			ioBuss.write(locationInstruction++, code);
+			values = intToByteArray(locationY);
+			cpuBuss.writeWord(locationInstruction++, values[0], values[1]);
+			
+			
+			
+
+		}//for
+//		byte[] values = intToByteArray(value);
+//		
+//		byte[] instructions = new byte[] { (byte) 0XDD, (byte) 0X02A,values[0],values[1],
+//			  	(byte) 0XFD, (byte) 0X02A,values[0],values[1]};
+
+		wrs.setProgramCounter(opcodeBase);
+	}//loadInstructions1
+	
+
+	
+	private byte[] intToByteArray(int value){//[0]-> lsb, [1] -> msb
 		byte lsb = (byte) (value & Z80.BYTE_MASK);
 		byte msb = (byte) ((value >> 8) & Z80.BYTE_MASK);
 		return new byte[]{lsb,msb};
