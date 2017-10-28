@@ -6,7 +6,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ InstructionDD_IXY1.class,
-				InstructionDD_IXY2.class})
+				InstructionDD_IXY2.class,
+				InstructionDD_IXY3.class})
 
 public class AllTestsDD_IXY {
 

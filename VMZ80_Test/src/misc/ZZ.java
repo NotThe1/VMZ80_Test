@@ -3,60 +3,104 @@ package misc;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import codeSupport.Z80;
+import codeSupport.Z80.Register;
 import hardware.ArithmeticUnit;
+import hardware.CentralProcessingUnit;
+import hardware.ConditionCodeRegister;
+import hardware.WorkingRegisterSet;
+import memory.IoBuss;
 
 public class ZZ {
-		static ArithmeticUnit au = ArithmeticUnit.getInstance();
+	static ArithmeticUnit au = ArithmeticUnit.getInstance();
 
 	public static void main(String[] args) {
 
-		byte arg1 = (byte)0X7F;
-		byte arg2 = (byte)0X00;
-		
-//		compare(arg1,arg2);
-//		compare(arg1,(byte)0X7F);
-//		compare(arg1,(byte)0XFF);
-		
-//		arg1 = (byte) 0X00;
-//		rotateLeftThruCarry(arg1,false);
-//		arg1 = (byte) 0XFF;
-//		rotateLeftThruCarry(arg1,false);
-		
-		test2RandomArrays();
-		
+		byte arg1 = (byte) 0X80;
+		byte arg2 = (byte) 0X00;
+		int iarg1 = arg1;
+		 int x = 0X1000;
+		 int ans = arg1 + x;
+		 System.out.printf("byte -> %02X, int -> %08X%n", arg1,iarg1);
+		 System.out.printf("arg1 -> %04x, x -> %d, ans -> %04d%n", arg1,x,ans);
+		 System.out.printf("iarg1 -> %04X, x -> %04X, ans1 -> %04X%n", iarg1,x,iarg1 + x);
+		 
+		// compare(arg1,arg2);
+		// compare(arg1,(byte)0X7F);
+		// compare(arg1,(byte)0XFF);
+
+		// arg1 = (byte) 0X00;
+		// rotateLeftThruCarry(arg1,false);
+		// arg1 = (byte) 0XFF;
+		// rotateLeftThruCarry(arg1,false);
+
+		// test2RandomArrays();
+		checkDisplacement();
+
 	}// main
-	
-	private static void test2RandomArrays(){
+
+	private static void checkDisplacement() {
+		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
+		WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
+		ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
+		IoBuss ioBuss = IoBuss.getInstance();
+		int instructionBase = 0X1000;
+		int start, result;
+		Register regIX = Z80.Register.IX;
+
+		byte[] instrucions = new byte[] { (byte) 0XDD, (byte) 0X34, (byte) 0X00, (byte) 0XDD, (byte) 0X34, (byte) 0X01,
+				(byte) 0XDD, (byte) 0X34, (byte) 0X10, (byte) 0XDD, (byte) 0X34, (byte) 0X7F, (byte) 0XDD, (byte) 0X34,
+				(byte) 0X80, (byte) 0XDD, (byte) 0X34, (byte) 0XFE, (byte) 0XDD, (byte) 0X34, (byte) 0XFF, };
+
+		byte[] displacements = new byte[] { (byte) 0X00, (byte) 0X01, (byte) 0X10, (byte) 0X7F, (byte) 0X80,
+				(byte) 0XFE, (byte) 0XFF };
+		int starts[] = new int[] { 0X1000, 0X0000 };
+		for (int i = 0; i < starts.length; i++) {
+			ioBuss.writeDMA(instructionBase, instrucions);
+			wrs.setProgramCounter(instructionBase);
+			wrs.setIX(starts[i]);
+			for (int j = 0; j < displacements.length; j++) {
+				cpu.executeInstruction(wrs.getProgramCounter());
+				result = wrs.getDoubleReg(Register.HL);
+				System.out.printf("IX -> %04X, displacements -> %02X, result -> %04X%n", starts[i], displacements[j],
+						result);
+
+			} // for j
+		} // for i
+
+	}// checkDisplacement
+
+	private static void test2RandomArrays() {
 		int testSize = 0x10;
-	
-		IntStream intStream = new Random().ints((long)testSize,0X0000,0X10000);
-		int[] ixValues= intStream.toArray();
-		 intStream = new Random().ints((long)testSize,0X0000,0X10000);//(long)testSize
-		int[] iyValues= intStream.toArray();
-		for (int i = 0; i < testSize; i++){
-			System.out.printf("i = %02X, IX = %04X, IY = %04X%n", i,ixValues[i],iyValues[i]);
+
+		IntStream intStream = new Random().ints((long) testSize, 0X0000, 0X10000);
+		int[] ixValues = intStream.toArray();
+		intStream = new Random().ints((long) testSize, 0X0000, 0X10000);// (long)testSize
+		int[] iyValues = intStream.toArray();
+		for (int i = 0; i < testSize; i++) {
+			System.out.printf("i = %02X, IX = %04X, IY = %04X%n", i, ixValues[i], iyValues[i]);
 		}
-	}//test2RandomArrays
-	
-	private static void rotateLeftThruCarry(byte arg1,boolean carry) {
+	}// test2RandomArrays
+
+	private static void rotateLeftThruCarry(byte arg1, boolean carry) {
 		au.rotateLeftThru(arg1, carry);
-		
-		System.out.printf("%nArg1 = %02X, carry = %s%n",arg1,carry);
+
+		System.out.printf("%nArg1 = %02X, carry = %s%n", arg1, carry);
 		System.out.printf("%s\tSign%n", au.hasSign());
 		System.out.printf("%s\tZero%n", au.isZero());
 		System.out.printf("%s\tHalf Carry%n", au.hasHalfCarry());
 		System.out.printf("%s\tParity%n", au.hasParity());
 
 	}
-	
-	private static void compare(byte arg1,byte arg2){
+
+	private static void compare(byte arg1, byte arg2) {
 		au.compare(arg1, arg2);
-		
-		System.out.printf("%nArg1 = %02X, Arg2 = %02X%n",arg1,arg2);
+
+		System.out.printf("%nArg1 = %02X, Arg2 = %02X%n", arg1, arg2);
 		System.out.printf("%s\tSign%n", au.hasSign());
 		System.out.printf("%s\tZero%n", au.isZero());
 		System.out.printf("%s\tHalf Carry%n", au.hasHalfCarry());
 
-	}//compare
+	}// compare
 
 }

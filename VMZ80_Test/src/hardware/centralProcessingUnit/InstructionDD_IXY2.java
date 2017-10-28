@@ -3,7 +3,6 @@ package hardware.centralProcessingUnit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import codeSupport.Z80;
@@ -30,10 +29,6 @@ public class InstructionDD_IXY2 {
 
 	String message;
 
-	@Before
-	public void setUp() throws Exception {
-	}//
-	
 	@Test
 	public void testINC(){
 		int result;
@@ -86,7 +81,6 @@ public class InstructionDD_IXY2 {
 		ioBuss.writeDMA(instructionBase, instructions);
 		wrs.setProgramCounter(instructionBase);
 	}//loadInstructions
-
 
 
 }//InstructionDD_IXY2

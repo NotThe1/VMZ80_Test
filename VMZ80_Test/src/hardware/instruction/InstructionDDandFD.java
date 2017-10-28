@@ -601,7 +601,7 @@ public class InstructionDDandFD {
 
 		instruction = new Instruction();
 		assertThat("RLC (IX+d)", Z80.Register.IX, equalTo(instruction.getDoubleRegister1()));
-		assertThat("RLC (IX+d)", (byte) 0X00, equalTo(instruction.getIndexDisplacement()));
+		assertThat("RLC (IX+d)",  (byte) 0X00, equalTo(instruction.getIndexDisplacement()));
 
 		wrs.incrementProgramCounter(4);
 		instruction = new Instruction();
@@ -616,7 +616,7 @@ public class InstructionDDandFD {
 		wrs.incrementProgramCounter(4);
 		instruction = new Instruction();
 		assertThat("RR (IX+d)", Z80.Register.IX, equalTo(instruction.getDoubleRegister1()));
-		assertThat("RR (IX+d)", (byte) 0X08, equalTo(instruction.getIndexDisplacement()));
+		assertThat("RR (IX+d)",(byte)  0X08, equalTo(instruction.getIndexDisplacement()));
 
 		wrs.incrementProgramCounter(4);
 		instruction = new Instruction();
