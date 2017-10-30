@@ -21,9 +21,17 @@ public class ZZ {
 		int iarg1 = arg1;
 		 int x = 0X1000;
 		 int ans = arg1 + x;
-		 System.out.printf("byte -> %02X, int -> %08X%n", arg1,iarg1);
-		 System.out.printf("arg1 -> %04x, x -> %d, ans -> %04d%n", arg1,x,ans);
-		 System.out.printf("iarg1 -> %04X, x -> %04X, ans1 -> %04X%n", iarg1,x,iarg1 + x);
+//		 System.out.printf("byte -> %02X, int -> %08X%n", arg1,iarg1);
+//		 System.out.printf("arg1 -> %04x, x -> %d, ans -> %04d%n", arg1,x,ans);
+//		 System.out.printf("iarg1 -> %04X, x -> %04X, ans1 -> %04X%n", iarg1,x,iarg1 + x);
+		 
+		 for (int i= -128;i < 128;i++){
+			 arg1 = (byte)i;
+//			 System.out.printf("i -> %02X, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
+		
+//			 System.out.printf("i -> %2d, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
+			 System.out.printf("i -> %2d, arg1 -> %02X, loc -> %d%n",i,arg1,x+i);
+	 }
 		 
 		// compare(arg1,arg2);
 		// compare(arg1,(byte)0X7F);
@@ -35,7 +43,7 @@ public class ZZ {
 		// rotateLeftThruCarry(arg1,false);
 
 		// test2RandomArrays();
-		checkDisplacement();
+		//		checkDisplacement();
 
 	}// main
 

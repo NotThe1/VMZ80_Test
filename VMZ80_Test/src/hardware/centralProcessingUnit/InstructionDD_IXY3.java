@@ -42,14 +42,14 @@ public class InstructionDD_IXY3 {
 		mapINC = setUp("/IncOriginal.txt");
 		mapDEC = setUp("/DecOrignal.txt");
 	}// setUp
+	
 	@Test
 	public void testINC() {
 		int valueLocation = valueBase;
-//		valueLocation = 1000;
 		FileFlag ff;
 		byte displacement;
 		// IX
-		loadInstructionsINC((byte) 0XDD);
+		loadInstructions((byte) 0XDD,(byte) 0X34);
 		for (int i = 0; i < 0X100; i++) {
 			ff = mapINC.get(i);
 			wrs.setIX(valueLocation);
@@ -62,7 +62,7 @@ public class InstructionDD_IXY3 {
 		} // for ff IX valuesADD
 		
 		// IX
-		loadInstructionsINC((byte) 0XFD);
+		loadInstructions((byte) 0XFD,(byte) 0X34);
 		for (int i = 0; i < 0X100; i++) {
 			ff = mapINC.get(i);
 			wrs.setIY(valueLocation);
@@ -75,6 +75,40 @@ public class InstructionDD_IXY3 {
 		} // for ff IX valuesADD
 		
 	}// testINC
+	
+	
+	@Test
+	public void testDEC() {
+		int valueLocation = valueBase;
+		FileFlag ff;
+		byte displacement;
+		// IX
+		loadInstructions((byte) 0XDD,(byte) 0X35);
+		for (int i = 0; i < 0X100; i++) {
+			ff = mapDEC.get(i);
+			wrs.setIX(valueLocation);
+			displacement = (byte) i;
+			message = String.format("loc -> %04d, displ -> %d, i ->  %d, netLoc = %04d %n",
+					valueLocation,displacement, i,valueLocation + displacement );
+			cpuBuss.write(valueLocation + displacement, ff.getSource());
+			cpu.executeInstruction(wrs.getProgramCounter());
+			assertThat(message,ff.getResult(),equalTo(cpuBuss.read(valueLocation + displacement)));
+		} // for ff IX valuesADD
+		
+		// IX
+		loadInstructions((byte) 0XFD,(byte) 0X35);
+		for (int i = 0; i < 0X100; i++) {
+			ff = mapDEC.get(i);
+			wrs.setIY(valueLocation);
+			displacement = (byte) i;
+			message = String.format("loc -> %04d, displ -> %d, i ->  %d, netLoc = %04d %n",
+					valueLocation,displacement, i,valueLocation + displacement );
+			cpuBuss.write(valueLocation + displacement, ff.getSource());
+			cpu.executeInstruction(wrs.getProgramCounter());
+			assertThat(message,ff.getResult(),equalTo(cpuBuss.read(valueLocation + displacement)));
+		} // for ff IX valuesADD
+		
+	}// testDEC
 	
 		//////////////////////////////////////////////////////////////
 
@@ -122,8 +156,7 @@ public class InstructionDD_IXY3 {
 		return map;
 	}// setUp
 
-	private void loadInstructionsINC(byte oc1) {
-		byte oc2 = (byte) 0X34;
+	private void loadInstructions(byte oc1,byte oc2) {
 		int instructionLocation = instructionBase;
 		for (int i = 0; i < 0X100; i++) {
 			cpuBuss.write(instructionLocation++, oc1);
