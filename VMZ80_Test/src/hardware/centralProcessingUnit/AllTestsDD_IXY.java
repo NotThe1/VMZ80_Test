@@ -8,7 +8,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ InstructionDD_IXY1.class,
 				InstructionDD_IXY2.class,
 				InstructionDD_IXY3.class,
-				InstructionDD_IXY4.class})
+				InstructionDD_IXY4.class,
+				InstructionDD_IXY5.class})
 
 public class AllTestsDD_IXY {
 

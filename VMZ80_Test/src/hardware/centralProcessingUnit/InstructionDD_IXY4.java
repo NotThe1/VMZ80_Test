@@ -43,15 +43,15 @@ public class InstructionDD_IXY4 {
 	
 	@Test
 	public void testSBC() {
-		testADC(Register.IX, false);
-		testADC(Register.IX, true);
-		testADC(Register.IY, false);
-		testADC(Register.IY, true);
+		testSBC(Register.IX, false);
+		testSBC(Register.IX, true);
+		testSBC(Register.IY, false);
+		testSBC(Register.IY, true);
 	}// testSBC
 
 	public void testSBC(Register ixy, boolean carryIn) {
 		byte opcode1 = ixy == Register.IX ? (byte) 0XDD : (byte) 0XFD;
-		byte opCode2 = (byte) 0X8E;
+		byte opCode2 = (byte) 0X9E;
 		byte arg1, arg2, difference;
 		boolean sign, zero, halfCarry, overflow, nFlag, carry;
 		// boolean carryState;
