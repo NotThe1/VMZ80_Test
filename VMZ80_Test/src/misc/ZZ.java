@@ -16,23 +16,23 @@ public class ZZ {
 
 	public static void main(String[] args) {
 
-		byte arg1 = (byte) 0X80;
-		byte arg2 = (byte) 0X00;
-		int iarg1 = arg1;
-		 int x = 0X1000;
-		 int ans = arg1 + x;
-//		 System.out.printf("byte -> %02X, int -> %08X%n", arg1,iarg1);
-//		 System.out.printf("arg1 -> %04x, x -> %d, ans -> %04d%n", arg1,x,ans);
-//		 System.out.printf("iarg1 -> %04X, x -> %04X, ans1 -> %04X%n", iarg1,x,iarg1 + x);
-		 
-		 for (int i= -128;i < 128;i++){
-			 arg1 = (byte)i;
-//			 System.out.printf("i -> %02X, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
-		
-//			 System.out.printf("i -> %2d, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
-			 System.out.printf("i -> %2d, arg1 -> %02X, loc -> %d%n",i,arg1,x+i);
-	 }
-		 
+		// byte arg1 = (byte) 0X80;
+		// byte arg2 = (byte) 0X00;
+		// int iarg1 = arg1;
+		// int x = 0X1000;
+		// int ans = arg1 + x;
+		// // System.out.printf("byte -> %02X, int -> %08X%n", arg1,iarg1);
+		// // System.out.printf("arg1 -> %04x, x -> %d, ans -> %04d%n", arg1,x,ans);
+		// // System.out.printf("iarg1 -> %04X, x -> %04X, ans1 -> %04X%n", iarg1,x,iarg1 + x);
+		//
+		// for (int i = -128; i < 128; i++) {
+		// arg1 = (byte) i;
+		// // System.out.printf("i -> %02X, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
+		//
+		// // System.out.printf("i -> %2d, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
+		// System.out.printf("i -> %2d, arg1 -> %02X, loc -> %d%n", i, arg1, x + i);
+		// }
+
 		// compare(arg1,arg2);
 		// compare(arg1,(byte)0X7F);
 		// compare(arg1,(byte)0XFF);
@@ -43,9 +43,39 @@ public class ZZ {
 		// rotateLeftThruCarry(arg1,false);
 
 		// test2RandomArrays();
-		//		checkDisplacement();
+		// checkDisplacement();
+		checkADDIX();
 
 	}// main
+
+	private static void checkADDIX() {
+		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
+		WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
+		ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
+		IoBuss ioBuss = IoBuss.getInstance();
+		int instructionBase = 0X1000;
+		int valueBase = 0X2000;
+		int start, result;
+		Register regIX = Z80.Register.IX;
+
+		byte[] instrucions = new byte[] { (byte) 0XDD, (byte) 0X86, (byte) 0X00, (byte) 0XDD, (byte) 0X86, (byte) 0X01,
+				(byte) 0XDD, (byte) 0X86, (byte) 0X02, (byte) 0XDD, (byte) 0X86, (byte) 0X03, (byte) 0XDD, (byte) 0X86,
+				(byte) 0X04, };
+
+		byte[] values = new byte[] { (byte) 0XE5, (byte) 0Xe6, (byte) 0Xe7, (byte) 0XFF, (byte) 0X80, (byte) 0XFE,
+				(byte) 0XFF };
+		ioBuss.writeDMA(instructionBase, instrucions);
+		ioBuss.writeDMA(valueBase, values);
+		wrs.setProgramCounter(instructionBase);
+		wrs.setIX(valueBase);
+		
+		for (int i = 0; i < values.length; i++) {
+			wrs.setAcc((byte) 0XE6);
+
+			cpu.executeInstruction(wrs.getProgramCounter());
+			System.out.printf("ans = %02X[%d]%n", wrs.getAcc(), wrs.getAcc());
+		} // for i
+	}// checkADDIX private static void checkDisplacement() {
 
 	private static void checkDisplacement() {
 		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
