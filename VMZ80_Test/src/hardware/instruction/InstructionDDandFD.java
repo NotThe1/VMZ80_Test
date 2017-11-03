@@ -53,13 +53,13 @@ public class InstructionDDandFD {
 
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
-		assertThat("EX (SP),IX", Z80.Register.IX, equalTo(instruction.getDoubleRegister2()));
-		assertThat("EX (SP),IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister1()));
+		assertThat("EX (SP),IX", Z80.Register.IX, equalTo(instruction.getDoubleRegister1()));
+		assertThat("EX (SP),IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister2()));
 
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
-		assertThat("LD SP,IX", Z80.Register.IX, equalTo(instruction.getDoubleRegister2()));
-		assertThat("LD SP,IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister1()));
+		assertThat("LD SP,IX", Z80.Register.IX, equalTo(instruction.getDoubleRegister1()));
+		assertThat("LD SP,IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister2()));
 		
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
@@ -75,13 +75,13 @@ public class InstructionDDandFD {
 
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
-		assertThat("EX (SP),IY", Z80.Register.IY, equalTo(instruction.getDoubleRegister2()));
-		assertThat("EX (SP),IY", Z80.Register.SP, equalTo(instruction.getDoubleRegister1()));
+		assertThat("EX (SP),IY", Z80.Register.IY, equalTo(instruction.getDoubleRegister1()));
+		assertThat("EX (SP),IY", Z80.Register.SP, equalTo(instruction.getDoubleRegister2()));
 
 		wrs.incrementProgramCounter(2);
 		instruction = new Instruction();
-		assertThat("LD SP,IY", Z80.Register.IY, equalTo(instruction.getDoubleRegister2()));
-		assertThat("LD SP,IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister1()));
+		assertThat("LD SP,IY", Z80.Register.IY, equalTo(instruction.getDoubleRegister1()));
+		assertThat("LD SP,IX", Z80.Register.SP, equalTo(instruction.getDoubleRegister2()));
 
 	}//testPage3
 	

@@ -44,9 +44,37 @@ public class ZZ {
 
 		// test2RandomArrays();
 		// checkDisplacement();
-		checkADDIX();
+		// checkADDIX();
+		checkPOP();
 
 	}// main
+
+	private static void  checkPOP() {
+		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
+		WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
+//		ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
+//		CpuBuss cpuBuss = CpuBuss.getInstance();
+		IoBuss ioBuss = IoBuss.getInstance();
+		int topOfStack = 0x1000;
+		int instructionBase = 0X0100;
+		
+		byte[] instructions = new byte[] {(byte) 0xDD, (byte) 0xE1};
+		byte[] values = new byte[] {(byte) 0x34, (byte) 0x12};
+		ioBuss.writeDMA(instructionBase, instructions);
+		ioBuss.writeDMA(topOfStack, values);
+		wrs.setStackPointer(topOfStack);
+		
+		wrs.setProgramCounter(instructionBase);
+		
+		cpu.executeInstruction(wrs.getProgramCounter());
+		
+		int ans = wrs.getIX();
+		
+		System.out.printf("IX -> %04X%n", ans);
+		
+		
+		
+	}//checkPOP
 
 	private static void checkADDIX() {
 		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
@@ -68,7 +96,7 @@ public class ZZ {
 		ioBuss.writeDMA(valueBase, values);
 		wrs.setProgramCounter(instructionBase);
 		wrs.setIX(valueBase);
-		
+
 		for (int i = 0; i < values.length; i++) {
 			wrs.setAcc((byte) 0XE6);
 
