@@ -27,10 +27,7 @@ public class InstructionCB1 {
 	// Register[] registers = new Register[] { Z80.Register.BC, Z80.Register.DE, Z80.Register.SP };
 	// String message;
 
-	String sSource;
-	byte source, result;
-	String flags, message;
-	boolean sign, zero, halfCarry, overflow, parity, nFlag, carry;
+//	boolean sign, zero, halfCarry, overflow, parity, nFlag, carry;
 	HashMap<Byte, FileFlag> mapRLC = new HashMap<>();
 	HashMap<Byte, FileFlag> mapRLcy = new HashMap<>();
 	HashMap<Byte, FileFlag> mapRLnc = new HashMap<>();
@@ -43,6 +40,10 @@ public class InstructionCB1 {
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
+		String sSource;
+		byte source, result;
+		boolean sign, zero, halfCarry, overflow, parity, nFlag, carry;
+	String flags ;
 		try {
 			InputStream inputStream = this.getClass().getResourceAsStream("/RotateLeftOriginal.txt");
 			// InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
@@ -107,13 +108,13 @@ public class InstructionCB1 {
 				(byte) 0X06, (byte) 0X07 };
 
 		wrs.setDoubleReg(Z80.Register.HL, hlRegisterValue); // (HL) - m
-		
+
 		Collection<FileFlag> valuesRLC = mapRLC.values();
-		
+
 		for (int r = 0; r < 8; r++) {
 			thisRegister = Z80.singleRegisters[r];
 			loadInstructionCB(instruction2[r]);
-			
+
 			wrs.setProgramCounter(instructioBase);
 			for (FileFlag ff : valuesRLC) {
 				wrs.setReg(thisRegister, ff.getSource());
@@ -125,12 +126,11 @@ public class InstructionCB1 {
 				assertThat("RLC parity :" + ff.getSource(), ff.parity, equalTo(ccr.isPvFlagSet()));
 				assertThat("RLC nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
 				assertThat("RLC carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
-			} // for each result set		
-//			System.out.printf("index = %d, Register = %s%n", r,thisRegister);
+			} // for each result set
+			// System.out.printf("index = %d, Register = %s%n", r,thisRegister);
 		} // for each register
 
 	}// testRLC_file
-	
 
 	@Test
 	public void testRLnc_file() {
@@ -138,16 +138,16 @@ public class InstructionCB1 {
 				(byte) 0X16, (byte) 0X17 };
 
 		wrs.setDoubleReg(Z80.Register.HL, hlRegisterValue); // (HL) - m
-		
+
 		Collection<FileFlag> valuesRLnc = mapRLnc.values();
-		
+
 		for (int r = 0; r < 8; r++) {
 			thisRegister = Z80.singleRegisters[r];
 			loadInstructionCB(instruction2[r]);
-			
+
 			wrs.setProgramCounter(instructioBase);
 			for (FileFlag ff : valuesRLnc) {
-//				 System.out.printf("source %02X <-> result %02X%n", ff.getSource(),ff.getResult());
+				// System.out.printf("source %02X <-> result %02X%n", ff.getSource(),ff.getResult());
 				wrs.setReg(thisRegister, ff.getSource());
 				ccr.setCarryFlag(false);
 				cpu.executeInstruction(wrs.getProgramCounter());
@@ -158,12 +158,11 @@ public class InstructionCB1 {
 				assertThat("RL cy = 0 parity :" + ff.getSource() + thisRegister, ff.parity, equalTo(ccr.isPvFlagSet()));
 				assertThat("RL cy = 0 nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
 				assertThat("RL cy = 0 carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
-			} // for each result set		
-//			System.out.printf("index = %d, Register = %s%n", r,thisRegister);
+			} // for each result set
+			// System.out.printf("index = %d, Register = %s%n", r,thisRegister);
 		} // for each register
 
 	}// testRLnc_file
-
 
 	@Test
 	public void testRLcy_file() {
@@ -171,16 +170,16 @@ public class InstructionCB1 {
 				(byte) 0X16, (byte) 0X17 };
 
 		wrs.setDoubleReg(Z80.Register.HL, hlRegisterValue); // (HL) - m
-		
+
 		Collection<FileFlag> valuesRLcy = mapRLcy.values();
-		
+
 		for (int r = 0; r < 8; r++) {
 			thisRegister = Z80.singleRegisters[r];
 			loadInstructionCB(instruction2[r]);
-			
+
 			wrs.setProgramCounter(instructioBase);
 			for (FileFlag ff : valuesRLcy) {
-//				 System.out.printf("source %02X <-> result %02X%n", ff.getSource(),ff.getResult());
+				// System.out.printf("source %02X <-> result %02X%n", ff.getSource(),ff.getResult());
 				wrs.setReg(thisRegister, ff.getSource());
 				ccr.setCarryFlag(true);
 				cpu.executeInstruction(wrs.getProgramCounter());
@@ -191,13 +190,11 @@ public class InstructionCB1 {
 				assertThat("RL cy = 1 parity :" + ff.getSource() + thisRegister, ff.parity, equalTo(ccr.isPvFlagSet()));
 				assertThat("RL cy = 1 nFlag :" + ff.getSource(), ff.nFlag, equalTo(ccr.isNFlagSet()));
 				assertThat("RL cy = 1 carry :" + ff.getSource(), ff.carry, equalTo(ccr.isCarryFlagSet()));
-			} // for each result set		
-//			System.out.printf("index = %d, Register = %s%n", r,thisRegister);
+			} // for each result set
+			// System.out.printf("index = %d, Register = %s%n", r,thisRegister);
 		} // for each register
 
 	}// testRLcy_file
-
-
 
 	////////////////////////////////////////////////////////////////////////
 	private byte getValue(String value) {
@@ -217,34 +214,34 @@ public class InstructionCB1 {
 	////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////
 
-//	class FileFlag {
-//		public boolean sign, zero, halfCarry, parity, nFlag, carry;
-//		private byte source, result;
-//
-//		public FileFlag(byte source, byte result) {
-//			this.source = source;
-//			this.result = result;
-//		}// Constructor
-//
-//		public FileFlag(byte source, byte result, boolean sign, boolean zero, boolean halfCarry, boolean parity,
-//				boolean nFlag, boolean carry) {
-//			this.source = source;
-//			this.result = result;
-//			this.sign = sign;
-//			this.zero = zero;
-//			this.halfCarry = halfCarry;
-//			this.parity = parity;
-//			this.nFlag = nFlag;
-//			this.carry = carry;
-//		}// Constructor
-//
-//		public byte getSource() {
-//			return this.source;
-//		}// getSource
-//
-//		public byte getResult() {
-//			return this.result;
-//		}// getSource
-//	}// FileFlag
+	// class FileFlag {
+	// public boolean sign, zero, halfCarry, parity, nFlag, carry;
+	// private byte source, result;
+	//
+	// public FileFlag(byte source, byte result) {
+	// this.source = source;
+	// this.result = result;
+	// }// Constructor
+	//
+	// public FileFlag(byte source, byte result, boolean sign, boolean zero, boolean halfCarry, boolean parity,
+	// boolean nFlag, boolean carry) {
+	// this.source = source;
+	// this.result = result;
+	// this.sign = sign;
+	// this.zero = zero;
+	// this.halfCarry = halfCarry;
+	// this.parity = parity;
+	// this.nFlag = nFlag;
+	// this.carry = carry;
+	// }// Constructor
+	//
+	// public byte getSource() {
+	// return this.source;
+	// }// getSource
+	//
+	// public byte getResult() {
+	// return this.result;
+	// }// getSource
+	// }// FileFlag
 
 }// class InstructionCB1

@@ -9,7 +9,8 @@ import org.junit.runners.Suite.SuiteClasses;
 				InstructionDD_IXY2.class,
 				InstructionDD_IXY3.class,
 				InstructionDD_IXY4.class,
-				InstructionDD_IXY5.class})
+				InstructionDD_IXY5.class,
+				InstructionDDCB.class})
 
 public class AllTestsDD_IXY {
 

@@ -45,9 +45,17 @@ public class ZZ {
 		// test2RandomArrays();
 		// checkDisplacement();
 		// checkADDIX();
-		checkPOP();
+//		checkPOP();
+		simpleLoop();
 
 	}// main
+	
+	private static void simpleLoop() {
+		//for (int i = 0; i <0X100; i++) {
+			for (int i = -128; i < 128; i++) {
+			System.out.printf("i -> %1$02X  [%1$d], byte - > %2$02X %n",	i,(byte) i);
+		}//for
+	}//simpleLoop
 
 	private static void  checkPOP() {
 		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
