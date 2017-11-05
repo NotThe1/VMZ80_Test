@@ -93,7 +93,7 @@ public class InstructionDD_IXY5 {
 		wrs.setStackPointer(0x0100);
 		cpuBuss.writeWord(0x0100, (byte) 0x90, (byte) 0x48);
 		cpu.executeInstruction(wrs.getProgramCounter());
-		System.out.printf("IX -> %04X%n", wrs.getIX());
+//		System.out.printf("IX -> %04X%n", wrs.getIX());
 
 ////////////////////////////////////
 		

@@ -18,7 +18,7 @@ import hardware.WorkingRegisterSet;
 import memory.CpuBuss;
 import memory.IoBuss;
 
-public class InstructionDDCB {
+public class InstructionDD_CB1 {
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
 	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();

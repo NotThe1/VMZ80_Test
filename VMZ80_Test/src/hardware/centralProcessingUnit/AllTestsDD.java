@@ -10,8 +10,11 @@ import org.junit.runners.Suite.SuiteClasses;
 				InstructionDD_IXY3.class,
 				InstructionDD_IXY4.class,
 				InstructionDD_IXY5.class,
-				InstructionDDCB.class})
+				InstructionDD_CB1.class,
+				InstructionDD_CB2.class,
+				InstructionDD_CB3.class,
+				InstructionDD_CB4.class})
 
-public class AllTestsDD_IXY {
+public class AllTestsDD {
 
 }
