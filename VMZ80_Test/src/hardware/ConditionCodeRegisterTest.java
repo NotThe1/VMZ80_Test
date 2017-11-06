@@ -17,6 +17,22 @@ public class ConditionCodeRegisterTest {
 		assertThat("keep imports", 1, equalTo(1));
 		ccr = ConditionCodeRegister.getInstance();
 	}//setUp
+	
+	@Test
+	public void testConditionCode() {
+		byte flag = 0b0000_0000;
+		ccr.clearAllCodes();
+		assertThat(" 01 ",flag,equalTo(ccr.getConditionCode()));
+		
+		flag = (byte) 0b1101_0111;
+		ccr.setConditionCode((byte) 0xFF);
+		assertThat(" 02 ",flag,equalTo(ccr.getConditionCode()));
+		
+		flag = (byte) 0b0000_0000;
+		ccr.setConditionCode((byte) 0x00);
+		assertThat(" 02 ",flag,equalTo(ccr.getConditionCode()));
+				
+	}//testConditionCode
 
 	@Test
 	public void testOffOn() {
