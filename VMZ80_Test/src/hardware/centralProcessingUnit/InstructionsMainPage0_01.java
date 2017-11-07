@@ -67,7 +67,7 @@ public class InstructionsMainPage0_01 {
 			} // for set values
 			assertThat(" PC ", instructionBase + instructions.length, equalTo(wrs.getProgramCounter()));
 
-		} // outer for
+		} //  for value 
 
 	}// testLDrrnn
 
