@@ -13,14 +13,15 @@ import codeSupport.Z80.Register;
 import hardware.CentralProcessingUnit;
 import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
+import memory.CpuBuss;
 import memory.IoBuss;
 
-public class InstructionsMainPage0 {
+public class InstructionsMainPage0_01 {
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
 	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
 	IoBuss ioBuss = IoBuss.getInstance();
-
+	CpuBuss cpuBuss = CpuBuss.getInstance();
 	int testCount;
 	int instructionBase = 0X1000;
 	int valueBase = 0X2000; // (HL) - m
@@ -34,14 +35,49 @@ public class InstructionsMainPage0 {
 		assertThat("keep imports", 1, equalTo(1));
 	}// setUp
 
+	@Test
+	public void testLDrrnn() {
+		/* @formatter:off */
+		byte[] instructions = new byte[] {(byte) 0x01,(byte) 00,(byte) 00,
+				                          (byte) 0x11,(byte) 00,(byte) 00,
+				                          (byte) 0x21,(byte) 00,(byte) 00,
+				                          (byte) 0x31,(byte) 00,(byte) 00,};
+         /* @formatter:on  */
+		int instructionCount = instructions.length / 3;
+
+		byte[] valueArray = new byte[] { (byte) 00, (byte) 00 };
+		byte hi, lo;
+		for (int value = 0; value < 65535; value++) {
+			hi = (byte) ((value >> 8) & Z80.BYTE_MASK);
+			lo = (byte) (value & Z80.BYTE_MASK);
+			valueArray[0] = lo;
+			valueArray[1] = hi;
+			// put nn into the instructions LD rr,nn
+			for (int i = 0; i < instructionCount; i++) {
+				instructions[(i * 3) + 1] = lo;
+				instructions[(i * 3) + 2] = hi;
+			} // for
+
+			loadInstructions(instructions);
+
+			for (Register r : Z80.doubleRegisters1) {
+				cpu.executeInstruction(wrs.getProgramCounter());
+				assertThat(r.toString(), value, equalTo(wrs.getDoubleReg(r)));
+				// System.out.printf("r -> %s, value -> %04X%n",r,wrs.getDoubleReg(r));
+			} // for set values
+			assertThat(" PC ", instructionBase + instructions.length, equalTo(wrs.getProgramCounter()));
+
+		} // outer for
+
+	}// testLDrrnn
 
 	@Test
 	public void testJR_Conditional_Carry() {
-		byte codeSet = 0x38;	// Z
-		byte codeReset = 0x30;	// NC
+		byte codeSet = 0x38; // Z
+		byte codeReset = 0x30; // NC
 
-		byte[] instructions = new byte[] { codeSet, (byte) 0x00,  codeReset, (byte) 0x00};
-		
+		byte[] instructions = new byte[] { codeSet, (byte) 0x00, codeReset, (byte) 0x00 };
+
 		ioBuss.writeDMA(instructionBase, instructions);
 
 		byte displacement;
@@ -52,26 +88,26 @@ public class InstructionsMainPage0 {
 			ioBuss.write(instructionBase + 5, displacement);
 			ioBuss.write(instructionBase + 7, displacement);
 			ccr.clearAllCodes();
-			
+
 			wrs.setProgramCounter(instructionBase);
 			ccr.setCarryFlag(true);
 			cpu.executeInstruction(wrs.getProgramCounter());
 			assertThat("1: i -> " + i, instructionBase + i + 2, equalTo(wrs.getProgramCounter()));
-			
+
 			wrs.setProgramCounter(instructionBase);
 			ccr.setCarryFlag(false);
 			cpu.executeInstruction(wrs.getProgramCounter());
-			assertThat("2: i -> " + i, instructionBase  + 2, equalTo(wrs.getProgramCounter()));
-			
+			assertThat("2: i -> " + i, instructionBase + 2, equalTo(wrs.getProgramCounter()));
+
 			ccr.clearAllCodes();
 			ccr.setCarryFlag(false);
 			cpu.executeInstruction(wrs.getProgramCounter());
-			assertThat("3: i -> " + i, instructionBase + i  + 4, equalTo(wrs.getProgramCounter()));
-			
-			wrs.setProgramCounter(instructionBase +2);
+			assertThat("3: i -> " + i, instructionBase + i + 4, equalTo(wrs.getProgramCounter()));
+
+			wrs.setProgramCounter(instructionBase + 2);
 			ccr.setCarryFlag(true);
 			cpu.executeInstruction(wrs.getProgramCounter());
-			assertThat("4: i -> " + i, instructionBase   + 4, equalTo(wrs.getProgramCounter()));
+			assertThat("4: i -> " + i, instructionBase + 4, equalTo(wrs.getProgramCounter()));
 
 			// System.out.printf("i = %02X, net address: %04X%n",i, instructionBase + i+2);
 		} // for
@@ -80,11 +116,11 @@ public class InstructionsMainPage0 {
 
 	@Test
 	public void testJR_Conditional_Zero() {
-		byte codeSet = 0x28;	// Z
-		byte codeReset = 0x20;	// NZ
+		byte codeSet = 0x28; // Z
+		byte codeReset = 0x20; // NZ
 
-		byte[] instructions = new byte[] { codeSet, (byte) 0x00,  codeReset, (byte) 0x00};
-		
+		byte[] instructions = new byte[] { codeSet, (byte) 0x00, codeReset, (byte) 0x00 };
+
 		ioBuss.writeDMA(instructionBase, instructions);
 
 		byte displacement;
@@ -95,26 +131,26 @@ public class InstructionsMainPage0 {
 			ioBuss.write(instructionBase + 5, displacement);
 			ioBuss.write(instructionBase + 7, displacement);
 			ccr.clearAllCodes();
-			
+
 			wrs.setProgramCounter(instructionBase);
 			ccr.setZeroFlag(true);
 			cpu.executeInstruction(wrs.getProgramCounter());
 			assertThat("1: i -> " + i, instructionBase + i + 2, equalTo(wrs.getProgramCounter()));
-			
+
 			wrs.setProgramCounter(instructionBase);
 			ccr.setZeroFlag(false);
 			cpu.executeInstruction(wrs.getProgramCounter());
-			assertThat("2: i -> " + i, instructionBase  + 2, equalTo(wrs.getProgramCounter()));
-			
+			assertThat("2: i -> " + i, instructionBase + 2, equalTo(wrs.getProgramCounter()));
+
 			ccr.clearAllCodes();
 			ccr.setZeroFlag(false);
 			cpu.executeInstruction(wrs.getProgramCounter());
-			assertThat("3: i -> " + i, instructionBase + i  + 4, equalTo(wrs.getProgramCounter()));
-			
-			wrs.setProgramCounter(instructionBase +2);
+			assertThat("3: i -> " + i, instructionBase + i + 4, equalTo(wrs.getProgramCounter()));
+
+			wrs.setProgramCounter(instructionBase + 2);
 			ccr.setZeroFlag(true);
 			cpu.executeInstruction(wrs.getProgramCounter());
-			assertThat("4: i -> " + i, instructionBase   + 4, equalTo(wrs.getProgramCounter()));
+			assertThat("4: i -> " + i, instructionBase + 4, equalTo(wrs.getProgramCounter()));
 
 			// System.out.printf("i = %02X, net address: %04X%n",i, instructionBase + i+2);
 		} // for
@@ -216,6 +252,14 @@ public class InstructionsMainPage0 {
 
 	/////////////////////////////////////////
 
+	private void loadInstructions(byte[] codes) {
+		int instructionLocation = instructionBase;
+		for (byte code : codes) {
+			ioBuss.write(instructionLocation++, code);
+		} // for codes
+		wrs.setProgramCounter(instructionBase);
+	}// loadInstructions
+
 	private void loadInstructions(int repeatCount, byte... codes) {
 		int instructionLocation = instructionBase;
 		for (int i = 0; i < repeatCount; i++) {
@@ -224,7 +268,7 @@ public class InstructionsMainPage0 {
 			} // for codes
 		} // for
 		wrs.setProgramCounter(instructionBase);
-	}// loadInstructionCB
+	}// loadInstructions
 
 	private void displayArray(String name, byte[] values) {
 		System.out.print(name + " :");
