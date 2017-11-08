@@ -2,8 +2,11 @@ package hardware.centralProcessingUnit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
+import java.io.InputStream;
 import java.util.Random;
+import java.util.Scanner;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,11 +32,114 @@ public class InstructionsMainPage0_02 {
 	Random random = new Random();
 	String message;
 	boolean sign, zero, halfCarry, parity, overflow, nFlag, carry;
+	byte arg1, arg2, sum, diff, ans;
+	String flags, sArg1;
 
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
 	}// setUp
+
+	@Test
+	public void testLD_r_n() {// LD r,n
+		Register reg;
+		byte[] instructions = new byte[] { (byte) 0x06, (byte) 0x0E, (byte) 0x16, (byte) 0x1E, (byte) 0x26, (byte) 0x2E,
+				(byte) 0x36, (byte) 0x3E };
+
+		int limit = 0x0100;
+		byte value;
+		for (int r = 0; r < Z80.singleRegisters.length; r++) {
+			loadInstructions(limit, instructions[r]);
+			for (int v = 0; v < limit; v++) {
+				value = (byte) v;
+				reg = Z80.singleRegisters[r];
+				if (reg.equals(Register.M)) {
+					wrs.setDoubleReg(Register.HL, valueBase);
+					ioBuss.write(valueBase, (byte) 0x00);
+				} // reg
+				message = String.format("Reg = %s, value = %02X", reg.toString(), v);
+//				System.out.println(message);
+				;
+				cpu.executeInstruction(wrs.getProgramCounter());
+				if (reg.equals(Register.M)) {
+					wrs.setDoubleReg(Register.HL, valueBase);
+					assertThat("ioBuss " + message, value, equalTo(ioBuss.read(valueBase)));
+				} // reg
+
+				assertThat(message, value, equalTo(wrs.getReg(reg)));
+			} // for value
+		} // for register
+	}//testLD_r_n
+
+	@Test
+	public void testINC_DED_r() {
+		byte[] instructions = new byte[] { (byte) 0x04, (byte) 0x0C, (byte) 0x14, (byte) 0x1C, (byte) 0x24, (byte) 0x2C,
+				(byte) 0x34, (byte) 0x3C };
+		testINC_DEC_r("INC", "/IncOriginal.txt", instructions);
+
+		instructions = new byte[] { (byte) 0x05, (byte) 0x0D, (byte) 0x15, (byte) 0x1D, (byte) 0x25, (byte) 0x2D,
+				(byte) 0x35, (byte) 0x3D };
+		testINC_DEC_r("DEC", "/DecOrignal.txt", instructions);
+	}// testINC_DED_r
+
+	public void testINC_DEC_r(String operation, String fileName, byte[] instructions) {
+		loadInstructions(instructions);
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream(fileName);
+			// InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()) {
+				sArg1 = scanner.next();
+				if (sArg1.equals(";")) {
+					scanner.nextLine();
+					continue;
+				} // if - skip line
+				arg1 = getValue(sArg1);
+				sum = getValue(scanner.next());
+				flags = scanner.next();
+
+				sign = flags.subSequence(0, 1).equals("1") ? true : false;
+				zero = flags.subSequence(1, 2).equals("1") ? true : false;
+				halfCarry = flags.subSequence(2, 3).equals("1") ? true : false;
+				overflow = flags.subSequence(3, 4).equals("1") ? true : false;
+				nFlag = flags.subSequence(4, 5).equals("1") ? true : false;
+				carry = flags.subSequence(5, 6).equals("1") ? true : false;
+
+				wrs.setProgramCounter(instructionBase);
+
+				for (Register reg : Z80.singleRegisters) {
+					if (reg.equals(Register.M)) {
+						wrs.setDoubleReg(Register.HL, valueBase);
+						ioBuss.write(valueBase, arg1);
+					} else {
+						wrs.setReg(reg, arg1);
+					} // if INC (m)
+					message = String.format("file %s(%s) -> %d  = %02X", operation, reg.toString(), arg1, sum);
+					// System.out.println(message);
+					cpu.executeInstruction(wrs.getProgramCounter());
+					if (reg.equals(Register.M)) {
+						assertThat("ans: " + message, sum, equalTo(ioBuss.read(valueBase)));
+					} // if INC (m)
+					assertThat("ans: " + message, sum, equalTo(wrs.getReg(reg)));
+					assertThat("sign: " + message, sign, equalTo(ccr.isSignFlagSet()));
+					assertThat("zero: " + message, zero, equalTo(ccr.isZeroFlagSet()));
+					assertThat("halfCarry: " + message, halfCarry, equalTo(ccr.isHFlagSet()));
+					assertThat("overFlow: " + message, overflow, equalTo(ccr.isPvFlagSet()));
+					assertThat("nFlag: " + message, nFlag, equalTo(ccr.isNFlagSet()));
+				} // for reg - each register
+
+				// System.out.printf("%02X %02X %s ",arg1,sum,flags);
+				// System.out.printf(" %s %s %s %s %s %s %n", sign,zero,halfCarry,overflow,nFlag,carry);
+			} // while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		} // try
+
+	}// testIncr
 
 	@Test
 	public void testDECrr() {
@@ -48,15 +154,15 @@ public class InstructionsMainPage0_02 {
 			for (Register reg : Z80.doubleRegisters1) {
 				wrs.setDoubleReg(reg, value);
 				cpu.executeInstruction(wrs.getProgramCounter());
-//				 System.out.printf("reg -> %s, value -> %04X, ans ->%04X%n",reg,wrs.getDoubleReg(reg),ans);
+				// System.out.printf("reg -> %s, value -> %04X, ans ->%04X%n",reg,wrs.getDoubleReg(reg),ans);
 				assertThat(reg.toString(), ans, equalTo(wrs.getDoubleReg(reg)));
 			} // for set values
 			assertThat(" PC ", instructionBase + instructions.length, equalTo(wrs.getProgramCounter()));
-			
-		}// for value
+
+		} // for value
 	} // testDECrr
 
-	 @Test
+	@Test
 	public void testINCrr() {
 	/* @formatter:off */
 	byte[] instructions = new byte[] {(byte) 0x03, (byte) 0x13,(byte) 0x23, (byte) 0x33};
@@ -77,7 +183,7 @@ public class InstructionsMainPage0_02 {
 
 	}// testINCrr
 
-	 @Test
+	@Test
 	public void testLD_Acc_inn() {// LD (nn),A
 		byte value;
 		int valueLocation;
@@ -105,7 +211,7 @@ public class InstructionsMainPage0_02 {
 		} // for value
 	}// testLD_Acc_inn
 
-	 @Test
+	@Test
 	public void testLD_inn_Acc() {// LD A,(nn)
 		byte value;
 		int valueLocation;
@@ -166,7 +272,7 @@ public class InstructionsMainPage0_02 {
 
 	}// testLD_HL_inn
 
-	 @Test
+	@Test
 	public void testLD_acc_iRR() {// LD A,(rr)
 		byte[] instructions = new byte[] { (byte) 0x0A, (byte) 0x1A };
 		loadInstructions(instructions);
@@ -275,5 +381,20 @@ public class InstructionsMainPage0_02 {
 		} // for codes
 		wrs.setProgramCounter(instructionBase);
 	}// loadInstructions
+
+	private void loadInstructions(int limit, byte opCode) {
+		int instructionLocation = instructionBase;
+		for (int i = 0; i < limit; i++) {
+			ioBuss.write(instructionLocation++, opCode);
+			ioBuss.write(instructionLocation++, (byte) i);
+		} // for
+		wrs.setProgramCounter(instructionBase);
+	}// loadInstructions
+
+	private byte getValue(String value) {
+		int tempInt;
+		tempInt = Integer.valueOf(value, 16);
+		return (byte) tempInt;
+	}// getValue
 
 }// class InstructionsMainPage0_02

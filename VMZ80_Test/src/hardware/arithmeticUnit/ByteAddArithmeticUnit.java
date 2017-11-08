@@ -175,7 +175,7 @@ public class ByteAddArithmeticUnit {
 				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
 				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
 				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-//				assertThat("overFlow: " +  message,overflow,equalTo(adder.hasOverflow()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
 //				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));			
 			}//while
