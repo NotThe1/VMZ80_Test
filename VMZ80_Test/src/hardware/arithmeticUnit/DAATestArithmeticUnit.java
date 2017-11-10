@@ -11,14 +11,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 import hardware.ArithmeticUnit;
+import hardware.ConditionCodeRegister;
 
 public class DAATestArithmeticUnit {
 	ArithmeticUnit au = ArithmeticUnit.getInstance();
-
-	byte arg1,arg2,diff,sum,daa,ans;
-	boolean CY,HC,CY1,HC1;
-	int intDiff,intSum;
+	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
+	byte arg1, arg2, result, daaResult, ans;
+	boolean CY, HC, CY1, HC1;
+	int intDiff, intSum;
 	String message;
+
+	boolean sign, zero, halfCarry, parity, nFlag, carry;
+	boolean cy, hc;
+	String flags, flagsDAA, sArg1;
+
 	@Before
 	public void setUp() throws Exception {
 		assertThat("keep imports", 1, equalTo(1));
@@ -26,97 +32,100 @@ public class DAATestArithmeticUnit {
 	}// setUp
 
 	@Test
-	public void testAfterSUB() {
+	public void testDAA() {
+		testDAA("ADD");
+		testDAA("SUB");
+	}
+
+	// @Test
+	public void testDAA(String priorOperation) {
+		// assume its ADD
+		String fileName = "/daaAddRevision01.txt";
+		String operator = "+";
+		if (priorOperation.equals("SUB")) {
+			fileName = "/daaSubRevision01.txt";
+			operator = "-";
+		} // if prior operation
+
 		try {
-			InputStream inputStream = this.getClass().getResourceAsStream("/daaSubOriginal.txt");
-//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			InputStream inputStream = this.getClass().getResourceAsStream(fileName);
+			// InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
 			Scanner scanner = new Scanner(inputStream);
 			scanner.nextLine();
-			while (scanner.hasNextLine()){
-				arg1 = getValue(scanner.next());
-				arg2 = getValue(scanner.next());
-				
-				diff = getValue(scanner.next());
-				CY= getState(scanner.nextInt());
-				HC= getState(scanner.nextInt());
-				daa = getValue(scanner.next());
+			while (scanner.hasNextLine()) {
+				sArg1 = scanner.next();
+				if (sArg1.equals(";")) {
+					scanner.nextLine();
+					continue;
+				} // if - skip the line
 
-				CY1= getState(scanner.nextInt());
-				HC1= getState(scanner.nextInt());
-				intDiff = scanner.nextInt();
-				
-//				System.out.printf("%d  %d %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
-//				System.out.printf("%02X  %02X %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
-				
-				
-				message = String.format("SUB -> %d - %d = %02X", arg1,arg2,diff);
-				ans = au.sub(arg1, arg2);
-				assertThat("ans: " + message,diff,equalTo(au.sub(arg1, arg2)));
-				assertThat("CY: " +  message,CY,equalTo(au.isCarryFlagSet()));
-				assertThat("HC: " +  message,HC,equalTo(au.isHCarryFlagSet()));
-				assertThat("DAA: " +  message,daa,equalTo(au.daa(ans, true, CY, HC)));
-				assertThat("CY1: " +  message,CY1,equalTo(au.isCarryFlagSet()));
-				assertThat("HC1: " +  message,HC1,equalTo(au.isHCarryFlagSet()));
-									
-			}//while
-			scanner.close();
-			inputStream.close();
-		} catch (Exception e) {
-			fail("testAfterSUB");
-	//		System.out.printf("%d  %d %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
-		}
-	}//testAftrSUB
-	
-	@Test
-	public void testAfterADD() {
-		try {
-			InputStream inputStream = this.getClass().getResourceAsStream("/daaAddOriginal.txt");
-//			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
-			Scanner scanner = new Scanner(inputStream);
-			scanner.nextLine();
-			while (scanner.hasNextLine()){
-				arg1 = getValue(scanner.next());
+				arg1 = getValue(sArg1);
 				arg2 = getValue(scanner.next());
-				
-				sum = getValue(scanner.next());
-				CY= getState(scanner.nextInt());
-				HC= getState(scanner.nextInt());
-				daa = getValue(scanner.next());
 
-				CY1= getState(scanner.nextInt());
-				HC1= getState(scanner.nextInt());
-//				intSum = scanner.nextInt();
-				
-//				System.out.printf("%d  %d %2X %s %s %02X %s %s %d%n",arg1,arg2,sum,CY,HC,daa,CY1,HC1,intSum);
-//				System.out.printf("%02X  %02X %2X %s %s %02X %s %s %d%n",arg1,arg2,sum,CY,HC,daa,CY1,HC1,intSum);
-				
-				message = String.format("ADD -> %d + %d = %02X", arg1,arg2,sum);
-				ans = au.add(arg1, arg2);
-				assertThat("ans: " + message,sum,equalTo(au.add(arg1, arg2)));
-				assertThat("CY: " +  message,CY,equalTo(au.isCarryFlagSet()));
-				assertThat("HC: " +  message,HC,equalTo(au.isHCarryFlagSet()));
-				assertThat("DAA: " +  message,daa,equalTo(au.daa(ans, false, CY, HC)));
-				assertThat("CY1: " +  message,CY1,equalTo(au.isCarryFlagSet()));
-				assertThat("HC1: " +  message,HC1,equalTo(au.isHCarryFlagSet()));
-							
-			}//while
+				result = getValue(scanner.next());
+				flags = scanner.next();
+
+				// sign = flags.subSequence(0, 1).equals("1") ? true : false;
+				// zero = flags.subSequence(1, 2).equals("1") ? true : false;
+				halfCarry = flags.subSequence(2, 3).equals("1") ? true : false;
+				// parity = flags.subSequence(3, 4).equals("1") ? true : false;
+				nFlag = flags.subSequence(4, 5).equals("1") ? true : false;
+				carry = flags.subSequence(5, 6).equals("1") ? true : false;
+
+				daaResult = getValue(scanner.next());
+
+				flagsDAA = scanner.next();
+
+				message = String.format("%02X %s %02X = %02X", arg1, operator, arg2, result);
+				// System.out.println(message);
+				// // prior operation
+				if (priorOperation.equals("ADD")) {
+					assertThat("ans: " + message, result, equalTo(au.add(arg1, arg2)));
+				} else {
+					assertThat("ans: " + message, result, equalTo(au.sub(arg1, arg2)));
+				} // if - prior operation
+				assertThat("CY: " + message, carry, equalTo(au.isCarryFlagSet()));
+				assertThat("HC: " + message, halfCarry, equalTo(au.isHCarryFlagSet()));
+
+				// DAA
+				ccr.setCarryFlag(carry);
+				ccr.setHFlag(halfCarry);
+				ccr.setNFlag(nFlag);
+
+				sign = flagsDAA.subSequence(0, 1).equals("1") ? true : false;
+				zero = flagsDAA.subSequence(1, 2).equals("1") ? true : false;
+				halfCarry = flagsDAA.subSequence(2, 3).equals("1") ? true : false;
+				parity = flagsDAA.subSequence(3, 4).equals("1") ? true : false;
+				nFlag = flagsDAA.subSequence(4, 5).equals("1") ? true : false;
+				carry = flagsDAA.subSequence(5, 6).equals("1") ? true : false;
+
+				message = String.format("%s %02X --daa--> %02X", priorOperation, result, daaResult);
+//				System.out.println(message);
+
+				assertThat("ans: " + message, daaResult,
+						equalTo(au.daa(result, ccr.isNFlagSet(), ccr.isCarryFlagSet(), ccr.isHFlagSet())));
+				assertThat("sign: " + message, sign, equalTo(au.isSignFlagSet()));
+				assertThat("zero: " + message, zero, equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " + message, halfCarry, equalTo(au.isHCarryFlagSet()));
+				assertThat("parity: " + message, parity, equalTo(au.isParityFlagSet()));
+
+				assertThat("carry: " + message, carry, equalTo(au.isCarryFlagSet()));
+
+			} // while
 			scanner.close();
 			inputStream.close();
 		} catch (Exception e) {
 			fail("testAfterADD");
-//			System.out.printf("%d  %d %2X %s %s %02X %s %s %d%n",arg1,arg2,sum,CY,HC,daa,CY1,HC1,intSum);
-		}//try
-	}//testAftrADD
-	
-	
-	private boolean getState(int value){
-		return value==1?true:false;
-	}//getState
+		} // try
+	}// testDAA
 
-	private byte getValue(String value){
+	///////////////////////////////////////////
+
+
+	private byte getValue(String value) {
 		int tempInt;
-		tempInt = Integer.valueOf(value,16);
-		return(byte)tempInt;
-	}//getValue
+		tempInt = Integer.valueOf(value, 16);
+		return (byte) tempInt;
+	}// getValue
 
-}//class AdderDAATest
+}// class AdderDAATest
