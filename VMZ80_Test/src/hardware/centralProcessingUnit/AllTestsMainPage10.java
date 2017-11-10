@@ -5,9 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ InstructionsMainPage0_01.class,
-				InstructionsMainPage0_02.class,
-				InstructionsMainPage0_03.class})
-public class AllTestsMainPage0 {
+@SuiteClasses({ InstructionsMainPage10_01.class })
+public class AllTestsMainPage10 {
 
 }

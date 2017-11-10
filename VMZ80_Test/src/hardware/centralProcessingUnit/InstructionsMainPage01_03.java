@@ -20,7 +20,7 @@ import hardware.WorkingRegisterSet;
 import memory.CpuBuss;
 import memory.IoBuss;
 
-public class InstructionsMainPage0_03 {
+public class InstructionsMainPage01_03 {
 
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
@@ -71,7 +71,7 @@ public class InstructionsMainPage0_03 {
 		assertThat("keep imports", 1, equalTo(1));
 		String sSource;
 		byte source, result;
-		boolean sign, zero, halfCarry,  parity, nFlag, carry;
+		boolean sign, zero, halfCarry, parity, nFlag, carry;
 		String flags;
 		try {
 			InputStream inputStream = this.getClass().getResourceAsStream(fileName);
@@ -166,7 +166,6 @@ public class InstructionsMainPage0_03 {
 		FileFlag ff;
 		for (int arg = 0; arg < 0x0100; arg++) {
 			ff = map.get((byte) arg);
-			// System.out.printf("arg -> %02X, arg1 -> %02X, result -> %02X%n",arg, ff.getSource(),ff.getResult());
 			message = String.format("%s %s: source = %02X,result = %02X", codeString, carryString, ff.getSource(),
 					ff.getResult());
 			ccr.setCarryFlag(carryIn);
@@ -180,6 +179,92 @@ public class InstructionsMainPage0_03 {
 		assertThat("PC :", instructionBase + 0x0100, equalTo(wrs.getProgramCounter()));
 	}// testRotateAcc
 
+	public void testCPL() {
+		Arrays.fill(instructions, (byte) 0x2F);
+		wrs.setProgramCounter(instructionBase);
+
+		try {
+			InputStream inputStream = this.getClass().getResourceAsStream("/LogicOriginal1");
+			// InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			Scanner scanner = new Scanner(inputStream);
+			scanner.nextLine(); // skip header
+			while (scanner.hasNextLine()) {
+				sArg1 = scanner.next();
+				if (sArg1.equals(";")) {
+					scanner.nextLine();
+					continue;
+				} // if - skip line
+				arg1 = getValue(sArg1);
+				sum = getValue(scanner.next());
+				flags = scanner.next();
+
+				// sign = flags.subSequence(0, 1).equals("1") ? true : false;
+				// zero = flags.subSequence(1, 2).equals("1") ? true : false;
+				halfCarry = flags.subSequence(2, 3).equals("1") ? true : false;
+				// overflow = flags.subSequence(3, 4).equals("1") ? true : false;
+				nFlag = flags.subSequence(4, 5).equals("1") ? true : false;
+				// carry = flags.subSequence(5, 6).equals("1") ? true : false;
+
+				message = String.format("CPL %02X -> %02X", arg1, sum);
+				// System.out.println(message);
+				wrs.setAcc(arg1);
+				cpu.executeInstruction(wrs.getProgramCounter());
+
+				assertThat("ans: " + message, sum, equalTo(wrs.getAcc()));
+				assertThat("halfCarry: " + message, halfCarry, equalTo(ccr.isHFlagSet()));
+				assertThat("nFlag: " + message, nFlag, equalTo(ccr.isNFlagSet()));
+
+				scanner.nextLine();
+			} // while
+			scanner.close();
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			fail(e.getMessage());
+		} // try
+
+	}// testCPL
+	
+	@Test
+	public void testSCF_CCF() {
+		//SCF
+		Arrays.fill(instructions, (byte) 0x37);
+		ioBuss.writeDMA(instructionBase, instructions);
+		wrs.setProgramCounter(instructionBase);
+		ccr.clearAllCodes();
+		assertThat("SCF 1",false,equalTo(ccr.isCarryFlagSet()));
+		cpu.executeInstruction(wrs.getProgramCounter());
+		assertThat("SCF 2",true,equalTo(ccr.isCarryFlagSet()));		
+		assertThat("SCF 3",false,equalTo(ccr.isHFlagSet()));		
+		assertThat("SCF 4",false,equalTo(ccr.isNFlagSet()));
+		
+
+		ccr.setConditionCode((byte) 0xFF);
+		cpu.executeInstruction(wrs.getProgramCounter());
+		assertThat("SCF 5",true,equalTo(ccr.isCarryFlagSet()));
+		assertThat("SCF 6",false,equalTo(ccr.isHFlagSet()));		
+		assertThat("SCF 7",false,equalTo(ccr.isNFlagSet()));
+		
+		//CCF
+		Arrays.fill(instructions, (byte) 0x3F);
+		ioBuss.writeDMA(instructionBase, instructions);
+		wrs.setProgramCounter(instructionBase);
+		boolean carryIn;
+		testCount = 0x0100;
+		ccr.setCarryFlag(true);
+		for ( int i = 0 ; i< testCount; i++) {
+			carryIn = random.nextBoolean();
+			ccr.setCarryFlag(carryIn);
+			assertThat("CCF 1",carryIn,equalTo(ccr.isCarryFlagSet()));
+			cpu.executeInstruction(wrs.getProgramCounter());
+			assertThat("CCF 2",!carryIn,equalTo(ccr.isCarryFlagSet()));
+			assertThat("CCF 3",carryIn,equalTo(ccr.isHFlagSet()));		
+			assertThat("CCF 3",false,equalTo(ccr.isNFlagSet()));
+
+		}//for testCount
+
+		
+	}//testSCF_CCF
 
 	////////////////////////////////////////////////////////////////////////
 	private byte getValue(String value) {
