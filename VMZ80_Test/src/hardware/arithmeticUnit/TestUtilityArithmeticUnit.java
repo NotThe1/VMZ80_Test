@@ -170,26 +170,26 @@ public class TestUtilityArithmeticUnit {
 	}// fixFlags
 
 	public void showFlags(ArithmeticUnit adder) {
-		String sign = adder.hasSign() ? "S" : "s";
-		String zero = adder.isZero() ? "Z" : "z";
-		String bit5 = adder.hasSign() ? "." : ".";
-		String half = adder.hasHalfCarry() ? "H" : "h";
-		String bit3 = adder.hasSign() ? "." : ".";
-		String PV = adder.hasParity() ? "P" : "p";
+		String sign = adder.isSignFlagSet() ? "S" : "s";
+		String zero = adder.isZeroFlagSet() ? "Z" : "z";
+		String bit5 = adder.isSignFlagSet() ? "." : ".";
+		String half = adder.isHCarryFlagSet() ? "H" : "h";
+		String bit3 = adder.isSignFlagSet() ? "." : ".";
+		String PV = adder.isParityFlagSet() ? "P" : "p";
 		String AS = adder.isNFlagSet() ? "N" : "n";
-		String carry = adder.hasCarry() ? "C" : "c";
+		String carry = adder.isCarryFlagSet() ? "C" : "c";
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFlags
 
 	public void showFlagsV(ArithmeticUnit adder) {
-		String sign = adder.hasSign() ? "S" : "s";
-		String zero = adder.isZero() ? "Z" : "z";
-		String bit5 = adder.hasSign() ? "." : ".";
-		String half = adder.hasHalfCarry() ? "H" : "h";
-		String bit3 = adder.hasSign() ? "." : ".";
-		String PV = adder.hasOverflow() ? "V" : "v";
+		String sign = adder.isSignFlagSet() ? "S" : "s";
+		String zero = adder.isZeroFlagSet() ? "Z" : "z";
+		String bit5 = adder.isSignFlagSet() ? "." : ".";
+		String half = adder.isHCarryFlagSet() ? "H" : "h";
+		String bit3 = adder.isSignFlagSet() ? "." : ".";
+		String PV = adder.isOverflowFlagSet() ? "V" : "v";
 		String AS = adder.isNFlagSet() ? "N" : "n";
-		String carry = adder.hasCarry() ? "C" : "c";
+		String carry = adder.isCarryFlagSet() ? "C" : "c";
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFlags
 

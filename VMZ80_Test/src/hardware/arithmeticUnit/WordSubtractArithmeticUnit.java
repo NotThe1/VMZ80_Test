@@ -62,12 +62,12 @@ public class WordSubtractArithmeticUnit {
 						
 				message = String.format("file SBC NC -> %s - %s = %s", sArg1,sArg2,sDiff);
 				assertThat("ans: " + message,diff,equalTo(au.subWordWithCarry(arg1, arg2,carryState)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 				
 				//---------------------------------------------------------------------------------
 				
@@ -89,12 +89,12 @@ public class WordSubtractArithmeticUnit {
 						
 				message = String.format("file SBC CY -> %s - %s = %s", sArg1,sArg2,sDiff);
 				assertThat("ans: " + message,diff,equalTo(au.subWordWithCarry(arg1, arg2,carryState)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 			}//while
 			scanner.close();
 			inputStream.close();

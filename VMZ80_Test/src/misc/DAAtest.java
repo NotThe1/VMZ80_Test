@@ -46,8 +46,8 @@ public class DAAtest {
 					binarySum = (byte) (binaryA + binaryB);
 					intSum = i + j;
 					adderSum = adder.add(binaryA, binaryB);
-					cFlag = adder.hasCarry()?1:0;
-					hFlag = adder.hasHalfCarry()?1:0;
+					cFlag = adder.isCarryFlagSet()?1:0;
+					hFlag = adder.isHCarryFlagSet()?1:0;
 					if (adderSum != binarySum) {
 						System.err.printf("binaryA = %02X, binaryB = %02X, binarySum = %02X, adderSum =%02X%n", binaryA,
 								binaryB, binarySum, adderSum);

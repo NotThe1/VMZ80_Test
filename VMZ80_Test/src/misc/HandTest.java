@@ -22,8 +22,8 @@ public class HandTest {
 		byte sum = adder.add(arg1, arg2);
 		byte daa = adder.daa(sum, false, CY, HC);
 
-		boolean HC1 = adder.hasHalfCarry();	
-		boolean CY1 = adder.hasCarry();
+		boolean HC1 = adder.isHCarryFlagSet();	
+		boolean CY1 = adder.isCarryFlagSet();
 		
 		
 		System.out.printf(" %02X, %02X, %s, %s %02X,%02X, %s, %s.%n",arg1,arg2,HC,CY,sum,daa,HC1,CY1);

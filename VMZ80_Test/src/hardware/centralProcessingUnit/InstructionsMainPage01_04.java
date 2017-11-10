@@ -67,8 +67,8 @@ public class InstructionsMainPage01_04 {
 				cy = scanner.next().equals("1")?true:false;
 				hc = scanner.next().equals("1")?true:false;
 				ans = getValue(scanner.next());
-				cy = scanner.next().equals("1")?true:false;
-				hc = scanner.next().equals("1")?true:false;
+				cy1 = scanner.next().equals("1")?true:false;
+				hc1 = scanner.next().equals("1")?true:false;
 				
 				
 				message = String.format("%2X\t%2X\t%02X\t%s\t%s\t%2X\t%s\t%s",

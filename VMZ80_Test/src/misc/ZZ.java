@@ -160,10 +160,10 @@ public class ZZ {
 		au.rotateLeftThru(arg1, carry);
 
 		System.out.printf("%nArg1 = %02X, carry = %s%n", arg1, carry);
-		System.out.printf("%s\tSign%n", au.hasSign());
-		System.out.printf("%s\tZero%n", au.isZero());
-		System.out.printf("%s\tHalf Carry%n", au.hasHalfCarry());
-		System.out.printf("%s\tParity%n", au.hasParity());
+		System.out.printf("%s\tSign%n", au.isSignFlagSet());
+		System.out.printf("%s\tZero%n", au.isZeroFlagSet());
+		System.out.printf("%s\tHalf Carry%n", au.isHCarryFlagSet());
+		System.out.printf("%s\tParity%n", au.isParityFlagSet());
 
 	}
 
@@ -171,9 +171,9 @@ public class ZZ {
 		au.compare(arg1, arg2);
 
 		System.out.printf("%nArg1 = %02X, Arg2 = %02X%n", arg1, arg2);
-		System.out.printf("%s\tSign%n", au.hasSign());
-		System.out.printf("%s\tZero%n", au.isZero());
-		System.out.printf("%s\tHalf Carry%n", au.hasHalfCarry());
+		System.out.printf("%s\tSign%n", au.isSignFlagSet());
+		System.out.printf("%s\tZero%n", au.isZeroFlagSet());
+		System.out.printf("%s\tHalf Carry%n", au.isHCarryFlagSet());
 
 	}// compare
 

@@ -52,11 +52,11 @@ public class DAATestArithmeticUnit {
 				message = String.format("SUB -> %d - %d = %02X", arg1,arg2,diff);
 				ans = au.sub(arg1, arg2);
 				assertThat("ans: " + message,diff,equalTo(au.sub(arg1, arg2)));
-				assertThat("CY: " +  message,CY,equalTo(au.hasCarry()));
-				assertThat("HC: " +  message,HC,equalTo(au.hasHalfCarry()));
+				assertThat("CY: " +  message,CY,equalTo(au.isCarryFlagSet()));
+				assertThat("HC: " +  message,HC,equalTo(au.isHCarryFlagSet()));
 				assertThat("DAA: " +  message,daa,equalTo(au.daa(ans, true, CY, HC)));
-				assertThat("CY1: " +  message,CY1,equalTo(au.hasCarry()));
-				assertThat("HC1: " +  message,HC1,equalTo(au.hasHalfCarry()));
+				assertThat("CY1: " +  message,CY1,equalTo(au.isCarryFlagSet()));
+				assertThat("HC1: " +  message,HC1,equalTo(au.isHCarryFlagSet()));
 									
 			}//while
 			scanner.close();
@@ -93,11 +93,11 @@ public class DAATestArithmeticUnit {
 				message = String.format("ADD -> %d + %d = %02X", arg1,arg2,sum);
 				ans = au.add(arg1, arg2);
 				assertThat("ans: " + message,sum,equalTo(au.add(arg1, arg2)));
-				assertThat("CY: " +  message,CY,equalTo(au.hasCarry()));
-				assertThat("HC: " +  message,HC,equalTo(au.hasHalfCarry()));
+				assertThat("CY: " +  message,CY,equalTo(au.isCarryFlagSet()));
+				assertThat("HC: " +  message,HC,equalTo(au.isHCarryFlagSet()));
 				assertThat("DAA: " +  message,daa,equalTo(au.daa(ans, false, CY, HC)));
-				assertThat("CY1: " +  message,CY1,equalTo(au.hasCarry()));
-				assertThat("HC1: " +  message,HC1,equalTo(au.hasHalfCarry()));
+				assertThat("CY1: " +  message,CY1,equalTo(au.isCarryFlagSet()));
+				assertThat("HC1: " +  message,HC1,equalTo(au.isHCarryFlagSet()));
 							
 			}//while
 			scanner.close();

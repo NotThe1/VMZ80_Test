@@ -73,10 +73,10 @@ public class WordAddArithmeticUnit {
 				assertThat("sum: " + message,sum,equalTo(au.addWord(arg1, arg2)));
 //				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
 //				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
 //				assertThat("overFlow: " +  message,overflow,equalTo(adder.hasOverflow()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 				
 				//---------------------------------------------------------------------------------
 				
@@ -128,12 +128,12 @@ public class WordAddArithmeticUnit {
 						
 				message = String.format("file WORD ADC CY=0 -> %s - %s = %s", sArg1,sArg2,sSum);
 				assertThat("sum: " + message,sum,equalTo(au.addWordWithCarry(arg1, arg2,carryState)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 				
 				
 			}//while
@@ -184,12 +184,12 @@ public class WordAddArithmeticUnit {
 						
 				message = String.format("file WORD ADC CY=0 -> %s - %s = %s", sArg1,sArg2,sSum);
 				assertThat("sum: " + message,sum,equalTo(au.addWordWithCarry(arg1, arg2,carryState)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 				
 			}//while
 			scanner.close();

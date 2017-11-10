@@ -108,7 +108,7 @@ public class TestLiteArithmeticUnit {
 		for (int bit = 0; bit < 8; bit++) {
 //			byte mask = (byte) (1 << bit);
 			ans = au.bitRes(arg, bit);
-			System.out.printf("Arg = %02X, bit  = %02X,ans = %02X, Zero = %s,%n", arg, bit, ans, au.isZero());
+			System.out.printf("Arg = %02X, bit  = %02X,ans = %02X, Zero = %s,%n", arg, bit, ans, au.isZeroFlagSet());
 		}
 	}// checkBits
 
@@ -117,19 +117,19 @@ public class TestLiteArithmeticUnit {
 		// byte ans = adder.shiftSRL(arg);
 		// byte ans = adder.shiftSRA(arg);
 		byte ans = au.shiftSLA(arg);
-		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, au.hasCarry());
+		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, au.isCarryFlagSet());
 	}// checkRotateLeft
 
 	public static void checkRotateRight() {
 		byte arg = (byte) 0X10;
 		byte ans = au.rotateRight(arg);
-		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, au.hasCarry());
+		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, au.isCarryFlagSet());
 	}// checkRotateLeft
 
 	public static void checkRotateLeft() {
 		byte arg = (byte) 0X01;
 		byte ans = au.rotateLeft(arg);
-		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, au.hasCarry());
+		System.out.printf("Arg = %02X, ans  = %02X, Carry = %s,%n", arg, ans, au.isCarryFlagSet());
 	}// checkRotateLeft
 
 	public static void checkFixedFlags2() {
@@ -217,7 +217,7 @@ public class TestLiteArithmeticUnit {
 		byte[] word1 = loadWord(val1);
 		byte[] word2 = loadWord(val2);
 		au.addWord(word1, word2);
-		boolean sign = au.hasSign();
+		boolean sign = au.isSignFlagSet();
 		// assertThat("testSign word: " + val1 + " + " + val2 + " = " + (val2 + val1), signFlag,
 		// equalTo(adder.hasSign()));
 	}// checkWordSignFlag
@@ -315,7 +315,7 @@ public class TestLiteArithmeticUnit {
 		byte[] word1 = loadWord(val1);
 		byte[] word2 = loadWord(val2);
 		// adder.add(word1, word2);
-		boolean pf = au.hasParity();
+		boolean pf = au.isParityFlagSet();
 		if (pf == parityFlag) {
 			int a = 1;
 		} // if
@@ -328,7 +328,7 @@ public class TestLiteArithmeticUnit {
 		byte[] word2 = loadWord(val2);
 		au.addWord(word1, word2);
 		boolean zeroFlag = (((val1 + val2) & 0XFFFF) == 0) ? true : false;
-		boolean zflag = au.isZero();
+		boolean zflag = au.isZeroFlagSet();
 		boolean x = true;
 	}// addWord
 
@@ -337,7 +337,7 @@ public class TestLiteArithmeticUnit {
 		byte[] bite2 = new byte[] { (byte) 0X33 };
 
 		// adder.add(bite1, bite2);
-		boolean zflag = au.isZero();
+		boolean zflag = au.isZeroFlagSet();
 	}// addByte
 
 	private static byte[] loadWord(int value) {
@@ -349,14 +349,14 @@ public class TestLiteArithmeticUnit {
 	}// getWordValue
 
 	private static void showFlags(ArithmeticUnit adder) {
-		String sign = adder.hasSign() ? "S" : "s";
-		String zero = adder.isZero() ? "Z" : "z";
-		String bit5 = adder.hasSign() ? "." : ".";
-		String half = adder.hasHalfCarry() ? "H" : "h";
-		String bit3 = adder.hasSign() ? "." : ".";
-		String PV = adder.hasParity() ? "P" : "p";
-		String AS = adder.hasSign() ? "." : ".";
-		String carry = adder.hasCarry() ? "C" : "c";
+		String sign = adder.isSignFlagSet() ? "S" : "s";
+		String zero = adder.isZeroFlagSet() ? "Z" : "z";
+		String bit5 = adder.isSignFlagSet() ? "." : ".";
+		String half = adder.isHCarryFlagSet() ? "H" : "h";
+		String bit3 = adder.isSignFlagSet() ? "." : ".";
+		String PV = adder.isParityFlagSet() ? "P" : "p";
+		String AS = adder.isSignFlagSet() ? "." : ".";
+		String carry = adder.isCarryFlagSet() ? "C" : "c";
 		System.out.printf("   %s%s%s%s %s%s%s%s%n", sign, zero, bit5, half, bit3, PV, AS, carry);
 	}// showFlags
 

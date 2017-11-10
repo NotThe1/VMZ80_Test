@@ -62,12 +62,12 @@ public class ByteAddArithmeticUnit {
 						
 				message = String.format("file ADD -> %d - %d = %02X", arg1,arg2,sum);
 				assertThat("ans: " + message,sum,equalTo(au.add(arg1, arg2)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));			
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));			
 			}//while
 			scanner.close();
 			inputStream.close();
@@ -105,12 +105,12 @@ public class ByteAddArithmeticUnit {
 						
 				message = String.format("file ADC NC -> %d - %d = %02X", arg1,arg2,sum);
 				assertThat("ans: " + message,sum,equalTo(au.addWithCarry(arg1, arg2,carryState)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 				
 				//---------------------------------------------------------------------------------
 				
@@ -131,12 +131,12 @@ public class ByteAddArithmeticUnit {
 						
 				message = String.format("file ADC CY -> %d - %d = %02X", arg1,arg2,sum);
 				assertThat("ans: " + message,sum,equalTo(au.addWithCarry(arg1, arg2,carryState)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 			}//while
 			scanner.close();
 			inputStream.close();
@@ -172,10 +172,10 @@ public class ByteAddArithmeticUnit {
 						
 				message = String.format("file INC -> %d  = %02X", arg1,sum);
 				assertThat("ans: " + message,sum,equalTo(au.increment(arg1)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
 //				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));			
 			}//while

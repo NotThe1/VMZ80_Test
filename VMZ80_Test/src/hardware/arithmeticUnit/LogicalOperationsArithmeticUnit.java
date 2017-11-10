@@ -53,12 +53,12 @@ public class LogicalOperationsArithmeticUnit {
 						
 				message = String.format("file AND -> %02X and %02X -> %02X", arg1,arg2,result);
 				assertThat("result: " + message,result,equalTo(au.and(arg1, arg2)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("parity: " +  message,parity,equalTo(au.hasParity()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("parity: " +  message,parity,equalTo(au.isParityFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 				scanner.next();//	Skip OR result
 				scanner.next();//	Skip OR flags
 				scanner.next();//	Skip XOR result
@@ -100,12 +100,12 @@ public class LogicalOperationsArithmeticUnit {
 						
 				message = String.format("file OR -> %02X and %02X -> %02X", arg1,arg2,result);
 				assertThat("result: " + message,result,equalTo(au.or(arg1, arg2)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("parity: " +  message,parity,equalTo(au.hasParity()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("parity: " +  message,parity,equalTo(au.isParityFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 				
 				scanner.next();//	Skip XOR result
 				scanner.next();//	Skip XOR flags
@@ -150,12 +150,12 @@ public class LogicalOperationsArithmeticUnit {
 						
 				message = String.format("file XOR -> %02X and %02X -> %02X", arg1,arg2,result);
 				assertThat("result: " + message,result,equalTo(au.xor(arg1, arg2)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("parity: " +  message,parity,equalTo(au.hasParity()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("parity: " +  message,parity,equalTo(au.isParityFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));			
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));			
 			}//while
 			scanner.close();
 			inputStream.close();
@@ -190,12 +190,12 @@ public class LogicalOperationsArithmeticUnit {
 						
 				message = String.format("file CP -> %02X <-> %02X", arg1,arg2);
 				au.compare(arg1, arg2);
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("overFlow: " +  message,overflow,equalTo(au.hasOverflow()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("overFlow: " +  message,overflow,equalTo(au.isOverflowFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));			
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));			
 			}//while
 			scanner.close();
 			inputStream.close();
@@ -234,8 +234,8 @@ public class LogicalOperationsArithmeticUnit {
 				message = String.format("file CPL -> %02X and %02X -> %02X", arg1,arg2,result);
 				assertThat("result: " + message,result,equalTo(au.complement(arg1)));
 //				assertThat("sign: " +  message,sign,equalTo(adder.hasSign()));
-//				assertThat("zero: " +  message,zero,equalTo(adder.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
+//				assertThat("zero: " +  message,zero,equalTo(adder.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
 //				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
 //				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));			
@@ -279,9 +279,9 @@ public class LogicalOperationsArithmeticUnit {
 						
 				message = String.format("file NEG -> %02X and %02X -> %02X", arg1,arg2,result);
 				assertThat("result: " + message,result,equalTo(au.negate(arg1)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
 //				assertThat("parity: " +  message,parity,equalTo(adder.hasParity()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
 //				assertThat("carry: " +  message,carry,equalTo(adder.hasCarry()));			

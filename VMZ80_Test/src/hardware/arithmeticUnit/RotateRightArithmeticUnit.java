@@ -54,12 +54,12 @@ public class RotateRightArithmeticUnit {
 						
 				message = String.format("file RR NC -> %d  = %02X", arg1,result);
 				assertThat("ans: " + message,result,equalTo(au.rotateRightThru(arg1, false)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("parity: " +  message,parity,equalTo(au.hasParity()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("parity: " +  message,parity,equalTo(au.isParityFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 // Carry = True				
 				result = getValue(scanner.next());
 				flags = scanner.next();
@@ -79,12 +79,12 @@ public class RotateRightArithmeticUnit {
 
 				message = String.format("file RR CY -> %d  = %02X", arg1,result);
 				assertThat("ans: " + message,result,equalTo(au.rotateRightThru(arg1, true)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("parity: " +  message,parity,equalTo(au.hasParity()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("parity: " +  message,parity,equalTo(au.isParityFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 				
 			}//while
 			scanner.close();
@@ -127,12 +127,12 @@ public class RotateRightArithmeticUnit {
 						
 				message = String.format("file RRC -> %d  = %02X", arg1,result);
 				assertThat("ans: " + message,result,equalTo(au.rotateRight(arg1)));
-				assertThat("sign: " +  message,sign,equalTo(au.hasSign()));
-				assertThat("zero: " +  message,zero,equalTo(au.isZero()));
-				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.hasHalfCarry()));
-				assertThat("parity: " +  message,parity,equalTo(au.hasParity()));
+				assertThat("sign: " +  message,sign,equalTo(au.isSignFlagSet()));
+				assertThat("zero: " +  message,zero,equalTo(au.isZeroFlagSet()));
+				assertThat("halfCarry: " +  message,halfCarry,equalTo(au.isHCarryFlagSet()));
+				assertThat("parity: " +  message,parity,equalTo(au.isParityFlagSet()));
 				assertThat("nFlag: " +  message,nFlag,equalTo(au.isNFlagSet()));
-				assertThat("carry: " +  message,carry,equalTo(au.hasCarry()));
+				assertThat("carry: " +  message,carry,equalTo(au.isCarryFlagSet()));
 							
 			}//while
 			scanner.close();

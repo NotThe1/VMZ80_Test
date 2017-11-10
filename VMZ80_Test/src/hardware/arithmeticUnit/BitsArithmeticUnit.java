@@ -32,7 +32,7 @@ public class BitsArithmeticUnit {
 				ans = (arg & mask) == 0;
 				au.bitTest(arg, bit);
 				msg = String.format("Bit - Arg: %02X, Bit %d", arg, bit);
-				assertThat(msg, ans, equalTo(au.isZero()));
+				assertThat(msg, ans, equalTo(au.isZeroFlagSet()));
 			} // inner for - bits
 		} // for - arg
 	}// testRLCA
