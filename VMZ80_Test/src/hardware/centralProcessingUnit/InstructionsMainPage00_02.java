@@ -19,7 +19,7 @@ import hardware.WorkingRegisterSet;
 import memory.CpuBuss;
 import memory.IoBuss;
 
-public class InstructionsMainPage01_02 {
+public class InstructionsMainPage00_02 {
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
 	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();

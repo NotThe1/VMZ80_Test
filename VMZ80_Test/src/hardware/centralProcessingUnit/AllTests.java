@@ -8,7 +8,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ AllTestsCB.class,
 	            AllTestsDD.class,
 	            AllTestsED.class,
-	            AllTestsMainPage01.class})
+	            AllTestsMainPage00.class})
 
 public class AllTests {
 
