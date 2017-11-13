@@ -41,7 +41,7 @@ public class InstructionsMainPage01_01 {
 		assertThat("Halt Instruction",instructionBase + testCount+1,equalTo(wrs.getProgramCounter()));
 	}//testHalt
 
-//	@Test
+	@Test
 	public void testLD_d_r() {
 		Register regSource, regDestination;
 		byte opCode, value;

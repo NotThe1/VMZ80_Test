@@ -146,7 +146,7 @@ public class InstructionDD_IXY5 {
 		return ans;
 	}//makeArray
 
-//	@Test
+	@Test
 	public void testJP() {
 		int[] targets = new int[] { 0x1234, 0xDEF0, 0x0000, 0xFFFF };
 		int testCount = targets.length;
@@ -174,7 +174,7 @@ public class InstructionDD_IXY5 {
 		
 	}// testJP
 
-//	@Test
+	@Test
 	public void testPUSH_POP() {
 		int[] answers = new int[] { 0x1234, 0x5678, 0x9ABC, 0xDEF0 };
 		int testCount = answers.length;

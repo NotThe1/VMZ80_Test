@@ -44,7 +44,7 @@ public class InstructionsMainPage00_04 {
 		 testDAA("SUB");
 	}
 
-	// @Test
+
 	public void testDAA(String priorOperation) {
 		// assume its ADD
 		String fileName = "/daaAddRevision01.txt";

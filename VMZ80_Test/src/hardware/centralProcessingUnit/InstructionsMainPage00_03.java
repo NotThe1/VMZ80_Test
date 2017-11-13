@@ -179,12 +179,14 @@ public class InstructionsMainPage00_03 {
 		assertThat("PC :", instructionBase + 0x0100, equalTo(wrs.getProgramCounter()));
 	}// testRotateAcc
 
+	@Test
 	public void testCPL() {
 		Arrays.fill(instructions, (byte) 0x2F);
+		ioBuss.writeDMA(instructionBase, instructions);
 		wrs.setProgramCounter(instructionBase);
 
 		try {
-			InputStream inputStream = this.getClass().getResourceAsStream("/LogicOriginal1");
+			InputStream inputStream = this.getClass().getResourceAsStream("/LogicOriginal1.txt");
 			// InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
 			Scanner scanner = new Scanner(inputStream);
 			scanner.nextLine(); // skip header
@@ -251,7 +253,7 @@ public class InstructionsMainPage00_03 {
 		wrs.setProgramCounter(instructionBase);
 		boolean carryIn;
 		testCount = 0x0100;
-		ccr.setCarryFlag(true);
+//		ccr.setCarryFlag(true);
 		for ( int i = 0 ; i< testCount; i++) {
 			carryIn = random.nextBoolean();
 			ccr.setCarryFlag(carryIn);
