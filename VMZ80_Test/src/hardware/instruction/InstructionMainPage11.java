@@ -102,8 +102,8 @@ public class InstructionMainPage11 {
 		assertThat("ADD  A,07H", (byte)0X07, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(2);
 		
-		instruction = new Instruction();
-		assertThat("RST 00H", (byte) 0X00, equalTo(instruction.getImmediateByte()));
+//		instruction = new Instruction();
+//		assertThat("RST 00H", (byte) 0X00, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(1);
 		
 		instruction = new Instruction();
@@ -133,8 +133,8 @@ public class InstructionMainPage11 {
 		assertThat("ADC  A,00H", (byte)0X00, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(2);
 		
-		instruction = new Instruction();
-		assertThat("RST 08H", (byte) 0X08, equalTo(instruction.getImmediateByte()));
+//		instruction = new Instruction();
+//		assertThat("RST 08H", (byte) 0X08, equalTo(instruction.getImmediateByte()));
 			
 	}// testInstructionsFromC0ToCF
 	
@@ -218,8 +218,8 @@ public class InstructionMainPage11 {
 		assertThat("SUB  07H", (byte)0X07, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(2);
 		
-		instruction = new Instruction();
-		assertThat("RST 010H", (byte) 0X010, equalTo(instruction.getImmediateByte()));
+//		instruction = new Instruction();
+//		assertThat("RST 010H", (byte) 0X010, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(1);
 		
 		instruction = new Instruction();
@@ -249,8 +249,8 @@ public class InstructionMainPage11 {
 		assertThat("SBC  A,00H", (byte)0X00, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(2);
 		
-		instruction = new Instruction();
-		assertThat("RST 18H", (byte) 0X18, equalTo(instruction.getImmediateByte()));
+//		instruction = new Instruction();
+//		assertThat("RST 18H", (byte) 0X18, equalTo(instruction.getImmediateByte()));
 			
 	}// testInstructionsFromD0ToDF
 	
@@ -334,8 +334,8 @@ public class InstructionMainPage11 {
 		assertThat("AND  07H", (byte)0X07, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(2);
 		
-		instruction = new Instruction();
-		assertThat("RST 020H", (byte) 0X020, equalTo(instruction.getImmediateByte()));
+//		instruction = new Instruction();
+//		assertThat("RST 020H", (byte) 0X020, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(1);
 		
 		instruction = new Instruction();
@@ -369,8 +369,8 @@ public class InstructionMainPage11 {
 		assertThat("XOR 00H", (byte)0X00, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(2);
 		
-		instruction = new Instruction();
-		assertThat("RST 28H", (byte) 0X28, equalTo(instruction.getImmediateByte()));
+//		instruction = new Instruction();
+//		assertThat("RST 28H", (byte) 0X28, equalTo(instruction.getImmediateByte()));
 			
 	}// testInstructionsFromE0ToEF
 	
@@ -452,8 +452,8 @@ public class InstructionMainPage11 {
 		assertThat("OR  07H", (byte)0X07, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(2);
 		
-		instruction = new Instruction();
-		assertThat("RST 030H", (byte) 0X030, equalTo(instruction.getImmediateByte()));
+//		instruction = new Instruction();
+//		assertThat("RST 030H", (byte) 0X030, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(1);
 		
 		instruction = new Instruction();
@@ -485,8 +485,8 @@ public class InstructionMainPage11 {
 		assertThat("CP 00H", (byte)0X00, equalTo(instruction.getImmediateByte()));
 		wrs.incrementProgramCounter(2);
 		
-		instruction = new Instruction();
-		assertThat("RST 38H", (byte) 0X38, equalTo(instruction.getImmediateByte()));
+//		instruction = new Instruction();
+//		assertThat("RST 38H", (byte) 0X38, equalTo(instruction.getImmediateByte()));
 			
 	}// testInstructionsFromF0ToFF
 	
