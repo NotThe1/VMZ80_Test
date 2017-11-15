@@ -1,4 +1,4 @@
-arg  RL(CY=0) flags   RL(CY=1) flags RLC flags
+arg  RL(CY=0) flags   RL(CY=1) flags RLC flags - RotateLeftOriginal.txt
 00	00	010100	01	000000	00	010100
 01	02	000000	03	000100	02	000000
 02	04	000000	05	000100	04	000000
