@@ -260,6 +260,70 @@ public class InstructionED3 {
 			fail(e.getMessage());
 		} // try
 	}// testCPDfile
+	
+	
+	@Test
+	public void testRETI_RETN() {
+		int instructionBase = 0x1000;
+		/* @formatter:off */
+		/*
+		0006: 1000             Start:                          
+		0007: 1000 CD 07 10               CALL   Target0              
+		0008: 1003 CD 09 10               CALL   Target1              
+		0009: 1006 76                     HALT                        
+		0010: 1007             Target0:                        
+		0011: 1007 ED 4D                  RETI                        
+		0012: 1009             Target1:                        
+		0013: 1009 ED 45                  RETN                        
+		0014: 100B 76                     HALT                        
+                    */
+		
+		byte[] instructions = new byte[] {  (byte) 0xCD,(byte) 0x07,(byte) 0x10,
+											(byte) 0xCD,(byte) 0x09,(byte) 0x10,
+											(byte) 0x76,
+											
+											(byte) 0xED,(byte) 0x4D,
+											(byte) 0xED,(byte) 0x45,
+											
+											(byte) 0x76};			/* @formatter:on  */
+
+		ioBuss.writeDMA(instructionBase, instructions);
+		wrs.setProgramCounter(instructionBase);
+		
+		wrs.setStackPointer(0x4000);// CALL Target0
+		assertThat("PC: ", 0x1000, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x4000, equalTo(wrs.getStackPointer()));
+		
+
+		cpu.startInstruction(); // RETI
+		assertThat("PC: ", 0x1007, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x3FFE, equalTo(wrs.getStackPointer()));
+
+		cpu.startInstruction(); // CALL Target1
+		assertThat("PC: ", 0x1003, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x4000, equalTo(wrs.getStackPointer()));
+		
+		cpu.startInstruction(); // RETN
+		assertThat("PC: ", 0x1009, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x3FFE, equalTo(wrs.getStackPointer()));
+
+
+		boolean iff2State = true;
+		wrs.setIFF1(false);
+		wrs.setIFF2(iff2State);
+		assertThat("IFF1 before ",false,equalTo(wrs.isIFF1Set()));
+		assertThat("IFF2 before ",iff2State,equalTo(wrs.isIFF2Set()));
+		cpu.startInstruction(); // HALT
+		assertThat("PC: ", 0x1006, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x4000, equalTo(wrs.getStackPointer()));
+		assertThat("IFF1 after ",iff2State,equalTo(wrs.isIFF1Set()));
+		assertThat("IFF2 after ",iff2State,equalTo(wrs.isIFF2Set()));
+		
+//		 System.out.printf("PC -> %04X, SP ->%04X%n", wrs.getProgramCounter(), wrs.getStackPointer());
+
+	}// testConditionlRET
+
+
 
 	//---------------------------------------------------------------------------------
 	

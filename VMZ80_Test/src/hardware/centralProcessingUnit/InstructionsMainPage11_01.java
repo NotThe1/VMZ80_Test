@@ -31,6 +31,8 @@ public class InstructionsMainPage11_01 {
 	boolean sign, zero, halfCarry, overflow, nFlag, carry;
 	boolean carryState;
 	String sArg1, flags, message;
+	
+
 
 	@Test
 	public void testConditionlRET() {

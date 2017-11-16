@@ -46,6 +46,52 @@ public class InstructionED1 {
 		// au = ArithmeticUnit.getInstance();
 	}// setUp
 	
+	@Test
+	public void testIM_0_1_2() {
+int instructionBase = 0x1000;
+
+		/* @formatter:off */
+		/*
+		0006: 1000             Start:                          
+		0007: 1000 ED 46                  IM 0              
+		0008: 1002 ED 56                  IM 1
+		0008: 1004 ED 5E                  IM 2             
+		0009: 1006 76                     HALT                        
+		                       
+                    */
+		
+		byte[] instructions = new byte[] {  (byte) 0xED,(byte) 0x46,
+											(byte) 0xED,(byte) 0x56,
+											(byte) 0xED,(byte) 0x5E,
+										
+											(byte) 0x76};			/* @formatter:on  */
+
+		ioBuss.writeDMA(instructionBase, instructions);
+		wrs.setProgramCounter(instructionBase);
+		
+		wrs.setStackPointer(0x4000);// IM 0
+		assertThat("PC: ", 0x1000, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x4000, equalTo(wrs.getStackPointer()));
+		
+
+		cpu.startInstruction(); // IM 1
+		assertThat("PC: ", 0x1002, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x4000, equalTo(wrs.getStackPointer()));
+
+		cpu.startInstruction(); // IM 2
+		assertThat("PC: ", 0x1004, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x4000, equalTo(wrs.getStackPointer()));
+		
+		cpu.startInstruction(); // HALT
+		assertThat("PC: ", 0x1006, equalTo(wrs.getProgramCounter()));
+		assertThat("SP: ", 0x4000, equalTo(wrs.getStackPointer()));
+
+
+
+	}// testConditionlRET
+
+
+	
 
 	@Test
 	public void testWordADDs_NCfile() {
@@ -360,7 +406,7 @@ public class InstructionED1 {
 				hi = values[(registerIndex * 2)];
 				lo = values[(registerIndex * 2) + 1];
 				wrs.setDoubleReg(reg, hi, lo);
-//				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), hi, lo);
+				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), hi, lo);
 				cpu.executeInstruction(wrs.getProgramCounter()); // LD (xx),rr
 
 			} // for registerIndex
@@ -373,8 +419,8 @@ public class InstructionED1 {
 				aAns[1] = values[((regSize - registerIndex) * 2) - 1];
 				aAns[0] = values[((regSize - registerIndex) * 2) - 2];
 
-//				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), aAns[0],
-//						aAns[1]);
+				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), aAns[0],
+						aAns[1]);
 				cpu.executeInstruction(wrs.getProgramCounter()); // LD rr,(xx)
 
 				message = String.format("LD|rr|bb %s: hi= %02X, lo = %02X.", reg.toString(), aAns[1], aAns[0]);
