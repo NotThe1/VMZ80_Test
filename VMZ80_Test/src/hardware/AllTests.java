@@ -8,9 +8,10 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ hardware.AllTestsMisc.class,
 				hardware.arithmeticUnit.AllTests.class,
 				hardware.centralProcessingUnit.AllTests.class,
-				hardware.instruction.AllTests.class,
 				
 	})
 public class AllTests {
 
 }
+// 				hardware.instruction.AllTests.class,
+
