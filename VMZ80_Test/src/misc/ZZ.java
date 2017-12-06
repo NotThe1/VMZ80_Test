@@ -59,7 +59,7 @@ public class ZZ {
 		String message = String.format("augend = %s%n", augend);
 		System.out.println(message);
 		byte[] ans = new byte[] {0x00,0x01,0x02,0x03};
-		System.out.printf("ans = %02X%n", ans);
+		System.out.printf(" ans = %02X%n", ans);
 	}
 
 	private static void simpleLoop() {
