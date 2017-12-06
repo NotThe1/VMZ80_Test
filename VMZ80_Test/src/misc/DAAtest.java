@@ -60,7 +60,7 @@ public class DAAtest {
 			pw.close();
 			fw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("[AppLogger]: doIt() -  IOexception");
 			e.printStackTrace();
 		}
 

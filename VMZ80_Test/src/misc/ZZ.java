@@ -1,5 +1,6 @@
 package misc;
 
+import java.util.BitSet;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -45,44 +46,53 @@ public class ZZ {
 		// test2RandomArrays();
 		// checkDisplacement();
 		// checkADDIX();
-//		checkPOP();
-		simpleLoop();
+		// checkPOP();
+		// simpleLoop();
+		testBitsetPrint();
 
 	}// main
-	
-	private static void simpleLoop() {
-		//for (int i = 0; i <0X100; i++) {
-			for (int i = -128; i < 128; i++) {
-			System.out.printf("i -> %1$02X  [%1$d], byte - > %2$02X %n",	i,(byte) i);
-		}//for
-	}//simpleLoop
 
-	private static void  checkPOP() {
+	private static void testBitsetPrint() {
+		final int SIZE = 16;
+		BitSet augend = new BitSet(SIZE);
+		augend = BitSet.valueOf(new byte[] { 0X5A });
+		String message = String.format("augend = %s%n", augend);
+		System.out.println(message);
+		byte[] ans = new byte[] {0x00,0x01,0x02,0x03};
+		System.out.printf("ans = %02X%n", ans);
+	}
+
+	private static void simpleLoop() {
+		// for (int i = 0; i <0X100; i++) {
+		for (int i = -128; i < 128; i++) {
+			System.out.printf("i -> %1$02X  [%1$d], byte - > %2$02X %n", i, (byte) i);
+		} // for
+	}// simpleLoop
+
+	private static void checkPOP() {
 		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 		WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
-//		ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
-//		CpuBuss cpuBuss = CpuBuss.getInstance();
+		// ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
+		// CpuBuss cpuBuss = CpuBuss.getInstance();
 		IoBuss ioBuss = IoBuss.getInstance();
 		int topOfStack = 0x1000;
 		int instructionBase = 0X0100;
-		
-		byte[] instructions = new byte[] {(byte) 0xDD, (byte) 0xE1};
-		byte[] values = new byte[] {(byte) 0x34, (byte) 0x12};
+
+		byte[] instructions = new byte[] { (byte) 0xDD, (byte) 0xE1 };
+		byte[] values = new byte[] { (byte) 0x34, (byte) 0x12 };
 		ioBuss.writeDMA(instructionBase, instructions);
 		ioBuss.writeDMA(topOfStack, values);
 		wrs.setStackPointer(topOfStack);
-		
+
 		wrs.setProgramCounter(instructionBase);
-		
+
 		cpu.executeInstruction(wrs.getProgramCounter());
-		
+
 		int ans = wrs.getIX();
-		
+
 		System.out.printf("IX -> %04X%n", ans);
-		
-		
-		
-	}//checkPOP
+
+	}// checkPOP
 
 	private static void checkADDIX() {
 		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();

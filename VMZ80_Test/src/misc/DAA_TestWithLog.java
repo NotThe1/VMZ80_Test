@@ -29,6 +29,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
+import codeSupport.AppLogger;
 import hardware.ArithmeticUnit;
 
 
@@ -77,7 +78,9 @@ int intDiff;
 			}
 			scanner.close() ;
 		} catch (Exception e) {
-			// TODO: handle exception
+			String message = String.format("[DAA_TestWithLog] doBtnOne()%n exception: %s",e.getMessage());
+			log.addError(message);
+			System.exit(-1);
 		}
 		
 		
