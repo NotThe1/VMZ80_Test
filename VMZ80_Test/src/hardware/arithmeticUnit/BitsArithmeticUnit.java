@@ -10,7 +10,6 @@ import hardware.ArithmeticUnit;
 
 public class BitsArithmeticUnit {
 	ArithmeticUnit au = ArithmeticUnit.getInstance();
-	TestUtilityArithmeticUnit atu = TestUtilityArithmeticUnit.getInstance();
 	byte arg;
 
 	@Before

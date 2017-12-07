@@ -353,7 +353,7 @@ int instructionBase = 0x1000;
 		int testLimit = 0X0100;
 
 		Random random = new Random();
-		byte[] values = new byte[10];
+//		byte[] values = new byte[10];
 
 		registers = new Register[] { Z80.Register.HL, Z80.Register.BC, Z80.Register.DE, Z80.Register.HL,
 				Z80.Register.SP };

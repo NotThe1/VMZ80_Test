@@ -82,12 +82,14 @@ public class InstructionDD_IXY3 {
 		int valueLocation = valueBase;
 		FileFlag ff;
 		byte displacement;
+		int netLocation;
 		// IX
 		loadInstructions((byte) 0XDD,(byte) 0X35);
 		for (int i = 0; i < 0X100; i++) {
 			ff = mapDEC.get(i);
 			wrs.setIX(valueLocation);
 			displacement = (byte) i;
+//			netLocation = valueLocation + displacement;
 			message = String.format("loc -> %04d, displ -> %d, i ->  %d, netLoc = %04d %n",
 					valueLocation,displacement, i,valueLocation + displacement );
 			cpuBuss.write(valueLocation + displacement, ff.getSource());

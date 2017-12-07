@@ -198,12 +198,12 @@ public class instructionsMainPage11_04 {
 		return (byte) tempInt;
 	}// getValue
 
-	private void loadInstructions(int count, byte[] opCodes) {
-		int numberOfCodes = opCodes.length;
-		for (int i = 0; i < count; i++) {
-			ioBuss.writeDMA(instructionBase + (i * numberOfCodes), opCodes);
-		} // for i - count
-		wrs.setProgramCounter(instructionBase);
-	}// loadInstructions
+//	private void loadInstructions(int count, byte[] opCodes) {
+//		int numberOfCodes = opCodes.length;
+//		for (int i = 0; i < count; i++) {
+//			ioBuss.writeDMA(instructionBase + (i * numberOfCodes), opCodes);
+//		} // for i - count
+//		wrs.setProgramCounter(instructionBase);
+//	}// loadInstructions
 
 }// class instructionsMainPage11_04
