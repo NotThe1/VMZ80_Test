@@ -42,7 +42,7 @@ public class InstructionCB1 {
 		assertThat("keep imports", 1, equalTo(1));
 		String sSource;
 		byte source, result;
-		boolean sign, zero, halfCarry, overflow, parity, nFlag, carry;
+		boolean sign, zero, halfCarry,  parity, nFlag, carry;
 	String flags ;
 		try {
 			InputStream inputStream = this.getClass().getResourceAsStream("/RotateLeftOriginal.txt");

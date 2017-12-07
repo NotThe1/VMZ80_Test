@@ -4,11 +4,9 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-import codeSupport.Z80;
 import codeSupport.Z80.Register;
 import hardware.ArithmeticUnit;
 import hardware.CentralProcessingUnit;
-import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
 import memory.IoBuss;
 
@@ -17,37 +15,37 @@ public class ZZ {
 
 	public static void main(String[] args) {
 
-		// byte arg1 = (byte) 0X80;
-		// byte arg2 = (byte) 0X00;
-		// int iarg1 = arg1;
-		// int x = 0X1000;
-		// int ans = arg1 + x;
-		// // System.out.printf("byte -> %02X, int -> %08X%n", arg1,iarg1);
-		// // System.out.printf("arg1 -> %04x, x -> %d, ans -> %04d%n", arg1,x,ans);
-		// // System.out.printf("iarg1 -> %04X, x -> %04X, ans1 -> %04X%n", iarg1,x,iarg1 + x);
-		//
-		// for (int i = -128; i < 128; i++) {
-		// arg1 = (byte) i;
-		// // System.out.printf("i -> %02X, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
-		//
-		// // System.out.printf("i -> %2d, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
-		// System.out.printf("i -> %2d, arg1 -> %02X, loc -> %d%n", i, arg1, x + i);
-		// }
+		 byte arg1 = (byte) 0X80;
+		 byte arg2 = (byte) 0X00;
+		 int iarg1 = arg1;
+		 int x = 0X1000;
+		 int ans = arg1 + x;
+		  System.out.printf("byte -> %02X, int -> %08X%n", arg1,iarg1);
+		  System.out.printf("arg1 -> %04x, x -> %d, ans -> %04d%n", arg1,x,ans);
+		  System.out.printf("iarg1 -> %04X, x -> %04X, ans1 -> %04X%n", iarg1,x,iarg1 + x);
+		
+		 for (int i = -128; i < 128; i++) {
+		 arg1 = (byte) i;
+		 // System.out.printf("i -> %02X, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
+		
+		 // System.out.printf("i -> %2d, arg1 -> %02X, loc -> %04X%n",i,arg1,x+i);
+		 System.out.printf("i -> %2d, arg1 -> %02X, loc -> %d%n", i, arg1, x + i);
+		 }
 
-		// compare(arg1,arg2);
-		// compare(arg1,(byte)0X7F);
-		// compare(arg1,(byte)0XFF);
+		 compare(arg1,arg2);
+		 compare(arg1,(byte)0X7F);
+		 compare(arg1,(byte)0XFF);
 
-		// arg1 = (byte) 0X00;
-		// rotateLeftThruCarry(arg1,false);
-		// arg1 = (byte) 0XFF;
-		// rotateLeftThruCarry(arg1,false);
+		 arg1 = (byte) 0X00;
+		 rotateLeftThruCarry(arg1,false);
+		 arg1 = (byte) 0XFF;
+		 rotateLeftThruCarry(arg1,false);
 
-		// test2RandomArrays();
-		// checkDisplacement();
-		// checkADDIX();
-		// checkPOP();
-		// simpleLoop();
+		 test2RandomArrays();
+		 checkDisplacement();
+		 checkADDIX();
+		 checkPOP();
+		 simpleLoop();
 		testBitsetPrint();
 
 	}// main
@@ -95,12 +93,12 @@ public class ZZ {
 	private static void checkADDIX() {
 		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 		WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
-		ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
+//		ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
 		IoBuss ioBuss = IoBuss.getInstance();
 		int instructionBase = 0X1000;
 		int valueBase = 0X2000;
-		int start, result;
-		Register regIX = Z80.Register.IX;
+//		int start, result;
+//		Register regIX = Z80.Register.IX;
 
 		byte[] instrucions = new byte[] { (byte) 0XDD, (byte) 0X86, (byte) 0X00, (byte) 0XDD, (byte) 0X86, (byte) 0X01,
 				(byte) 0XDD, (byte) 0X86, (byte) 0X02, (byte) 0XDD, (byte) 0X86, (byte) 0X03, (byte) 0XDD, (byte) 0X86,
@@ -124,11 +122,11 @@ public class ZZ {
 	private static void checkDisplacement() {
 		CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 		WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
-		ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
+//		ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
 		IoBuss ioBuss = IoBuss.getInstance();
 		int instructionBase = 0X1000;
-		int start, result;
-		Register regIX = Z80.Register.IX;
+		int  result;
+//		Register regIX = Z80.Register.IX;
 
 		byte[] instrucions = new byte[] { (byte) 0XDD, (byte) 0X34, (byte) 0X00, (byte) 0XDD, (byte) 0X34, (byte) 0X01,
 				(byte) 0XDD, (byte) 0X34, (byte) 0X10, (byte) 0XDD, (byte) 0X34, (byte) 0X7F, (byte) 0XDD, (byte) 0X34,

@@ -32,14 +32,13 @@ import javax.swing.border.BevelBorder;
 import codeSupport.AppLogger;
 import hardware.ArithmeticUnit;
 
-
-
 public class DAA_TestWithLog {
-AppLogger log = AppLogger.getInstance();
-ArithmeticUnit adder = ArithmeticUnit.getInstance();
-byte arg1,arg2,diff,daa;
-boolean CY,HC,CY1,HC1;
-int intDiff;
+	AppLogger log = AppLogger.getInstance();
+	ArithmeticUnit adder = ArithmeticUnit.getInstance();
+	byte arg1, arg2, diff, daa;
+	boolean CY, HC, CY1, HC1;
+	int intDiff;
+
 	/**
 	 * Launch the application.
 	 */
@@ -51,71 +50,71 @@ int intDiff;
 					window.frmTemplate.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
-				}//try
-			}//run
+				} // try
+			}// run
 		});
 	}// main
 
 	/* Standard Stuff */
-	
-	private void doBtnOne(){
+
+	private void doBtnOne() {
 		try {
 			Scanner scanner = new Scanner(new File("c:\\Temp\\daaSubXX.txt"));
-			while (scanner.hasNextLine()){
+			while (scanner.hasNextLine()) {
 				arg1 = scanner.nextByte();
 				arg2 = scanner.nextByte();
-				
+
 				diff = getValue(scanner.next());
-				CY= getState(scanner.nextInt());
-				HC= getState(scanner.nextInt());
+				CY = getState(scanner.nextInt());
+				HC = getState(scanner.nextInt());
 				daa = getValue(scanner.next());
 
-				CY1= getState(scanner.nextInt());
-				HC1= getState(scanner.nextInt());
+				CY1 = getState(scanner.nextInt());
+				HC1 = getState(scanner.nextInt());
 				intDiff = scanner.nextInt();
-				
-				System.out.printf("%X  %X %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
+
+				System.out.printf("%X  %X %2X %s %s %02X %s %s %d%n", arg1, arg2, diff, CY, HC, daa, CY1, HC1, intDiff);
 			}
-			scanner.close() ;
+			scanner.close();
 		} catch (Exception e) {
-			String message = String.format("[DAA_TestWithLog] doBtnOne()%n exception: %s",e.getMessage());
+			String message = String.format("[DAA_TestWithLog] doBtnOne()%n exception: %s", e.getMessage());
 			log.addError(message);
 			System.exit(-1);
 		}
-		
-		
-	}//doBtnOne
-	private boolean getState(int value){
-		return value==1?true:false;
-	}//getState
 
-	private byte getValue(String value){
+	}// doBtnOne
+
+	private boolean getState(int value) {
+		return value == 1 ? true : false;
+	}// getState
+
+	private byte getValue(String value) {
 		int tempInt;
-		tempInt = Integer.valueOf(value,16);
-		return(byte)tempInt;
-	}//getValue
+		tempInt = Integer.valueOf(value, 16);
+		return (byte) tempInt;
+	}// getValue
 
-	private void doBtnTwo(){
+	private void doBtnTwo() {
 		String msg;
 		try {
-//			InputStream inputStream = this.getClass().getResourceAsStream("/daaSubOriginal.txt");
-		InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
+			// InputStream inputStream = this.getClass().getResourceAsStream("/daaSubOriginal.txt");
+			InputStream inputStream = this.getClass().getResourceAsStream("/daaTemp.txt");
 			Scanner scanner = new Scanner(inputStream);
-			while (scanner.hasNextLine()){
+			while (scanner.hasNextLine()) {
 				arg1 = scanner.nextByte();
 				arg2 = scanner.nextByte();
-				
+
 				diff = getValue(scanner.next());
-				CY= getState(scanner.nextInt());
-				HC= getState(scanner.nextInt());
+				CY = getState(scanner.nextInt());
+				HC = getState(scanner.nextInt());
 				daa = getValue(scanner.next());
 
-				CY1= getState(scanner.nextInt());
-				HC1= getState(scanner.nextInt());
+				CY1 = getState(scanner.nextInt());
+				HC1 = getState(scanner.nextInt());
 				intDiff = scanner.nextInt();
-				
-//				System.out.printf("%d  %d %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
-				msg = String.format("%d  %d %2X %s %s %02X %s %s %d",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
+
+				// System.out.printf("%d %d %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
+				msg = String.format("%d  %d %2X %s %s %02X %s %s %d", arg1, arg2, diff, CY, HC, daa, CY1, HC1, intDiff);
 				log.addInfo(msg);
 			}
 			scanner.close();
@@ -123,45 +122,50 @@ int intDiff;
 		} catch (Exception e) {
 			log.addError(e.getMessage());
 		}
-	}//doBtnTwo
-	
-	private void doBtnThree(){
+	}// doBtnTwo
+
+	private void doBtnThree() {
 		byte ans = (byte) 0X01;
 		CY = false;
-		HC= false;
+		HC = false;
 		byte result = adder.daa(ans, true, CY, HC);
-		int a = 0;
-	}//doBtnThree
-	
-	private void doBtnFour(){
-		
-	}//doBtnFour
-	
-	//---------------------------------------------------------
-	
-	private void doFileNew(){
-		
-	}//doFileNew
-	private void doFileOpen(){
-		
-	}//doFileOpen
-	private void doFileSave(){
-		
-	}//doFileSave
-	private void doFileSaveAs(){
-		
-	}//doFileSaveAs
-	private void doFilePrint(){
-		
-	}//doFilePrint
-	private void doFileExit(){
+		System.out.println(result);
+	}// doBtnThree
+
+	private void doBtnFour() {
+
+	}// doBtnFour
+
+	// ---------------------------------------------------------
+
+	private void doFileNew() {
+
+	}// doFileNew
+
+	private void doFileOpen() {
+
+	}// doFileOpen
+
+	private void doFileSave() {
+
+	}// doFileSave
+
+	private void doFileSaveAs() {
+
+	}// doFileSaveAs
+
+	private void doFilePrint() {
+
+	}// doFilePrint
+
+	private void doFileExit() {
 		appClose();
 		System.exit(0);
-	}//doFileExit
-
+	}// doFileExit
 
 	private void appClose() {
-		Preferences myPrefs =  Preferences.userNodeForPackage(DAA_TestWithLog.class).node(this.getClass().getSimpleName());
+		Preferences myPrefs = Preferences.userNodeForPackage(DAA_TestWithLog.class)
+				.node(this.getClass().getSimpleName());
 		Dimension dim = frmTemplate.getSize();
 		myPrefs.putInt("Height", dim.height);
 		myPrefs.putInt("Width", dim.width);
@@ -170,11 +174,12 @@ int intDiff;
 		myPrefs.putInt("LocY", point.y);
 		myPrefs.putInt("Divider", splitPane1.getDividerLocation());
 		myPrefs = null;
-		
-	}//appClose
+
+	}// appClose
 
 	private void appInit() {
-		Preferences myPrefs =  Preferences.userNodeForPackage(DAA_TestWithLog.class).node(this.getClass().getSimpleName());
+		Preferences myPrefs = Preferences.userNodeForPackage(DAA_TestWithLog.class)
+				.node(this.getClass().getSimpleName());
 		frmTemplate.setSize(myPrefs.getInt("Width", 761), myPrefs.getInt("Height", 693));
 		frmTemplate.setLocation(myPrefs.getInt("LocX", 100), myPrefs.getInt("LocY", 100));
 		splitPane1.setDividerLocation(myPrefs.getInt("Divider", 250));
@@ -207,7 +212,7 @@ int intDiff;
 		gridBagLayout.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
 		frmTemplate.getContentPane().setLayout(gridBagLayout);
-		
+
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.insets = new Insets(0, 0, 5, 0);
@@ -216,12 +221,12 @@ int intDiff;
 		gbc_panel.gridy = 0;
 		frmTemplate.getContentPane().add(panel, gbc_panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 0, 0 };
+		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
-		
+
 		btnOne = new JButton("Button 1");
 		btnOne.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnOne = new GridBagConstraints();
@@ -236,7 +241,7 @@ int intDiff;
 		});
 		btnOne.setMaximumSize(new Dimension(0, 0));
 		btnOne.setPreferredSize(new Dimension(100, 20));
-		
+
 		btnTwo = new JButton("Button 2");
 		btnTwo.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnTwo = new GridBagConstraints();
@@ -251,7 +256,7 @@ int intDiff;
 		});
 		btnTwo.setPreferredSize(new Dimension(100, 20));
 		btnTwo.setMaximumSize(new Dimension(0, 0));
-		
+
 		btnThree = new JButton("Button 3");
 		btnThree.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnThree = new GridBagConstraints();
@@ -266,7 +271,7 @@ int intDiff;
 		});
 		btnThree.setPreferredSize(new Dimension(100, 20));
 		btnThree.setMaximumSize(new Dimension(0, 0));
-		
+
 		btnFour = new JButton("Button 4");
 		btnFour.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnFour = new GridBagConstraints();
@@ -281,7 +286,7 @@ int intDiff;
 		});
 		btnFour.setPreferredSize(new Dimension(100, 20));
 		btnFour.setMaximumSize(new Dimension(0, 0));
-		
+
 		splitPane1 = new JSplitPane();
 		GridBagConstraints gbc_splitPane1 = new GridBagConstraints();
 		gbc_splitPane1.insets = new Insets(0, 0, 5, 0);
@@ -289,40 +294,40 @@ int intDiff;
 		gbc_splitPane1.gridx = 0;
 		gbc_splitPane1.gridy = 1;
 		frmTemplate.getContentPane().add(splitPane1, gbc_splitPane1);
-		
+
 		JPanel panelLeft = new JPanel();
 		splitPane1.setLeftComponent(panelLeft);
 		GridBagLayout gbl_panelLeft = new GridBagLayout();
-		gbl_panelLeft.columnWidths = new int[]{0};
-		gbl_panelLeft.rowHeights = new int[]{0};
-		gbl_panelLeft.columnWeights = new double[]{Double.MIN_VALUE};
-		gbl_panelLeft.rowWeights = new double[]{Double.MIN_VALUE};
+		gbl_panelLeft.columnWidths = new int[] { 0 };
+		gbl_panelLeft.rowHeights = new int[] { 0 };
+		gbl_panelLeft.columnWeights = new double[] { Double.MIN_VALUE };
+		gbl_panelLeft.rowWeights = new double[] { Double.MIN_VALUE };
 		panelLeft.setLayout(gbl_panelLeft);
-		
+
 		JPanel panelRight = new JPanel();
 		splitPane1.setRightComponent(panelRight);
 		GridBagLayout gbl_panelRight = new GridBagLayout();
-		gbl_panelRight.columnWidths = new int[]{0, 0};
-		gbl_panelRight.rowHeights = new int[]{0, 0};
-		gbl_panelRight.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panelRight.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panelRight.columnWidths = new int[] { 0, 0 };
+		gbl_panelRight.rowHeights = new int[] { 0, 0 };
+		gbl_panelRight.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+		gbl_panelRight.rowWeights = new double[] { 1.0, Double.MIN_VALUE };
 		panelRight.setLayout(gbl_panelRight);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 0;
 		panelRight.add(scrollPane, gbc_scrollPane);
-		
+
 		tpLog = new JTextPane();
 		scrollPane.setViewportView(tpLog);
-		
+
 		lblLog = new JLabel("New label");
 		lblLog.setHorizontalAlignment(SwingConstants.CENTER);
 		scrollPane.setColumnHeaderView(lblLog);
 		splitPane1.setDividerLocation(250);
-		
+
 		JPanel panelStatus = new JPanel();
 		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		GridBagConstraints gbc_panelStatus = new GridBagConstraints();
@@ -333,10 +338,10 @@ int intDiff;
 
 		JMenuBar menuBar = new JMenuBar();
 		frmTemplate.setJMenuBar(menuBar);
-		
+
 		JMenu mnuFile = new JMenu("File");
 		menuBar.add(mnuFile);
-		
+
 		JMenuItem mnuFileNew = new JMenuItem("New");
 		mnuFileNew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -344,7 +349,7 @@ int intDiff;
 			}
 		});
 		mnuFile.add(mnuFileNew);
-		
+
 		JMenuItem mnuFileOpen = new JMenuItem("Open...");
 		mnuFileOpen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -352,10 +357,10 @@ int intDiff;
 			}
 		});
 		mnuFile.add(mnuFileOpen);
-		
+
 		JSeparator separator = new JSeparator();
 		mnuFile.add(separator);
-		
+
 		JMenuItem mnuFileSave = new JMenuItem("Save...");
 		mnuFileSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -363,7 +368,7 @@ int intDiff;
 			}
 		});
 		mnuFile.add(mnuFileSave);
-		
+
 		JMenuItem mnuFileSaveAs = new JMenuItem("Save As...");
 		mnuFileSaveAs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -371,10 +376,10 @@ int intDiff;
 			}
 		});
 		mnuFile.add(mnuFileSaveAs);
-		
+
 		JSeparator separator_2 = new JSeparator();
 		mnuFile.add(separator_2);
-		
+
 		JMenuItem mnuFilePrint = new JMenuItem("Print...");
 		mnuFilePrint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -382,11 +387,10 @@ int intDiff;
 			}
 		});
 		mnuFile.add(mnuFilePrint);
-		
-		
+
 		JSeparator separator_1 = new JSeparator();
 		mnuFile.add(separator_1);
-		
+
 		JMenuItem mnuFileExit = new JMenuItem("Exit");
 		mnuFileExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -395,10 +399,8 @@ int intDiff;
 		});
 		mnuFile.add(mnuFileExit);
 
-		
-
 	}// initialize
-	
+
 	private JFrame frmTemplate;
 	private JButton btnOne;
 	private JButton btnTwo;
@@ -407,7 +409,5 @@ int intDiff;
 	private JSplitPane splitPane1;
 	private JTextPane tpLog;
 	private JLabel lblLog;
-
-
 
 }// class GUItemplate

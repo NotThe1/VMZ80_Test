@@ -193,7 +193,7 @@ public class InstructionsMainPage00_02 {
 		byte[] instructions = new byte[] {(byte) 0x32,(byte) 00,(byte) 00  };
          /* @formatter:on  */
 
-		byte hi, lo, hiLoc, loLoc;
+		byte hiLoc, loLoc;
 		for (int i = 0; i < 0x0100; i++) {
 			value = (byte) i;
 			valueLocation = random.nextInt(valueLimit) + (instructionBase + 0X100);
@@ -221,7 +221,7 @@ public class InstructionsMainPage00_02 {
 		byte[] instructions = new byte[] {(byte) 0x3A,(byte) 00,(byte) 00  };
          /* @formatter:on  */
 
-		byte hi, lo, hiLoc, loLoc;
+		byte  hiLoc, loLoc;
 		for (int i = 0; i < 0x0100; i++) {
 			value = (byte) i;
 			valueLocation = random.nextInt(valueLimit) + (instructionBase + 0X100);

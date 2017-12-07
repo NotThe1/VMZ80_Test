@@ -270,12 +270,12 @@ public class InstructionsMainPage00_01 {
 		wrs.setProgramCounter(instructionBase);
 	}// loadInstructions
 
-	private void displayArray(String name, byte[] values) {
-		System.out.print(name + " :");
-		for (byte v : values) {
-			System.out.print(" " + v + ",");
-		} // for
-		System.out.println();
-	}// displayArray
+//	private void displayArray(String name, byte[] values) {
+//		System.out.print(name + " :");
+//		for (byte v : values) {
+//			System.out.print(" " + v + ",");
+//		} // for
+//		System.out.println();
+//	}// displayArray
 
 }// class InstructionsMainPage0

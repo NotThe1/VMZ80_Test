@@ -44,7 +44,6 @@ public class InstructionDD_CB4 {
 		byte code0, code3;
 		byte targetValue, newValue;
 		byte displacement;
-		boolean bitState;
 		String regNote = "none";
 
 		if (regIXY.equals(Register.IX)) {
@@ -60,7 +59,6 @@ public class InstructionDD_CB4 {
 			wrs.setDoubleReg(regIXY, valueBase);
 			for (int testBit = 0; testBit < 8; testBit++) {
 				loadData(valueBase, targetValue);
-				boolean trap = (value == 1) & (testBit == 1);
 				code3 = (byte) (opCodeBase + (testBit << 3));
 				loadInstructions(code0, (byte) 0xCB, code3);
 				newValue = (byte) (value | Z80.BITS[testBit]);
@@ -89,7 +87,6 @@ public class InstructionDD_CB4 {
 		byte code0, code3;
 		byte targetValue, newValue;
 		byte displacement;
-		boolean bitState;
 		String regNote = "none";
 
 		if (regIXY.equals(Register.IX)) {
@@ -105,7 +102,6 @@ public class InstructionDD_CB4 {
 			wrs.setDoubleReg(regIXY, valueBase);
 			for (int testBit = 0; testBit < 8; testBit++) {
 				loadData(valueBase, targetValue);
-				boolean trap = (value == 1) & (testBit == 1);
 				code3 = (byte) (opCodeBase + (testBit << 3));
 				loadInstructions(code0, (byte) 0xCB, code3);
 				newValue = (byte) (value & Z80.BITS_NOT[testBit]);

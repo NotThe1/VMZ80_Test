@@ -79,14 +79,14 @@ public class DAAtest {
 		return (byte) (hiValues[tens] + loValues[units]);
 	}// makeBinaryComposit
 
-	private void doit0() {
-		for (int hi = 0; hi < 10; hi++) {
-			for (int lo = 0; lo < 10; lo++) {
-				System.out.printf("hi = %d, lo = %d%n", hi, lo);
-			} // for
-
-		} // for
-
-	}// doit0
+//	private void doit0() {
+//		for (int hi = 0; hi < 10; hi++) {
+//			for (int lo = 0; lo < 10; lo++) {
+//				System.out.printf("hi = %d, lo = %d%n", hi, lo);
+//			} // for
+//
+//		} // for
+//
+//	}// doit0
 
 }//

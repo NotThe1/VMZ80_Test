@@ -362,11 +362,11 @@ public class InstructionsMainPage11_01 {
 		return ans;
 	}
 
-	private byte getValue(String value) {
-		int tempInt;
-		tempInt = Integer.valueOf(value, 16);
-		return (byte) tempInt;
-	}// getValue
+//	private byte getValue(String value) {
+//		int tempInt;
+//		tempInt = Integer.valueOf(value, 16);
+//		return (byte) tempInt;
+//	}// getValue
 
 	private void loadInstructions(int count, byte[] opCodes) {
 		int numberOfCodes = opCodes.length;

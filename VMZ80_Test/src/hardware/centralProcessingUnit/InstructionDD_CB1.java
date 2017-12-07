@@ -50,7 +50,7 @@ public class InstructionDD_CB1 {
 		String sSource;
 		byte source, result;
 		String flags ;
-		boolean sign, zero, halfCarry, overflow, parity, nFlag, carry;
+		boolean sign, zero, halfCarry,  parity, nFlag, carry;
 
 		try {
 			InputStream inputStream = this.getClass().getResourceAsStream("/RotateLeftOriginal.txt");
