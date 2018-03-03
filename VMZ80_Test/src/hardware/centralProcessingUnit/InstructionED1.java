@@ -406,7 +406,7 @@ int instructionBase = 0x1000;
 				hi = values[(registerIndex * 2)];
 				lo = values[(registerIndex * 2) + 1];
 				wrs.setDoubleReg(reg, hi, lo);
-				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), hi, lo);
+//				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), hi, lo);
 				cpu.executeInstruction(wrs.getProgramCounter()); // LD (xx),rr
 
 			} // for registerIndex
@@ -419,8 +419,8 @@ int instructionBase = 0x1000;
 				aAns[1] = values[((regSize - registerIndex) * 2) - 1];
 				aAns[0] = values[((regSize - registerIndex) * 2) - 2];
 
-				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), aAns[0],
-						aAns[1]);
+//				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), aAns[0],
+//						aAns[1]);
 				cpu.executeInstruction(wrs.getProgramCounter()); // LD rr,(xx)
 
 				message = String.format("LD|rr|bb %s: hi= %02X, lo = %02X.", reg.toString(), aAns[1], aAns[0]);
