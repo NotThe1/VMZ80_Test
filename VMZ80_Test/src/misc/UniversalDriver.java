@@ -16,6 +16,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
+import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.prefs.Preferences;
@@ -40,6 +42,7 @@ import javax.swing.border.SoftBevelBorder;
 import disks.DiskDrive;
 import disks.DiskMetrics;
 import disks.utility.DiskUtility;
+import disks.utility.UpdateSystemDisk;
 import utilities.filePicker.FilePicker;
 
 public class UniversalDriver {
@@ -73,10 +76,70 @@ public class UniversalDriver {
 	}// main
 
 	/* Standard Stuff */
+	
+	private void doUpdateSystemDisk() {
+		String diskPath = "C:\\Users\\admin\\VMdata\\Disks\\ZZZ.F3HD";
+		File file = new File(diskPath);
+		file.delete();
+		try {
+			file.createNewFile();
+			UpdateSystemDisk.updateDisk(diskPath);
+		} catch (IOException e) {
+			log.addError(" Did not create file :" + diskPath);
+		} // try
+	}//doUpdateSystemDisk
+	
+	private void doDiskDrive() {
+		String msg;
+		String[] types = new String[] { "f3DD", "f3HD", "f3ED", "f5DD", "f5HD", "f8SS", "F8ds" };
+		for (String type : types) {
+			DiskDrive diskDrive = new DiskDrive("abc." + type);
+			msg = String.format("Type %s, - %s", type, diskDrive.description);
+			log.addInfo(msg);
+		} // for
+	}//doDiskDrive
+	
+	private void doDiskMetric() {
+		String msg;
+		String[] types = new String[] { "f3DD", "f3HD", "f3ED", "f5DD", "f5HD", "f8SS", "F8ds" };
+		for (String type : types) {
+			DiskMetrics diskMetric = DiskMetrics.getDiskMetric(type);
+			msg = String.format("Type %s, - %s", type, diskMetric.descriptor);
+			log.addInfo(msg);
+		} // for
+	}//doDiskMetric
+	
+	private void doFileChooser() {
+		// JFileChooser fc = FilePicker.customiseChooser("C:\\Temp\\", "Text", "txt");
+		// JFileChooser fc = FilePicker.getDiskPicker();
+		// JFileChooser fc = FilePicker.getMemoryPicker();
+		// JFileChooser fc = FilePicker.getListAsmPicker();
+		// JFileChooser fc = FilePicker.getListMemoryPicker();
+		// JFileChooser fc = FilePicker.getListZ80Picker();
+		// JFileChooser fc = FilePicker.getAllListPicker();
+		// JFileChooser fc = FilePicker.getZ80ListPicker();
+		JFileChooser fc = FilePicker.getZ80SourcePicker();
+		// JFileChooser fc = FilePicker
+		// JFileChooser fc = FilePicker
+		// JFileChooser fc = FilePicker
 
-	private void doBtnOne() {
+		if (fc.showOpenDialog(frmTemplate) == JFileChooser.APPROVE_OPTION) {
+			log.addInfo(fc.getSelectedFile().toString());
+			log.addInfo(fc.getSelectedFile().getName());
+		}
+		;
+
+	
+	}//doFileChooser
+	
+	private void doDiskUtility() {
 		DiskUtility du = DiskUtility.getInstance();
 		du.setVisible(true);
+		du = null;
+	}//doDiskUtility
+
+	private void doBtnOne() {
+		doDiskUtility();
 	}// doBtnOne
 
 	private void doBtnTwo() {
@@ -408,67 +471,40 @@ public class UniversalDriver {
 		JMenuItem mnuDiskUtility = new JMenuItem("DiskUtility");
 		mnuDiskUtility.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				DiskUtility du = DiskUtility.getInstance();
-				du.setVisible(true);
+				doDiskUtility();
 			}
 		});
 
 		JMenuItem mnuTargetsFileChooser = new JMenuItem("File Chooser");
 		mnuTargetsFileChooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// JFileChooser fc = FilePicker.customiseChooser("C:\\Temp\\", "Text", "txt");
-				// JFileChooser fc = FilePicker.getDiskPicker();
-				// JFileChooser fc = FilePicker.getMemoryPicker();
-				// JFileChooser fc = FilePicker.getListAsmPicker();
-				// JFileChooser fc = FilePicker.getListMemoryPicker();
-				// JFileChooser fc = FilePicker.getListZ80Picker();
-				// JFileChooser fc = FilePicker.getAllListPicker();
-				// JFileChooser fc = FilePicker.getZ80ListPicker();
-				JFileChooser fc = FilePicker.getZ80SourcePicker();
-				// JFileChooser fc = FilePicker
-				// JFileChooser fc = FilePicker
-				// JFileChooser fc = FilePicker
-
-				if (fc.showOpenDialog(frmTemplate)== JFileChooser.APPROVE_OPTION) {
-					log.addInfo(fc.getSelectedFile().toString());
-					log.addInfo(fc.getSelectedFile().getName());
-				};
-				
-			}
-		});
+				doFileChooser();
+		}});
 		mnuTargets.add(mnuTargetsFileChooser);
 		mnuTargets.add(mnuDiskUtility);
 
 		JMenuItem mnuTargetsDiskMetric = new JMenuItem("DiskMetric");
 		mnuTargetsDiskMetric.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String msg;
-				String[] types = new String[] { "f3DD", "f3HD", "f3ED", "f5DD", "f5HD", "f8SS","F8ds" };
-				for (String type : types) {
-					DiskMetrics diskMetric = DiskMetrics.getDiskMetric(type);
-					msg = String.format("Type %s, - %s", type, diskMetric.descriptor);
-					log.addInfo(msg);
-				} // for
-
-			}
-		});
+				doDiskMetric();
+		}});
 		mnuTargets.add(mnuTargetsDiskMetric);
-		
+
 		JMenuItem mnuTargetsDiskDrive = new JMenuItem("DiskDrive");
 		mnuTargetsDiskDrive.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String msg;
-				String[] types = new String[] { "f3DD", "f3HD", "f3ED", "f5DD", "f5HD", "f8SS","F8ds" };
-				for (String type : types) {
-					DiskDrive diskDrive = new DiskDrive("abc." + type);
-					msg = String.format("Type %s, - %s", type, diskDrive.description);
-					log.addInfo(msg);
-				} // for
-
-				
+				doDiskDrive() ;
 			}
 		});
 		mnuTargets.add(mnuTargetsDiskDrive);
+
+		JMenuItem mntmUpdatesystemdisk = new JMenuItem("UpdateSystemDisk");
+		mntmUpdatesystemdisk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				doUpdateSystemDisk();
+			}
+		});
+		mnuTargets.add(mntmUpdatesystemdisk);
 
 	}// initialize
 
