@@ -17,6 +17,7 @@ import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
 import memory.IoBuss;
 
+
 public class InstructionED3 {
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	IoBuss ioBuss = IoBuss.getInstance();

@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import codeSupport.Z80;
-
+ 
 public class ConditionCodeRegisterTest {
 	ConditionCodeRegister ccr;
 

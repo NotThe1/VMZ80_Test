@@ -73,7 +73,7 @@ public class ZZ {
 		IoBuss ioBuss = IoBuss.getInstance();
 		int topOfStack = 0x1000;
 		int instructionBase = 0X0100;
-
+ 
 		byte[] instructions = new byte[] { (byte) 0xDD, (byte) 0xE1 };
 		byte[] values = new byte[] { (byte) 0x34, (byte) 0x12 };
 		ioBuss.writeDMA(instructionBase, instructions);

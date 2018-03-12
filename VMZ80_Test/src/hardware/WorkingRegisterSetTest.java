@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import codeSupport.Z80;
 import codeSupport.Z80.Register;
-
+ 
 public class WorkingRegisterSetTest {
 	WorkingRegisterSet wrs;
 	Register[] byteRegisters = new Register[] { Register.A, Register.B, Register.C, Register.D, Register.E, Register.H,

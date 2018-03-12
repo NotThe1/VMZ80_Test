@@ -12,7 +12,7 @@ import hardware.CentralProcessingUnit;
 import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
 import memory.IoBuss;
-
+ 
 public class InstructionCB4 {
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();

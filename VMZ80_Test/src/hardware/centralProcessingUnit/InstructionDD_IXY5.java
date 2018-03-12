@@ -19,7 +19,7 @@ import memory.CpuBuss;
 import memory.IoBuss;
 
 public class InstructionDD_IXY5 {
-
+ 
 	CentralProcessingUnit cpu = CentralProcessingUnit.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
 	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
