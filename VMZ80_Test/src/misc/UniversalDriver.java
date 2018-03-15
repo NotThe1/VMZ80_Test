@@ -43,6 +43,7 @@ import disks.DiskDrive;
 import disks.DiskMetrics;
 import disks.utility.DiskUtility;
 import disks.utility.UpdateSystemDisk;
+import ioSystem.IOController;
 import utilities.filePicker.FilePicker;
 
 public class UniversalDriver {
@@ -76,6 +77,10 @@ public class UniversalDriver {
 	}// main
 
 	/* Standard Stuff */
+	
+	private void doIOController() {
+		IOController ioc =  IOController.getInstance();
+	}
 	
 	private void doUpdateSystemDisk() {
 		String diskPath = "C:\\Users\\admin\\VMdata\\Disks\\ZZZ.F3HD";
@@ -139,7 +144,7 @@ public class UniversalDriver {
 	}//doDiskUtility
 
 	private void doBtnOne() {
-		doDiskUtility();
+		doIOController();
 	}// doBtnOne
 
 	private void doBtnTwo() {
@@ -271,7 +276,7 @@ public class UniversalDriver {
 		gbl_panelForButtons.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panelForButtons.setLayout(gbl_panelForButtons);
 
-		btnOne = new JButton("Disk Utility");
+		btnOne = new JButton("IOController");
 		btnOne.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnOne = new GridBagConstraints();
 		gbc_btnOne.insets = new Insets(0, 0, 0, 5);
@@ -480,6 +485,14 @@ public class UniversalDriver {
 			public void actionPerformed(ActionEvent e) {
 				doFileChooser();
 		}});
+		
+		JMenuItem mnuTargetsIOController = new JMenuItem("IOController");
+		mnuTargetsIOController.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				doIOController();
+			}
+		});
+		mnuTargets.add(mnuTargetsIOController);
 		mnuTargets.add(mnuTargetsFileChooser);
 		mnuTargets.add(mnuDiskUtility);
 
