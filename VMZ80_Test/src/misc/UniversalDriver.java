@@ -80,6 +80,7 @@ public class UniversalDriver {
 	
 	private void doIOController() {
 		IOController ioc =  IOController.getInstance();
+		ioc.toString(); /* shut down 'not used' warning */
 	}
 	
 	private void doUpdateSystemDisk() {

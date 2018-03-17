@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.prefs.Preferences;
@@ -80,17 +81,22 @@ private IOController ioc = IOController.getInstance();
 	/* Standard Stuff */
 	
 	private void doBtnOne(){
-		byte fromDevice = ioc.byteFromDevice(TTYZ80.IN);
-		
+		byte fromDevice =0x00;
+		try {
+			fromDevice = ioc.byteFromDevice(TTYZ80.IN);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		addScreenByte(fromDevice);
 	}//doBtnOne
 	
 	private void doBtnTwo(){
-		byte b;
-		while ( ioc.byteFromDevice(TTYZ80.STATUS) != 0x01){
-			b= ioc.byteFromDevice(TTYZ80.IN);
-			ioc.byteToDevice(TTYZ80.OUT, b);
-		}//while
+//		byte b;
+//		while ( ioc.byteFromDevice(TTYZ80.STATUS) != 0x01){
+//			b= ioc.byteFromDevice(TTYZ80.IN);
+//			ioc.byteToDevice(TTYZ80.OUT, b);
+//		}//while
 		
 	}//doBtnTwo
 	
@@ -170,6 +176,7 @@ private IOController ioc = IOController.getInstance();
 		myPrefs.putInt("ByteOut", hdnByteOut.getValue());
 		
 		myPrefs = null;
+		ioc.close();
 	}//appClose
 
 	private void appInit() {
@@ -446,6 +453,7 @@ private IOController ioc = IOController.getInstance();
 		panelTop.add(lblCharactersOut, gbc_lblCharactersOut);
 		
 		txtSource = new JTextField();
+		txtSource.setText("ABCDEFGHIJKLMNOPQRSTUV");
 		GridBagConstraints gbc_txtSource = new GridBagConstraints();
 		gbc_txtSource.anchor = GridBagConstraints.WEST;
 		gbc_txtSource.gridwidth = 3;
