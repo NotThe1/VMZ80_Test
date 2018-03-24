@@ -540,6 +540,14 @@ private IOController ioc = IOController.getInstance();
 		scrollPaneForScreen.setColumnHeaderView(lblForScreen);
 		
 		txtLocalScreen = new JTextPane();
+		txtLocalScreen.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent mouseEvent) {
+				if (mouseEvent.getClickCount() >1) {
+					clearScreen();
+				}//if
+			}//mouseClicked
+		});
 		scrollPaneForScreen.setViewportView(txtLocalScreen);
 		splitPane2.setDividerLocation(300);
 		

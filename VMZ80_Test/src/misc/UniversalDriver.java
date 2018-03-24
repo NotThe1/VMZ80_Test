@@ -1,5 +1,5 @@
 package misc;
-
+ 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -149,7 +149,7 @@ public class UniversalDriver {
 	}// doBtnOne
 
 	private void doBtnTwo() {
-
+		doDiskUtility() ;
 	}// doBtnTwo
 
 	private void doBtnThree() {
@@ -294,7 +294,7 @@ public class UniversalDriver {
 		btnOne.setMaximumSize(new Dimension(0, 0));
 		btnOne.setPreferredSize(new Dimension(100, 20));
 
-		btnTwo = new JButton("Button 2");
+		btnTwo = new JButton("doDiskUtility() ");
 		btnTwo.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnTwo = new GridBagConstraints();
 		gbc_btnTwo.insets = new Insets(0, 0, 0, 5);
