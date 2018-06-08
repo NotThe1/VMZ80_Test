@@ -123,13 +123,13 @@ public class InstructionMapper {
 		String bitsYYY = "xxx";
 		String bitsZZZ = getBits(zzz);		
 		String message = "opCode\tPage\tYYY\tZZZ";
-		log.addWarning(message);
+		log.warn(message);
 		
 		for (int yyy = 0; yyy <8;yyy++) {
 			opCode = pageInt + (yyy << 3) + zzz;
 			bitsYYY = getBits(yyy);
 			message = String.format("  %02X\t %s\t%s\t%s", opCode,bitsPage,bitsYYY,bitsZZZ);
-			log.addInfo(message);
+			log.info(message);
 		}//for
 
 	}// doBtnThree
@@ -144,13 +144,13 @@ public class InstructionMapper {
 		String bitsYYY = getBits(yyy);
 		String bitsZZZ = "XXX";		
 		String message = "opCode\tPage\tYYY\tZZZ";
-		log.addWarning(message);
+		log.warn(message);
 		
 		for (int zzz = 0; zzz <8;zzz++) {
 			opCode = pageInt + yyyInt + zzz;
 			bitsZZZ = getBits(zzz);
 			message = String.format("  %02X\t %s\t%s\t%s", opCode,bitsPage,bitsYYY,bitsZZZ);
-			log.addInfo(message);
+			log.info(message);
 		}//for
 
 

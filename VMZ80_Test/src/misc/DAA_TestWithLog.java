@@ -78,7 +78,7 @@ public class DAA_TestWithLog {
 			scanner.close();
 		} catch (Exception e) {
 			String message = String.format("[DAA_TestWithLog] doBtnOne()%n exception: %s", e.getMessage());
-			log.addError(message);
+			log.error(message);
 			System.exit(-1);
 		}
 
@@ -115,12 +115,12 @@ public class DAA_TestWithLog {
 
 				// System.out.printf("%d %d %2X %s %s %02X %s %s %d%n",arg1,arg2,diff,CY,HC,daa,CY1,HC1,intDiff);
 				msg = String.format("%d  %d %2X %s %s %02X %s %s %d", arg1, arg2, diff, CY, HC, daa, CY1, HC1, intDiff);
-				log.addInfo(msg);
+				log.info(msg);
 			}
 			scanner.close();
 			inputStream.close();
 		} catch (Exception e) {
-			log.addError(e.getMessage());
+			log.error(e.getMessage());
 		}
 	}// doBtnTwo
 

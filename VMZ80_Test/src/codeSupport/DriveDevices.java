@@ -193,7 +193,7 @@ private IOController ioc = IOController.getInstance();
 		txtLog.setText(EMPTY_STRING);
 
 		log.setDoc(txtLog.getStyledDocument());
-		log.addInfo("Starting....");
+		log.info("Starting....");
 		
 		localScreen = txtLocalScreen.getStyledDocument();
 	}// appInit

@@ -91,7 +91,7 @@ public class UniversalDriver {
 			file.createNewFile();
 			UpdateSystemDisk.updateDisk(diskPath);
 		} catch (IOException e) {
-			log.addError(" Did not create file :" + diskPath);
+			log.error(" Did not create file :" + diskPath);
 		} // try
 	}//doUpdateSystemDisk
 	
@@ -101,7 +101,7 @@ public class UniversalDriver {
 		for (String type : types) {
 			DiskDrive diskDrive = new DiskDrive("abc." + type);
 			msg = String.format("Type %s, - %s", type, diskDrive.description);
-			log.addInfo(msg);
+			log.info(msg);
 		} // for
 	}//doDiskDrive
 	
@@ -111,7 +111,7 @@ public class UniversalDriver {
 		for (String type : types) {
 			DiskMetrics diskMetric = DiskMetrics.getDiskMetric(type);
 			msg = String.format("Type %s, - %s", type, diskMetric.descriptor);
-			log.addInfo(msg);
+			log.info(msg);
 		} // for
 	}//doDiskMetric
 	
@@ -130,8 +130,8 @@ public class UniversalDriver {
 		// JFileChooser fc = FilePicker
 
 		if (fc.showOpenDialog(frmTemplate) == JFileChooser.APPROVE_OPTION) {
-			log.addInfo(fc.getSelectedFile().toString());
-			log.addInfo(fc.getSelectedFile().getName());
+			log.info(fc.getSelectedFile().toString());
+			log.info(fc.getSelectedFile().getName());
 		}
 		;
 
@@ -211,7 +211,7 @@ public class UniversalDriver {
 		txtLog.setText(EMPTY_STRING);
 
 		log.setDoc(txtLog.getStyledDocument());
-		log.addInfo("Starting....");
+		log.info("Starting....");
 
 	}// appInit
 
