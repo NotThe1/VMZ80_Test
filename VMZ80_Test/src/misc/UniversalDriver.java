@@ -153,7 +153,9 @@ public class UniversalDriver {
 	}// doBtnTwo
 
 	private void doBtnThree() {
-
+		DiskUtility du = new DiskUtility();
+		du.setVisible(true);
+		du = null;
 	}// doBtnThree
 
 	private void doBtnFour() {
@@ -294,7 +296,7 @@ public class UniversalDriver {
 		btnOne.setMaximumSize(new Dimension(0, 0));
 		btnOne.setPreferredSize(new Dimension(100, 20));
 
-		btnTwo = new JButton("doDiskUtility() ");
+		btnTwo = new JButton("du Instance");
 		btnTwo.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnTwo = new GridBagConstraints();
 		gbc_btnTwo.insets = new Insets(0, 0, 0, 5);
@@ -310,7 +312,7 @@ public class UniversalDriver {
 		btnTwo.setPreferredSize(new Dimension(100, 20));
 		btnTwo.setMaximumSize(new Dimension(0, 0));
 
-		btnThree = new JButton("Button 3");
+		btnThree = new JButton("du standard class");
 		btnThree.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnThree = new GridBagConstraints();
 		gbc_btnThree.insets = new Insets(0, 0, 0, 5);
