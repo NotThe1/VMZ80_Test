@@ -93,11 +93,16 @@ private IOController ioc = IOController.getInstance();
 	
 	private void doBtnTwo(){
 //		byte b;
-//		while ( ioc.byteFromDevice(TTYZ80.STATUS) != 0x01){
-//			b= ioc.byteFromDevice(TTYZ80.IN);
-//			ioc.byteToDevice(TTYZ80.OUT, b);
+//		try {
+//			while ( ioc.byteFromDevice(TTYZ80.STATUS) != 0x01){
+//				b= ioc.byteFromDevice(TTYZ80.IN);
+//				ioc.byteToDevice(TTYZ80.OUT, b);
+//			}
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 //		}//while
-		
+//		
 	}//doBtnTwo
 	
 	private void doBtnThree(){
