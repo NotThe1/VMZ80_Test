@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -43,6 +44,8 @@ import disks.DiskDrive;
 import disks.DiskMetrics;
 import disks.utility.DiskUtility;
 import disks.utility.UpdateSystemDisk;
+import hardware.ConditionCodeRegister;
+import hardware.ViewCCR;
 import ioSystem.IOController;
 import utilities.filePicker.FilePicker;
 
@@ -59,6 +62,8 @@ public class UniversalDriver {
 	private JTextPane txtLog;
 	private JPopupMenu popupLog;
 	private AdapterLog logAdaper = new AdapterLog();
+	
+	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
 
 	/**
 	 * Launch the application.
@@ -354,12 +359,105 @@ public class UniversalDriver {
 		JPanel panelLeft = new JPanel();
 		splitPane1.setLeftComponent(panelLeft);
 		GridBagLayout gbl_panelLeft = new GridBagLayout();
-		gbl_panelLeft.columnWidths = new int[] { 0 };
-		gbl_panelLeft.rowHeights = new int[] { 0 };
-		gbl_panelLeft.columnWeights = new double[] { Double.MIN_VALUE };
-		gbl_panelLeft.rowWeights = new double[] { Double.MIN_VALUE };
+		gbl_panelLeft.columnWidths = new int[] { 0, 0 };
+		gbl_panelLeft.rowHeights = new int[] { 0, 0, 0 };
+		gbl_panelLeft.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
+		gbl_panelLeft.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 		panelLeft.setLayout(gbl_panelLeft);
-
+		
+		ViewCCR panel = new ViewCCR();
+//		panel.setSize(350,70);
+//		GridBagConstraints gbc_panel = new GridBagConstraints();
+//		gbc_panel.fill = GridBagConstraints.BOTH;
+//		gbc_panel.gridx = 0;
+//		gbc_panel.gridy = 0;
+//		panelLeft.add(panel, gbc_panel);
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 5, 0);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridy = 0;
+		gbc_panel.gridx = 0;
+		panelLeft.add(panel, gbc_panel);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[]{0};
+		gbl_panel.rowHeights = new int[]{0};
+		gbl_panel.columnWeights = new double[]{Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		
+		JPanel panel_1 = new JPanel();
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.fill = GridBagConstraints.VERTICAL;
+		gbc_panel_1.gridx = 0;
+		gbc_panel_1.gridy = 1;
+		panelLeft.add(panel_1, gbc_panel_1);
+		GridBagLayout gbl_panel_1 = new GridBagLayout();
+		gbl_panel_1.columnWidths = new int[]{0, 0};
+		gbl_panel_1.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel_1.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_panel_1.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel_1.setLayout(gbl_panel_1);
+		
+		cbS = new JCheckBox("Sign");
+		GridBagConstraints gbc_cbS = new GridBagConstraints();
+		gbc_cbS.insets = new Insets(0, 0, 5, 0);
+		gbc_cbS.gridx = 0;
+		gbc_cbS.gridy = 0;
+		panel_1.add(cbS, gbc_cbS);
+		
+		JCheckBox cbZ = new JCheckBox("Zero");
+		GridBagConstraints gbc_cbZ = new GridBagConstraints();
+		gbc_cbZ.insets = new Insets(0, 0, 5, 0);
+		gbc_cbZ.gridx = 0;
+		gbc_cbZ.gridy = 1;
+		panel_1.add(cbZ, gbc_cbZ);
+		
+		JCheckBox cbH = new JCheckBox("Half Carry");
+		GridBagConstraints gbc_cbH = new GridBagConstraints();
+		gbc_cbH.insets = new Insets(0, 0, 5, 0);
+		gbc_cbH.gridx = 0;
+		gbc_cbH.gridy = 2;
+		panel_1.add(cbH, gbc_cbH);
+		
+		JCheckBox cbP = new JCheckBox("Parity");
+		GridBagConstraints gbc_cbP = new GridBagConstraints();
+		gbc_cbP.insets = new Insets(0, 0, 5, 0);
+		gbc_cbP.gridx = 0;
+		gbc_cbP.gridy = 3;
+		panel_1.add(cbP, gbc_cbP);
+		
+		JCheckBox cbN = new JCheckBox("N Flag");
+		GridBagConstraints gbc_cbN = new GridBagConstraints();
+		gbc_cbN.insets = new Insets(0, 0, 5, 0);
+		gbc_cbN.gridx = 0;
+		gbc_cbN.gridy = 4;
+		panel_1.add(cbN, gbc_cbN);
+		
+		JCheckBox cbC = new JCheckBox("Carry");
+		GridBagConstraints gbc_cbC = new GridBagConstraints();
+		gbc_cbC.insets = new Insets(0, 0, 5, 0);
+		gbc_cbC.gridx = 0;
+		gbc_cbC.gridy = 5;
+		panel_1.add(cbC, gbc_cbC);
+		
+		JButton btnCCR = new JButton("Update CCR");
+		btnCCR.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ccr.setSignFlag(cbS.isSelected()?true:false);
+				ccr.setZeroFlag(cbZ.isSelected()?true:false);
+				ccr.setHFlag(cbH.isSelected()?true:false);
+				ccr.setPvFlag(cbP.isSelected()?true:false);
+				ccr.setNFlag(cbN.isSelected()?true:false);
+				ccr.setCarryFlag(cbC.isSelected()?true:false);
+				Thread t = new Thread(panel);
+				t.start();
+				}
+		});
+		GridBagConstraints gbc_btnCCR = new GridBagConstraints();
+		gbc_btnCCR.gridx = 0;
+		gbc_btnCCR.gridy = 6;
+		panel_1.add(btnCCR, gbc_btnCCR);
+		
 		JPanel panelForLog = new JPanel();
 		splitPane1.setRightComponent(panelForLog);
 		GridBagLayout gbl_panelForLog = new GridBagLayout();
@@ -528,6 +626,7 @@ public class UniversalDriver {
 	private static final String PUM_LOG_CLEAR = "popupLogClear";
 
 	static final String EMPTY_STRING = "";
+	private JCheckBox cbS;
 
 	//////////////////////////////////////////////////////////////////////////
 
