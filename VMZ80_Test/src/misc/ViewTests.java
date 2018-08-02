@@ -40,6 +40,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
 import codeSupport.AppLogger;
+import codeSupport.Z80;
 import codeSupport.Z80.Register;
 import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
@@ -47,6 +48,7 @@ import hardware.View.V_CCR;
 import hardware.View.V_IndexRegisters;
 import hardware.View.V_PrimaryRegisters;
 import hardware.View.V_ProgramRegisters;
+import hardware.View.V_SpecialPurposeRegisters;
 
 public class ViewTests {
 
@@ -100,7 +102,7 @@ public class ViewTests {
 
 	private void appInit() {
 		Preferences myPrefs = Preferences.userNodeForPackage(ViewTests.class).node(this.getClass().getSimpleName());
-		frmTemplate.setSize(1028, 539);
+		frmTemplate.setSize(myPrefs.getInt("Width", 1000), myPrefs.getInt("Height", 600));
 		frmTemplate.setLocation(myPrefs.getInt("LocX", 100), myPrefs.getInt("LocY", 100));
 		splitPane1.setDividerLocation(myPrefs.getInt("Divider", 250));
 		myPrefs = null;
@@ -139,6 +141,14 @@ public class ViewTests {
 		wrs.setIY(0x5A5A);
 		Thread t_IndexRegisters = new Thread(panel_V_IndexRegisters);
 		t_IndexRegisters.run();
+		
+		wrs.setReg(Z80.Register.I, (byte)0xF0);
+		wrs.setReg(Z80.Register.R, (byte)0x0F);
+		wrs.setIFF1(true);
+		wrs.setIFF2(false);
+		Thread t_SpecialRegisters = new Thread(panel_V_SpecialPurposeRegisters);
+		t_SpecialRegisters.run();
+		
 
 	}// appInit
 
@@ -211,6 +221,8 @@ public class ViewTests {
 				t_ProgramRegisters.run();
 				Thread t_IndexRegisters = new Thread(panel_V_IndexRegisters);
 				t_IndexRegisters.run();
+				Thread t_SpecialRegisters = new Thread(panel_V_SpecialPurposeRegisters);
+				t_SpecialRegisters.run();
 			}//actionPerformed
 		});
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
@@ -238,7 +250,8 @@ public class ViewTests {
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
-		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
+		gbc_tabbedPane.anchor = GridBagConstraints.NORTH;
+		gbc_tabbedPane.fill = GridBagConstraints.HORIZONTAL;
 		gbc_tabbedPane.gridx = 0;
 		gbc_tabbedPane.gridy = 0;
 		panelLeft.add(tabbedPane, gbc_tabbedPane);
@@ -250,12 +263,12 @@ public class ViewTests {
 		gbl_panelPrimaryRegisters.columnWidths = new int[] { 200, 0 };
 		gbl_panelPrimaryRegisters.rowHeights = new int[] { 0, 0, 0 };
 		gbl_panelPrimaryRegisters.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gbl_panelPrimaryRegisters.rowWeights = new double[] { 0.0, 0.0, 0.0 };
+		gbl_panelPrimaryRegisters.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0 };
 		panelPrimaryRegisters.setLayout(gbl_panelPrimaryRegisters);
 
 		V_CCR viewCCR = new V_CCR();
 		viewCCR.setSize(new Dimension(0, 0));
-		viewCCR.setMinimumSize(new Dimension(190, 54));
+		viewCCR.setPreferredSize(new Dimension(190, 55));
 		GridBagConstraints gbc_viewCCR = new GridBagConstraints();
 		gbc_viewCCR.anchor = GridBagConstraints.NORTHWEST;
 		gbc_viewCCR.insets = new Insets(0, 0, 5, 0);
@@ -283,17 +296,29 @@ public class ViewTests {
 		gbc_panel_V_ProgramRegisters.gridx = 0;
 		gbc_panel_V_ProgramRegisters.gridy = 2;
 		panelPrimaryRegisters.add(panel_V_ProgramRegisters, gbc_panel_V_ProgramRegisters);
-
-		//
+		
 		panel_V_IndexRegisters = new V_IndexRegisters();
 		panel_V_IndexRegisters.setPreferredSize(new Dimension(240, 75));
 		panel_V_IndexRegisters.setLayout(null);
 
 		GridBagConstraints gbc_panel_V_IndexRegisters = new GridBagConstraints();
-		gbc_panel_V_IndexRegisters.anchor = GridBagConstraints.NORTHWEST;
+		gbc_panel_V_IndexRegisters.fill = GridBagConstraints.VERTICAL;
+		gbc_panel_V_IndexRegisters.anchor = GridBagConstraints.WEST;
 		gbc_panel_V_IndexRegisters.gridx = 0;
 		gbc_panel_V_IndexRegisters.gridy = 3;
 		panelPrimaryRegisters.add(panel_V_IndexRegisters, gbc_panel_V_IndexRegisters);
+
+
+		//
+		panel_V_SpecialPurposeRegisters = new V_SpecialPurposeRegisters();
+		panel_V_SpecialPurposeRegisters.setLayout(null);
+
+		GridBagConstraints gbc_panel_V_SpecialPurposeRegisters = new GridBagConstraints();
+		gbc_panel_V_SpecialPurposeRegisters.fill = GridBagConstraints.VERTICAL;
+		gbc_panel_V_SpecialPurposeRegisters.anchor = GridBagConstraints.WEST;
+		gbc_panel_V_SpecialPurposeRegisters.gridx = 0;
+		gbc_panel_V_SpecialPurposeRegisters.gridy = 4;
+		panelPrimaryRegisters.add(panel_V_SpecialPurposeRegisters, gbc_panel_V_SpecialPurposeRegisters);
 		//
 
 		JPanel panelCCR = new JPanel();
@@ -488,6 +513,7 @@ public class ViewTests {
 	private V_PrimaryRegisters panel_V_PrimayRegisters;
 	private V_ProgramRegisters panel_V_ProgramRegisters;
 	private V_IndexRegisters panel_V_IndexRegisters;
+	private V_SpecialPurposeRegisters panel_V_SpecialPurposeRegisters;
 	//////////////////////////////////////////////////////////////////////////
 
 	class AdapterLog implements ActionListener {// , ListSelectionListener
