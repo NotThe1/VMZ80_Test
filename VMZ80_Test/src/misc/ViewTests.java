@@ -18,14 +18,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
 import java.beans.PropertyVetoException;
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -45,8 +43,7 @@ import javax.swing.border.BevelBorder;
 import codeSupport.AppLogger;
 import codeSupport.Z80;
 import codeSupport.Z80.Register;
-import disks.diskPanel.DiskPanelEvent;
-import disks.diskPanel.DiskPanelEventListener;
+import disks.DiskControlUnit;
 import disks.diskPanel.V_IF_DiskPanel;
 import hardware.ConditionCodeRegister;
 import hardware.WorkingRegisterSet;
@@ -55,7 +52,6 @@ import hardware.View.V_IF_IndexRegisters;
 import hardware.View.V_IF_PrimaryRegisters;
 import hardware.View.V_IF_ProgramRegisters;
 import hardware.View.V_IF_SpecialRegisters;
-import utilities.filePicker.FilePicker;
 
 public class ViewTests {
 
@@ -69,8 +65,17 @@ public class ViewTests {
 
 	ConditionCodeRegister ccr = ConditionCodeRegister.getInstance();
 	WorkingRegisterSet wrs = WorkingRegisterSet.getInstance();
+	private V_IF_PrimaryRegisters ifPrimaryRegisters;
+	private V_IF_ProgramRegisters ifProgramRegisters;
+	private V_IF_IndexRegisters ifIndexRegisters;
+	private V_IF_SpecialRegisters ifSpecialRegisters;
+	private V_IF_CCR ifCCR;
 	
-	File[] mountedDisks = new File[4];
+	private V_IF_DiskPanel ifDiskPanel;	
+	
+	DiskControlUnit dcu = DiskControlUnit.getInstance();
+	
+//	File[] mountedDisks = new File[4];
 	
 //	private static RoundIcon redIcon = new RoundIcon(Color.RED);
 //	private static RoundIcon grayIcon = new RoundIcon(Color.GRAY);
@@ -180,71 +185,71 @@ public class ViewTests {
 		}//for
 	
 	}//getInternalFrameLocations
-	private void doDiskpanelEvent(DiskPanelEvent diskPanelEvent) {
-
-		if (diskPanelEvent.isSelected()) {
-			mountDisk(diskPanelEvent.getDiskIndex());
-		}else {
-			dismountDisk(diskPanelEvent.getDiskIndex());			
-		}//if mount/dismount
-		
-		ifDiskPanel.updateDisks(mountedDisks);
-		
-		Thread t_ifDiskPanel = new Thread(ifDiskPanel);
-		t_ifDiskPanel.start();
-	}//doDiskpanelEvent
-	
-	private void mountDisk(int diskIndex) {
-		if(mountedDisks[diskIndex] !=null) {
-			String diskPath = mountedDisks[diskIndex].getAbsolutePath();
-			log.warnf("disk already mounted at index %d - %s%n", diskIndex,diskPath);
-			return;
-		}//if mounted already
-		
-		JFileChooser fc = FilePicker.getDiskPicker();
-		if (fc.showOpenDialog(frmTemplate) == JFileChooser.CANCEL_OPTION) {
-			log.info("Bailed out of the open");
-			return;
-		} // if
-
-		File selectedFile = fc.getSelectedFile();
-		
-		if (!selectedFile.exists()) {
-			log.info("Selected Disk does not exists");
-			return; // try again
-		} //if exists
-		
-		if (isDiskMounted(selectedFile)) {
-			log.warn("Disk already mounted");
-			return;
-		}// already mounted
-		
-		mountedDisks[diskIndex] = selectedFile;
-		log.infof("Mounted Disk - Index %d, Path: %s%n", diskIndex,mountedDisks[diskIndex].getAbsoluteFile());
-		return;		
-	}//mountDisk
-	
-	private void dismountDisk(int diskIndex) {
-		if (mountedDisks[diskIndex] ==null) {
-			log.warn("No Disk to Dismount");
-		}else {
-			log.infof("Dismounted Disk - Index %d, Path: %s%n", diskIndex,mountedDisks[diskIndex].getAbsoluteFile());
-
-			mountedDisks[diskIndex] =null;
-		}//if
-		
-	}//dismountDisk
-	
-	private boolean isDiskMounted(File newFile) {
-		boolean ans = false;
-		for (File file:mountedDisks) {
-			if (newFile.equals(file)) {
-				ans = true;
-				break;
-			}//if
-		}//for
-		return ans;
-	}//
+//	private void doDiskpanelEvent(DiskPanelEvent diskPanelEvent) {
+//
+//		if (diskPanelEvent.isSelected()) {
+//			mountDisk(diskPanelEvent.getDiskIndex());
+//		}else {
+//			dismountDisk(diskPanelEvent.getDiskIndex());			
+//		}//if mount/dismount
+//		
+//		ifDiskPanel.updateDisks(mountedDisks);
+//		
+//		Thread t_ifDiskPanel = new Thread(ifDiskPanel);
+//		t_ifDiskPanel.start();
+//	}//doDiskpanelEvent
+//	
+//	private void mountDisk(int diskIndex) {
+//		if(mountedDisks[diskIndex] !=null) {
+//			String diskPath = mountedDisks[diskIndex].getAbsolutePath();
+//			log.warnf("disk already mounted at index %d - %s%n", diskIndex,diskPath);
+//			return;
+//		}//if mounted already
+//		
+//		JFileChooser fc = FilePicker.getDiskPicker();
+//		if (fc.showOpenDialog(frmTemplate) == JFileChooser.CANCEL_OPTION) {
+//			log.info("Bailed out of the open");
+//			return;
+//		} // if
+//
+//		File selectedFile = fc.getSelectedFile();
+//		
+//		if (!selectedFile.exists()) {
+//			log.info("Selected Disk does not exists");
+//			return; // try again
+//		} //if exists
+//		
+//		if (isDiskMounted(selectedFile)) {
+//			log.warn("Disk already mounted");
+//			return;
+//		}// already mounted
+//		
+//		mountedDisks[diskIndex] = selectedFile;
+//		log.infof("Mounted Disk - Index %d, Path: %s%n", diskIndex,mountedDisks[diskIndex].getAbsoluteFile());
+//		return;		
+//	}//mountDisk
+//	
+//	private void dismountDisk(int diskIndex) {
+//		if (mountedDisks[diskIndex] ==null) {
+//			log.warn("No Disk to Dismount");
+//		}else {
+//			log.infof("Dismounted Disk - Index %d, Path: %s%n", diskIndex,mountedDisks[diskIndex].getAbsoluteFile());
+//
+//			mountedDisks[diskIndex] =null;
+//		}//if
+//		
+//	}//dismountDisk
+//	
+//	private boolean isDiskMounted(File newFile) {
+//		boolean ans = false;
+//		for (File file:mountedDisks) {
+//			if (newFile.equals(file)) {
+//				ans = true;
+//				break;
+//			}//if
+//		}//for
+//		return ans;
+//	}//
 
 	private void appClose() {
 		Preferences myPrefs = Preferences.userNodeForPackage(ViewTests.class).node(this.getClass().getSimpleName());
@@ -273,6 +278,8 @@ public class ViewTests {
 		log.info("Starting....");
 
 		initAllRegisters();
+		dcu.setDisplay(ifDiskPanel);
+		
 		
 
 	}// appInit
@@ -351,15 +358,7 @@ public class ViewTests {
 		panelForButtons.add(btnNewButton_1);
 		
 		JButton btnAddTwoDisks = new JButton("Add disks A & D");
-		btnAddTwoDisks.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				File[] files = new File[4];
-				files[0] = new File("C:\\Temp\\icons\\icons8-toolbox-50.png");
-				files[3] = new File("C:\\Users\\admin\\Dropbox\\Trips\\PP_Both_2018.odt");
-				ifDiskPanel.updateDisplay(files);		
-			}
-		});
-		panelForButtons.add(btnAddTwoDisks);
+			panelForButtons.add(btnAddTwoDisks);
 
 		splitPane1 = new JSplitPane();
 		GridBagConstraints gbc_splitPane1 = new GridBagConstraints();
@@ -423,11 +422,11 @@ public class ViewTests {
 		ifCCR.setVisible(true);
 		
 		ifDiskPanel = new V_IF_DiskPanel();
-		ifDiskPanel.addDiskPanelActionListener(new DiskPanelEventListener() {
-			public void diskPanelAction(DiskPanelEvent diskPanelEvent) {
-				doDiskpanelEvent(diskPanelEvent);
-			}
-		});
+//		ifDiskPanel.addDiskPanelActionListener(new DiskPanelEventListener() {
+//			public void diskPanelAction(DiskPanelEvent diskPanelEvent) {
+//				doDiskpanelEvent(diskPanelEvent);
+//			}
+//		});
 //		ifDiskPanel.addDiskPanelActionListener(adapterLog);
 		desktopPane.add(ifDiskPanel);
 		ifDiskPanel.setVisible(true);		
@@ -506,16 +505,16 @@ public class ViewTests {
 
 	static final String EMPTY_STRING = "";
 	private JDesktopPane desktopPane;
-	private V_IF_PrimaryRegisters ifPrimaryRegisters;
-	private V_IF_ProgramRegisters ifProgramRegisters;
-	private V_IF_IndexRegisters ifIndexRegisters;
-	private V_IF_SpecialRegisters ifSpecialRegisters;
-	private V_IF_CCR ifCCR;
-	
-	private V_IF_DiskPanel ifDiskPanel;	
+//	private V_IF_PrimaryRegisters ifPrimaryRegisters;
+//	private V_IF_ProgramRegisters ifProgramRegisters;
+//	private V_IF_IndexRegisters ifIndexRegisters;
+//	private V_IF_SpecialRegisters ifSpecialRegisters;
+//	private V_IF_CCR ifCCR;
+//	
+//	private V_IF_DiskPanel ifDiskPanel;	
 	//////////////////////////////////////////////////////////////////////////
 
-	class AdapterLog implements ActionListener,DiskPanelEventListener {// , ListSelectionListener
+	class AdapterLog implements ActionListener {// , ListSelectionListener
 		/*   ActionListener   */
 		@Override
 		public void actionPerformed(ActionEvent actionEvent) {
@@ -530,12 +529,7 @@ public class ViewTests {
 			}// switch
 		}// actionPerformed
 
-		/*   DiskPanelEventListener   */
-		@Override
-		public void diskPanelAction(DiskPanelEvent diskPanelEvent) {
-			doDiskpanelEvent(diskPanelEvent);
-			
-		}//diskPanelAction
+
 	}// class AdapterAction
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
