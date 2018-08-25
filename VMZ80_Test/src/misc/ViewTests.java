@@ -422,12 +422,7 @@ public class ViewTests {
 		ifCCR.setVisible(true);
 		
 		ifDiskPanel = new V_IF_DiskPanel();
-//		ifDiskPanel.addDiskPanelActionListener(new DiskPanelEventListener() {
-//			public void diskPanelAction(DiskPanelEvent diskPanelEvent) {
-//				doDiskpanelEvent(diskPanelEvent);
-//			}
-//		});
-//		ifDiskPanel.addDiskPanelActionListener(adapterLog);
+
 		desktopPane.add(ifDiskPanel);
 		ifDiskPanel.setVisible(true);		
 
@@ -497,6 +492,17 @@ public class ViewTests {
 			}
 		});
 		mnuFile.add(mnuFileExit);
+		
+		JMenu mnuWindows = new JMenu("Windows");
+		menuBar.add(mnuWindows);
+		
+		JMenuItem mnuWindowsPrimaryRegisters = new JMenuItem("PrimaryRegisters");
+		mnuWindowsPrimaryRegisters.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ifPrimaryRegisters.setVisible(!ifPrimaryRegisters.isVisible());
+			}
+		});
+		mnuWindows.add(mnuWindowsPrimaryRegisters);
 
 	}// initialize
 
@@ -505,13 +511,7 @@ public class ViewTests {
 
 	static final String EMPTY_STRING = "";
 	private JDesktopPane desktopPane;
-//	private V_IF_PrimaryRegisters ifPrimaryRegisters;
-//	private V_IF_ProgramRegisters ifProgramRegisters;
-//	private V_IF_IndexRegisters ifIndexRegisters;
-//	private V_IF_SpecialRegisters ifSpecialRegisters;
-//	private V_IF_CCR ifCCR;
-//	
-//	private V_IF_DiskPanel ifDiskPanel;	
+
 	//////////////////////////////////////////////////////////////////////////
 
 	class AdapterLog implements ActionListener {// , ListSelectionListener
