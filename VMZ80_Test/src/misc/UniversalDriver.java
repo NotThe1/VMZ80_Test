@@ -45,6 +45,7 @@ import disks.utility.DiskUtility;
 import disks.utility.UpdateSystemDisk;
 import hardware.ConditionCodeRegister;
 import ioSystem.IOController;
+import memory.MemoryLoaderFromFile;
 import utilities.filePicker.FilePicker;
 
 public class UniversalDriver {
@@ -162,6 +163,9 @@ public class UniversalDriver {
 	}// doBtnThree
 
 	private void doBtnFour() {
+		String targetFileName ="C:\\Users\\admin\\VMdata\\Memory\\sampleLF.hex";
+		log.infof("testFile: %s%n", targetFileName);
+		MemoryLoaderFromFile.loadMemoryImage(new File(targetFileName));
 
 	}// doBtnFour
 
@@ -331,7 +335,7 @@ public class UniversalDriver {
 		btnThree.setPreferredSize(new Dimension(100, 20));
 		btnThree.setMaximumSize(new Dimension(0, 0));
 
-		btnFour = new JButton("Button 4");
+		btnFour = new JButton("Load Memory");
 		btnFour.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnFour = new GridBagConstraints();
 		gbc_btnFour.gridx = 4;
