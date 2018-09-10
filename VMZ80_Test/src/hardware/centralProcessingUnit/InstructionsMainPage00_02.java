@@ -259,10 +259,10 @@ public class InstructionsMainPage00_02 {
 			instructions[2] = hiLoc;
 			loadInstructions(instructions);
 
-			hi = (byte) ((value >> 8) & Z80.BYTE_MASK);
-			lo = (byte) (value & Z80.BYTE_MASK);
-			// valueArray[0] = lo;
-			// valueArray[1] = hi;
+//			hi = (byte) ((value >> 8) & Z80.BYTE_MASK);
+//			lo = (byte) (value & Z80.BYTE_MASK);
+			lo = (byte) ((value >> 8) & Z80.BYTE_MASK);
+			hi = (byte) (value & Z80.BYTE_MASK);
 
 			cpuBuss.writeWord(valueLocation, hi, lo);
 			cpu.executeInstruction(wrs.getProgramCounter());
