@@ -42,6 +42,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 import ioSystem.IOController;
+import ioSystem.listDevice.ListDevice;
 import ioSystem.ttyZ80.TTYZ80;
 import utilities.hdNumberBox.HDNumberBox;
 
@@ -110,11 +111,12 @@ public class DriveDevices {
 		ioc.byteToDevice(TTYZ80.OUT, sourceByte);
 	}// doBtnThree
 
-	private void doBtnFour() {
+	private void doBtnFour(byte ioAddress) {
 		byte[] sourceBytes = txtSource.getText().getBytes();
 		for (byte b : sourceBytes) {
-			ioc.byteToDevice(TTYZ80.OUT, b);
+			ioc.byteToDevice(ioAddress, b);
 		} //
+		ioc.byteToDevice(ioAddress,(byte)0x0A);
 
 	}// doBtnFour
 
@@ -282,17 +284,24 @@ public class DriveDevices {
 		gbc_panelForButtons.gridy = 0;
 		frmTemplate.getContentPane().add(panelForButtons, gbc_panelForButtons);
 		GridBagLayout gbl_panelForButtons = new GridBagLayout();
-		gbl_panelForButtons.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_panelForButtons.rowHeights = new int[] { 0, 0 };
-		gbl_panelForButtons.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panelForButtons.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+		gbl_panelForButtons.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_panelForButtons.rowHeights = new int[] { 0, 0, 0 };
+		gbl_panelForButtons.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panelForButtons.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		panelForButtons.setLayout(gbl_panelForButtons);
+		
+		JLabel lblTty = new JLabel("TTY: ");
+		GridBagConstraints gbc_lblTty = new GridBagConstraints();
+		gbc_lblTty.insets = new Insets(0, 0, 5, 5);
+		gbc_lblTty.gridx = 0;
+		gbc_lblTty.gridy = 0;
+		panelForButtons.add(lblTty, gbc_lblTty);
 
 		btnOne = new JButton("Get 1 character");
 		btnOne.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnOne = new GridBagConstraints();
-		gbc_btnOne.insets = new Insets(0, 0, 0, 5);
-		gbc_btnOne.gridx = 0;
+		gbc_btnOne.insets = new Insets(0, 0, 5, 5);
+		gbc_btnOne.gridx = 1;
 		gbc_btnOne.gridy = 0;
 		panelForButtons.add(btnOne, gbc_btnOne);
 		btnOne.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -308,8 +317,8 @@ public class DriveDevices {
 		btnTwo = new JButton("Full Duplex");
 		btnTwo.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnTwo = new GridBagConstraints();
-		gbc_btnTwo.insets = new Insets(0, 0, 0, 5);
-		gbc_btnTwo.gridx = 1;
+		gbc_btnTwo.insets = new Insets(0, 0, 5, 5);
+		gbc_btnTwo.gridx = 2;
 		gbc_btnTwo.gridy = 0;
 		panelForButtons.add(btnTwo, gbc_btnTwo);
 		btnTwo.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -324,8 +333,8 @@ public class DriveDevices {
 		btnThree = new JButton("Send Byte");
 		btnThree.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnThree = new GridBagConstraints();
-		gbc_btnThree.insets = new Insets(0, 0, 0, 5);
-		gbc_btnThree.gridx = 3;
+		gbc_btnThree.insets = new Insets(0, 0, 5, 5);
+		gbc_btnThree.gridx = 4;
 		gbc_btnThree.gridy = 0;
 		panelForButtons.add(btnThree, gbc_btnThree);
 		btnThree.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -340,14 +349,14 @@ public class DriveDevices {
 		btnFour = new JButton("Send All Chars");
 		btnFour.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnFour = new GridBagConstraints();
-		gbc_btnFour.insets = new Insets(0, 0, 0, 5);
-		gbc_btnFour.gridx = 4;
+		gbc_btnFour.insets = new Insets(0, 0, 5, 5);
+		gbc_btnFour.gridx = 5;
 		gbc_btnFour.gridy = 0;
 		panelForButtons.add(btnFour, gbc_btnFour);
 		btnFour.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		btnFour.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				doBtnFour();
+				doBtnFour(TTYZ80.OUT);
 			}
 		});
 		btnFour.setPreferredSize(new Dimension(100, 20));
@@ -363,14 +372,14 @@ public class DriveDevices {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				log.infof("Status = %d%n", fromDevice);
+				log.infof("Status = %02X%n", fromDevice);
 				// addScreenByte(fromDevice);
 
 			}
 		});
 		GridBagConstraints gbc_btnGetStatus = new GridBagConstraints();
-		gbc_btnGetStatus.insets = new Insets(0, 0, 0, 5);
-		gbc_btnGetStatus.gridx = 5;
+		gbc_btnGetStatus.insets = new Insets(0, 0, 5, 5);
+		gbc_btnGetStatus.gridx = 6;
 		gbc_btnGetStatus.gridy = 0;
 		panelForButtons.add(btnGetStatus, gbc_btnGetStatus);
 
@@ -394,10 +403,29 @@ public class DriveDevices {
 			}
 		});
 		GridBagConstraints gbc_btnReadAll = new GridBagConstraints();
-		gbc_btnReadAll.insets = new Insets(0, 0, 0, 5);
-		gbc_btnReadAll.gridx = 6;
+		gbc_btnReadAll.insets = new Insets(0, 0, 5, 5);
+		gbc_btnReadAll.gridx = 7;
 		gbc_btnReadAll.gridy = 0;
 		panelForButtons.add(btnReadAll, gbc_btnReadAll);
+		
+		JLabel lblLst = new JLabel("LST: ");
+		GridBagConstraints gbc_lblLst = new GridBagConstraints();
+		gbc_lblLst.insets = new Insets(0, 0, 0, 5);
+		gbc_lblLst.gridx = 0;
+		gbc_lblLst.gridy = 1;
+		panelForButtons.add(lblLst, gbc_lblLst);
+		
+		JButton btnPrintLine = new JButton("Print Line");
+		btnPrintLine.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				doBtnFour(ListDevice.LIST_OUT);
+			}
+		});
+		GridBagConstraints gbc_btnPrintLine = new GridBagConstraints();
+		gbc_btnPrintLine.insets = new Insets(0, 0, 0, 5);
+		gbc_btnPrintLine.gridx = 1;
+		gbc_btnPrintLine.gridy = 1;
+		panelForButtons.add(btnPrintLine, gbc_btnPrintLine);
 
 
 		splitPane1 = new JSplitPane();

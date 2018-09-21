@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -46,7 +45,6 @@ import disks.utility.UpdateSystemDisk;
 import hardware.ConditionCodeRegister;
 import ioSystem.IOController;
 import memory.MemoryLoaderFromFile;
-import utilities.filePicker.FilePicker;
 
 public class UniversalDriver {
 
@@ -128,16 +126,16 @@ public class UniversalDriver {
 		// JFileChooser fc = FilePicker.getListZ80Picker();
 		// JFileChooser fc = FilePicker.getAllListPicker();
 		// JFileChooser fc = FilePicker.getZ80ListPicker();
-		JFileChooser fc = FilePicker.getZ80SourcePicker();
+//		JFileChooser fc = FilePicker.getZ80SourcePicker();
 		// JFileChooser fc = FilePicker
 		// JFileChooser fc = FilePicker
 		// JFileChooser fc = FilePicker
 
-		if (fc.showOpenDialog(frmTemplate) == JFileChooser.APPROVE_OPTION) {
-			log.info(fc.getSelectedFile().toString());
-			log.info(fc.getSelectedFile().getName());
-		}
-		;
+//		if (fc.showOpenDialog(frmTemplate) == JFileChooser.APPROVE_OPTION) {
+//			log.info(fc.getSelectedFile().toString());
+//			log.info(fc.getSelectedFile().getName());
+//		}
+//		;
 
 	
 	}//doFileChooser
