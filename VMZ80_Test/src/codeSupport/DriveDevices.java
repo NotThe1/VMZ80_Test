@@ -43,10 +43,9 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import ioSystem.IOControllerA;
+import ioSystem.IOController;
 import ioSystem.listDevice.GenericPrinter;
 import ioSystem.ttyZ80.TTYZ80;
-import ioSystem.ttyZ80.TTYZ80A;
 import utilities.hdNumberBox.HDNumberBox;
 
 public class DriveDevices {
@@ -64,7 +63,7 @@ public class DriveDevices {
 	private AdapterLog logAdaper = new AdapterLog();
 	private StyledDocument localScreen;
 
-	private IOControllerA ioc = IOControllerA.getInstance();
+	private IOController ioc = IOController.getInstance();
 
 	/**
 	 * Launch the application.
@@ -91,11 +90,11 @@ public class DriveDevices {
 	}// doBtnOne
 
 	private void doBtnTwo() {
-		Byte statusValue = ioc.byteToCPU(TTYZ80A.STATUS);
+		Byte statusValue = ioc.byteToCPU(TTYZ80.STATUS);
 		while (statusValue != 0) {
 			hdStatusReturned.setValue(statusValue);
-			addScreenByte(ioc.byteToCPU(TTYZ80A.IN));
-			statusValue = ioc.byteToCPU(TTYZ80A.STATUS);
+			addScreenByte(ioc.byteToCPU(TTYZ80.IN));
+			statusValue = ioc.byteToCPU(TTYZ80.STATUS);
 		} // while
 	}// doBtnTwo
 
