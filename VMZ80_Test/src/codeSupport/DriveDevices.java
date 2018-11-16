@@ -1,4 +1,7 @@
 package codeSupport;
+/*
+ * 2018-11-16 Changed to Queue for I/O
+ */
 
 import java.awt.Color;
 import java.awt.Component;
@@ -16,7 +19,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.prefs.Preferences;
@@ -41,9 +43,10 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
-import ioSystem.IOController;
-import ioSystem.listDevice.ListDevice;
+import ioSystem.IOControllerA;
+import ioSystem.listDevice.GenericPrinter;
 import ioSystem.ttyZ80.TTYZ80;
+import ioSystem.ttyZ80.TTYZ80A;
 import utilities.hdNumberBox.HDNumberBox;
 
 public class DriveDevices {
@@ -61,7 +64,7 @@ public class DriveDevices {
 	private AdapterLog logAdaper = new AdapterLog();
 	private StyledDocument localScreen;
 
-	private IOController ioc = IOController.getInstance();
+	private IOControllerA ioc = IOControllerA.getInstance();
 
 	/**
 	 * Launch the application.
@@ -83,40 +86,30 @@ public class DriveDevices {
 
 	private void doBtnOne() {
 		byte fromDevice = 0x00;
-		try {
-			fromDevice = ioc.byteFromDevice(TTYZ80.IN);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		fromDevice = ioc.byteToCPU(TTYZ80.IN);
 		addScreenByte(fromDevice);
 	}// doBtnOne
 
 	private void doBtnTwo() {
-		// byte b;
-		// try {
-		// while ( ioc.byteFromDevice(TTYZ80.STATUS) != 0x01){
-		// b= ioc.byteFromDevice(TTYZ80.IN);
-		// ioc.byteToDevice(TTYZ80.OUT, b);
-		// }
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }//while
-		//
+		Byte statusValue = ioc.byteToCPU(TTYZ80A.STATUS);
+		while (statusValue != 0) {
+			hdStatusReturned.setValue(statusValue);
+			addScreenByte(ioc.byteToCPU(TTYZ80A.IN));
+			statusValue = ioc.byteToCPU(TTYZ80A.STATUS);
+		} // while
 	}// doBtnTwo
 
 	private void doBtnThree() {
 		byte sourceByte = (byte) hdnByteOut.getValue();
-		ioc.byteToDevice(TTYZ80.OUT, sourceByte);
+		ioc.byteFromCPU(TTYZ80.OUT, sourceByte);
 	}// doBtnThree
 
 	private void doBtnFour(byte ioAddress) {
 		byte[] sourceBytes = txtSource.getText().getBytes();
 		for (byte b : sourceBytes) {
-			ioc.byteToDevice(ioAddress, b);
+			ioc.byteFromCPU(ioAddress, b);
 		} //
-		ioc.byteToDevice(ioAddress,(byte)0x0A);
+		ioc.byteFromCPU(ioAddress, (byte) 0x0A);
 
 	}// doBtnFour
 
@@ -286,10 +279,11 @@ public class DriveDevices {
 		GridBagLayout gbl_panelForButtons = new GridBagLayout();
 		gbl_panelForButtons.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gbl_panelForButtons.rowHeights = new int[] { 0, 0, 0 };
-		gbl_panelForButtons.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panelForButtons.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				Double.MIN_VALUE };
 		gbl_panelForButtons.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		panelForButtons.setLayout(gbl_panelForButtons);
-		
+
 		JLabel lblTty = new JLabel("TTY: ");
 		GridBagConstraints gbc_lblTty = new GridBagConstraints();
 		gbc_lblTty.insets = new Insets(0, 0, 5, 5);
@@ -314,7 +308,7 @@ public class DriveDevices {
 		btnOne.setMaximumSize(new Dimension(0, 0));
 		btnOne.setPreferredSize(new Dimension(100, 20));
 
-		btnTwo = new JButton("Full Duplex");
+		btnTwo = new JButton("Get Byte (Status)");
 		btnTwo.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnTwo = new GridBagConstraints();
 		gbc_btnTwo.insets = new Insets(0, 0, 5, 5);
@@ -366,15 +360,8 @@ public class DriveDevices {
 		btnGetStatus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				byte fromDevice = 0x00;
-				try {
-					fromDevice = ioc.byteFromDevice(TTYZ80.STATUS);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				fromDevice = ioc.byteToCPU(TTYZ80.STATUS);
 				log.infof("Status = %02X%n", fromDevice);
-				// addScreenByte(fromDevice);
-
 			}
 		});
 		GridBagConstraints gbc_btnGetStatus = new GridBagConstraints();
@@ -388,37 +375,31 @@ public class DriveDevices {
 			public void actionPerformed(ActionEvent actionEvent) {
 				byte byteCount = 0x00;
 				byte fromDevice = 0x00;
-				try {
-					byteCount = ioc.byteFromDevice(TTYZ80.STATUS);
-					log.infof("Status = %d%n", byteCount);
-					while (ioc.byteFromDevice(TTYZ80.STATUS) > 0) {
-						fromDevice = ioc.byteFromDevice(TTYZ80.IN);
-						addScreenByte(fromDevice);
-					} // for
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} // try
-
-			}
+				byteCount = ioc.byteToCPU(TTYZ80.STATUS);
+				log.infof("Status = %d%n", byteCount);
+				while (ioc.byteToCPU(TTYZ80.STATUS) > 0) {
+					fromDevice = ioc.byteToCPU(TTYZ80.IN);
+					addScreenByte(fromDevice);
+				} // for
+			}// actionPerformed
 		});
 		GridBagConstraints gbc_btnReadAll = new GridBagConstraints();
 		gbc_btnReadAll.insets = new Insets(0, 0, 5, 5);
 		gbc_btnReadAll.gridx = 7;
 		gbc_btnReadAll.gridy = 0;
 		panelForButtons.add(btnReadAll, gbc_btnReadAll);
-		
+
 		JLabel lblLst = new JLabel("LST: ");
 		GridBagConstraints gbc_lblLst = new GridBagConstraints();
 		gbc_lblLst.insets = new Insets(0, 0, 0, 5);
 		gbc_lblLst.gridx = 0;
 		gbc_lblLst.gridy = 1;
 		panelForButtons.add(lblLst, gbc_lblLst);
-		
+
 		JButton btnPrintLine = new JButton("Print Line");
 		btnPrintLine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				doBtnFour(ListDevice.LIST_OUT);
+				doBtnFour(GenericPrinter.OUT);
 			}
 		});
 		GridBagConstraints gbc_btnPrintLine = new GridBagConstraints();
@@ -426,7 +407,6 @@ public class DriveDevices {
 		gbc_btnPrintLine.gridx = 1;
 		gbc_btnPrintLine.gridy = 1;
 		panelForButtons.add(btnPrintLine, gbc_btnPrintLine);
-
 
 		splitPane1 = new JSplitPane();
 		GridBagConstraints gbc_splitPane1 = new GridBagConstraints();
@@ -458,8 +438,8 @@ public class DriveDevices {
 		GridBagLayout gbl_panelTop = new GridBagLayout();
 		gbl_panelTop.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
 		gbl_panelTop.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_panelTop.columnWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gbl_panelTop.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panelTop.columnWeights = new double[] { 0.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE };
+		gbl_panelTop.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panelTop.setLayout(gbl_panelTop);
 
 		Component verticalStrut_2 = Box.createVerticalStrut(20);
@@ -593,6 +573,19 @@ public class DriveDevices {
 		gbc_hdnStatusAddress.gridx = 1;
 		gbc_hdnStatusAddress.gridy = 7;
 		panelTop.add(hdnStatusAddress, gbc_hdnStatusAddress);
+
+		hdStatusReturned = new HDNumberBox();
+		// hdStatusReturned.setValue(237);
+		hdStatusReturned.setPreferredSize(new Dimension(40, 25));
+		// hdStatusReturned.setMinValue(0);
+		// hdStatusReturned.setMaxValue(255);
+		hdStatusReturned.setDecimalDisplay(false);
+		GridBagConstraints gbc_hdStatusReturned = new GridBagConstraints();
+		gbc_hdStatusReturned.insets = new Insets(0, 0, 0, 5);
+		gbc_hdStatusReturned.anchor = GridBagConstraints.NORTHWEST;
+		gbc_hdStatusReturned.gridx = 2;
+		gbc_hdStatusReturned.gridy = 7;
+		panelTop.add(hdStatusReturned, gbc_hdStatusReturned);
 		// GridBagLayout gbl_hdnStatusAddress = new GridBagLayout();
 		// gbl_hdnStatusAddress.columnWidths = new int[]{0};
 		// gbl_hdnStatusAddress.rowHeights = new int[]{0};
@@ -760,6 +753,7 @@ public class DriveDevices {
 	private JLabel lblForScreen;
 	private JTextField txtSource;
 	private JTextPane txtLocalScreen;
+	private HDNumberBox hdStatusReturned;
 
 	//////////////////////////////////////////////////////////////////////////
 
