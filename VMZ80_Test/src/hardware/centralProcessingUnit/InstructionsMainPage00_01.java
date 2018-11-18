@@ -61,7 +61,7 @@ public class InstructionsMainPage00_01 {
 
 			loadInstructions(instructions);
 
-			for (Register r : Z80.doubleRegisters1) {
+			for (Register r : Z80.getAllDoubleRegisters1()) {
 				cpu.executeInstruction(wrs.getProgramCounter());
 				assertThat(r.toString(), value, equalTo(wrs.getDoubleReg(r)));
 				// System.out.printf("r -> %s, value -> %04X%n",r,wrs.getDoubleReg(r));

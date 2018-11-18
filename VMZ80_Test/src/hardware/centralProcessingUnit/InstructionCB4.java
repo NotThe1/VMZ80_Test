@@ -39,13 +39,13 @@ public class InstructionCB4 {
 		boolean bitState;
 
 		for (int r = 0; r < numberOfRegisters; r++) {
-			thisRegister = Z80.singleRegisters[r];
+			thisRegister = Z80.getSingleRegister(r);
 			for (int value = 0; value < numberOfValues; value++) {
 				loadInstructionCB(opCodeBase);
 				wrs.setProgramCounter(instructionBase);
 				for (int testBit = 0; testBit < 8; testBit++) {
 					wrs.setReg(thisRegister, (byte) value);
-					bitState = (Z80.BITS[testBit] & (byte) value) != Z80.BITS[testBit] ? true : false;
+					bitState = (Z80.getBit(testBit) & (byte) value) != Z80.getBit(testBit) ? true : false;
 					message = String.format("reg = %s, value = %02X, bit = %d", thisRegister, value, testBit);
 					// System.out.printf(message + ", Set = %s,\topCodeBase = %02X%n", bitState, opCodeBase);
 					cpu.executeInstruction(wrs.getProgramCounter());
@@ -67,13 +67,13 @@ public class InstructionCB4 {
 		byte result;
 
 		for (int r = 0; r < numberOfRegisters; r++) {
-			thisRegister = Z80.singleRegisters[r];
+			thisRegister = Z80.getSingleRegister(r);
 			for (int value = 0; value < numberOfValues; value++) {
 				loadInstructionCB(opCodeBase);
 				wrs.setProgramCounter(instructionBase);
 				for (int testBit = 0; testBit < 8; testBit++) {
 					wrs.setReg(thisRegister, (byte) value);
-					result = (byte) (value & Z80.BITS_NOT[testBit]);
+					result = (byte) (value & Z80.getBitNot(testBit));
 					message = String.format("reg = %s, value = %02X, bit = %d", thisRegister, value, testBit);
 					// System.out.printf(message + ", result = %02X,\topCodeBase = %02X%n", result, opCodeBase);
 					cpu.executeInstruction(wrs.getProgramCounter());
@@ -94,13 +94,13 @@ public class InstructionCB4 {
 		byte result;
 
 		for (int r = 0; r < numberOfRegisters; r++) {
-			thisRegister = Z80.singleRegisters[r];
+			thisRegister = Z80.getSingleRegister(r);
 			for (int value = 0; value < numberOfValues; value++) {
 				loadInstructionCB(opCodeBase);
 				wrs.setProgramCounter(instructionBase);
 				for (int testBit = 0; testBit < 8; testBit++) {
 					wrs.setReg(thisRegister, (byte) value);
-					result = (byte) (value | Z80.BITS[testBit]);
+					result = (byte) (value | Z80.getBit(testBit));
 					message = String.format("reg = %s, value = %02X, bit = %d", thisRegister, value, testBit);
 					// System.out.printf(message + ", result = %02X,\topCodeBase = %02X%n", result, opCodeBase);
 					cpu.executeInstruction(wrs.getProgramCounter());

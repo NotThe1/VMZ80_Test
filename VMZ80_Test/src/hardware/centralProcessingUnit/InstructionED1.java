@@ -417,11 +417,12 @@ int instructionBase = 0x1000;
 			for (registerIndex = 0; registerIndex < regSize; registerIndex++) {
 				Register reg = registers[registerIndex];
 				// returns lo,hi
-				aAns[1] = values[((regSize - registerIndex) * 2) - 1];
-				aAns[0] = values[((regSize - registerIndex) * 2) - 2];
+				//****************
+				aAns[0] = values[((regSize - registerIndex) * 2) - 1];
+				aAns[1] = values[((regSize - registerIndex) * 2) - 2];
 
-//				System.out.printf("PC = %04X    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), aAns[0],
-//						aAns[1]);
+				System.out.printf("PC = %04d    %s,  %02X,  %02X  %n", wrs.getProgramCounter(), reg.toString(), aAns[0],
+						aAns[1]);
 				cpu.executeInstruction(wrs.getProgramCounter()); // LD rr,(xx)
 
 				message = String.format("LD|rr|bb %s: hi= %02X, lo = %02X.", reg.toString(), aAns[1], aAns[0]);

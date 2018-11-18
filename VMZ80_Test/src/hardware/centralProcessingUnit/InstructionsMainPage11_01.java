@@ -248,8 +248,8 @@ public class InstructionsMainPage11_01 {
 		Register reg;
 		wrs.setStackPointer(valueBase);
 		// PUSH
-		for (int r = 0; r < Z80.doubleRegisters2.length; r++) {
-			reg = Z80.doubleRegisters2[r];
+		for (int r = 0; r < Z80.getAllDoubleRegisters2().length; r++) {
+			reg = Z80.getDoubleRegister2(r);
 			wordValue = regValues[r];
 			wrs.setDoubleReg(reg, wordValue);
 			wordParts = splitWord(wordValue);
@@ -265,16 +265,16 @@ public class InstructionsMainPage11_01 {
 		// POP
 		instructions = new byte[] { (byte) 0xC1, (byte) 0xD1, (byte) 0xE1, (byte) 0xF1 }; // POP
 		loadInstructions(1, instructions);
-		for (int r = 0; r < Z80.doubleRegisters2.length; r++) {
-			reg = Z80.doubleRegisters2[r];
+		for (int r = 0; r < Z80.getAllDoubleRegisters2().length; r++) {
+			reg = Z80.getDoubleRegister2(r);
 			wrs.setDoubleReg(reg, -1); // reset all registers
 		} // for r - reg
 
-		int stackLocation = valueBase - (2 * Z80.doubleRegisters2.length);
+		int stackLocation = valueBase - (2 * Z80.getAllDoubleRegisters2().length);
 		wrs.setStackPointer(stackLocation);
 		// System.out.print(stackLocation);
-		for (int r = 0; r < Z80.doubleRegisters2.length; r++) {
-			reg = Z80.doubleRegisters2[r];
+		for (int r = 0; r < Z80.getAllDoubleRegisters2().length; r++) {
+			reg = Z80.getDoubleRegister2(r);
 			cpu.startInstruction();
 			assertThat(reg.toString() + "POP ", stackLocation + (2 * (r + 1)), equalTo(wrs.getStackPointer()));
 		} // for r - reg

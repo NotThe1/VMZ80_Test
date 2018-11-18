@@ -55,7 +55,7 @@ public class InstructionsMainPage01_01 {
 				} // if halt skip
 				opCode = (byte) i;
 				loadInstructions(opCode);
-				regSource = Z80.singleRegisters[i & 0b0000_0111];
+				regSource = Z80.getSingleRegister(i & 0b0000_0111);
 				wrs.setReg(regSource, value);
 				if (regSource.equals(Register.M)) {
 					wrs.setDoubleReg(Register.M, valueBase);
@@ -63,7 +63,7 @@ public class InstructionsMainPage01_01 {
 				} // if source is (HL)
 				wrs.setReg(regSource, value);
 
-				regDestination = Z80.singleRegisters[(i & 0b0011_1000) >> 3];
+				regDestination = Z80.getSingleRegister((i & 0b0011_1000) >> 3);
 				if (regDestination.equals(Register.M)) {
 					if (regSource.equals(Register.L) || regSource.equals(Register.H)) {
 						continue;

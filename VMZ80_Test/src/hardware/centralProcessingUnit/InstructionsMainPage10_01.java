@@ -91,8 +91,8 @@ public class InstructionsMainPage10_01 {
 				carry = flags.subSequence(5, 6).equals("1") ? true : false;
 
 				wrs.setProgramCounter(instructionBase);
-				for (int r = 0; r < Z80.singleRegisters.length - 1; r++) {
-					reg = Z80.singleRegisters[r];
+				for (int r = 0; r < Z80.getAllSingleRegisters().length - 1; r++) {
+					reg =Z80.getSingleRegister(r);
 					message = String.format("%s,%s [%s]: %02X %s %02X = %02X", operation, reg.toString(), carryString,
 							arg1, operator, arg2, result);
 					wrs.setAcc(arg1);
@@ -164,8 +164,8 @@ public class InstructionsMainPage10_01 {
 				carry = flags.subSequence(5, 6).equals("1") ? true : false;
 
 				wrs.setProgramCounter(instructionBase);
-				for (int r = 0; r < Z80.singleRegisters.length - 1; r++) {
-					reg = Z80.singleRegisters[r];
+				for (int r = 0; r < Z80.getAllSingleRegisters().length - 1; r++) {
+					reg = Z80.getSingleRegister(r);
 					message = String.format("%s,%s : %02X %s %02X = %02X", operation, reg.toString(), arg1, operator,
 							arg2, result);
 					wrs.setAcc(arg1);

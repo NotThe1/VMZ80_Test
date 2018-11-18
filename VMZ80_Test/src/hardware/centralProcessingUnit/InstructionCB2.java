@@ -110,7 +110,7 @@ public class InstructionCB2 {
 		Collection<FileFlag> valuesRLC = mapRRC.values();
 		
 		for (int r = 0; r < 8; r++) {
-			thisRegister = Z80.singleRegisters[r];
+			thisRegister = Z80.getSingleRegister(r);
 			loadInstructionCB(instruction2[r]);
 			
 			wrs.setProgramCounter(instructioBase);
@@ -142,7 +142,7 @@ public class InstructionCB2 {
 		Collection<FileFlag> valuesRLnc = mapRRnc.values();
 		
 		for (int r = 0; r < 8; r++) {
-			thisRegister = Z80.singleRegisters[r];
+			thisRegister = Z80.getSingleRegister(r);
 			loadInstructionCB(instruction2[r]);
 			
 			wrs.setProgramCounter(instructioBase);
@@ -175,7 +175,7 @@ public class InstructionCB2 {
 		Collection<FileFlag> valuesRLcy = mapRRcy.values();
 		
 		for (int r = 0; r < 8; r++) {
-			thisRegister = Z80.singleRegisters[r];
+			thisRegister = Z80.getSingleRegister(r);
 			loadInstructionCB(instruction2[r]);
 			
 			wrs.setProgramCounter(instructioBase);

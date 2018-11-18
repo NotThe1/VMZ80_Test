@@ -113,7 +113,7 @@ public class YY {
 		Collection<FileFlag> valuesRLcy = mapRLcy.values();
 		
 		for (int r = 0; r < 8; r++) {
-			thisRegister = Z80.singleRegisters[r];
+			thisRegister = Z80.getSingleRegister(r);
 			loadInstructionCB(instruction2[r]);
 			
 			wrs.setProgramCounter(instructioBase);

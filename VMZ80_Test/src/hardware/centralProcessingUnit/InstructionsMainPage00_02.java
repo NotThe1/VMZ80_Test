@@ -49,11 +49,11 @@ public class InstructionsMainPage00_02 {
 
 		int limit = 0x0100;
 		byte value;
-		for (int r = 0; r < Z80.singleRegisters.length; r++) {
+		for (int r = 0; r < Z80.getAllSingleRegisters().length; r++) {
 			loadInstructions(limit, instructions[r]);
 			for (int v = 0; v < limit; v++) {
 				value = (byte) v;
-				reg = Z80.singleRegisters[r];
+				reg = Z80.getSingleRegister(r);
 				if (reg.equals(Register.M)) {
 					wrs.setDoubleReg(Register.HL, valueBase);
 					ioBuss.write(valueBase, (byte) 0x00);
@@ -109,7 +109,7 @@ public class InstructionsMainPage00_02 {
 
 				wrs.setProgramCounter(instructionBase);
 
-				for (Register reg : Z80.singleRegisters) {
+				for (Register reg : Z80.getAllSingleRegisters()) {
 					if (reg.equals(Register.M)) {
 						wrs.setDoubleReg(Register.HL, valueBase);
 						ioBuss.write(valueBase, arg1);
@@ -152,7 +152,7 @@ public class InstructionsMainPage00_02 {
 			ans = (value - 1) & 0xFFFF;
 			loadInstructions(instructions);
 
-			for (Register reg : Z80.doubleRegisters1) {
+			for (Register reg :Z80.getAllDoubleRegisters1()) {
 				wrs.setDoubleReg(reg, value);
 				cpu.executeInstruction(wrs.getProgramCounter());
 				// System.out.printf("reg -> %s, value -> %04X, ans ->%04X%n",reg,wrs.getDoubleReg(reg),ans);
@@ -173,7 +173,7 @@ public class InstructionsMainPage00_02 {
 			ans = (value + 1) & 0xFFFF;
 			loadInstructions(instructions);
 
-			for (Register reg : Z80.doubleRegisters1) {
+			for (Register reg : Z80.getAllDoubleRegisters1()) {
 				wrs.setDoubleReg(reg, value);
 				cpu.executeInstruction(wrs.getProgramCounter());
 				// System.out.printf("reg -> %s, value -> %04X, ans ->%n",reg,wrs.getDoubleReg(reg),ans);

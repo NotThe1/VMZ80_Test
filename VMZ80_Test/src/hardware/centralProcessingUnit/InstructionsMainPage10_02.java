@@ -43,7 +43,7 @@ public class InstructionsMainPage10_02 {
 
 
 	public void test_AND_OR_XOR(String operation) {
-		byte[] instructions = new byte[Z80.singleRegisters.length];
+		byte[] instructions = new byte[Z80.getAllSingleRegisters().length];
 		switch (operation) {
 		case "AND":
 			 instructions = new byte[] { (byte) 0xA0, (byte) 0xA1, (byte) 0xA2, (byte) 0xA3, (byte) 0xA4, (byte) 0xA5,
@@ -58,7 +58,7 @@ public class InstructionsMainPage10_02 {
 						(byte) 0xAE, (byte) 0xAF };
 			break;
 		}// switch
-		loadInstructions(Z80.singleRegisters.length,instructions);
+		loadInstructions(Z80.getAllSingleRegisters().length,instructions);
 
 		try {
 			InputStream inputStream = this.getClass().getResourceAsStream("/LogicOriginal.txt");
@@ -107,8 +107,8 @@ public class InstructionsMainPage10_02 {
 				carry = flags.subSequence(5, 6).equals("1") ? true : false;
 
 				wrs.setProgramCounter(instructionBase);
-				for (int r = 0; r < Z80.singleRegisters.length - 1; r++) {
-					reg = Z80.singleRegisters[r];
+				for (int r = 0; r < Z80.getAllSingleRegisters().length - 1; r++) {
+					reg = Z80.getSingleRegister(r);
 					message = String.format("reg: %s %02X %s %02X = %02X",reg.toString(), arg1,operation,arg2, result);
 					if(reg.equals(Register.M)) {
 						wrs.setDoubleReg(Register.HL, valueBase);
@@ -137,10 +137,10 @@ public class InstructionsMainPage10_02 {
 	
 @Test
 	public void testCP() {
-		byte[] instructions = new byte[Z80.singleRegisters.length];
+		byte[] instructions = new byte[Z80.getAllSingleRegisters().length];
 			 instructions = new byte[] { (byte) 0xB8, (byte) 0xB9, (byte) 0xBA, (byte) 0xBB, (byte) 0xBC, (byte) 0xBD,
 						(byte) 0xBE, (byte) 0xBF };
-		loadInstructions(Z80.singleRegisters.length,instructions);
+		loadInstructions(Z80.getAllSingleRegisters().length,instructions);
 
 		try {
 			InputStream inputStream = this.getClass().getResourceAsStream("/CpOriginal.txt");
@@ -166,8 +166,8 @@ public class InstructionsMainPage10_02 {
 				carry = flags.subSequence(5, 6).equals("1") ? true : false;
 
 				wrs.setProgramCounter(instructionBase);
-				for (int r = 0; r < Z80.singleRegisters.length - 1; r++) {
-					reg = Z80.singleRegisters[r];
+				for (int r = 0; r < Z80.getAllSingleRegisters().length - 1; r++) {
+					reg = Z80.getSingleRegister(r);
 					message = String.format("reg: %s %02X CP %02X = %02X",reg.toString(), arg1,arg2, result);
 					if(reg.equals(Register.M)) {
 						wrs.setDoubleReg(Register.HL, valueBase);

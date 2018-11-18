@@ -61,7 +61,7 @@ public class InstructionDD_CB4 {
 				loadData(valueBase, targetValue);
 				code3 = (byte) (opCodeBase + (testBit << 3));
 				loadInstructions(code0, (byte) 0xCB, code3);
-				newValue = (byte) (value | Z80.BITS[testBit]);
+				newValue = (byte) (value | Z80.getBit(testBit));
 				for (int i = 0; i < 0x0100; i++) {
 					displacement = (byte) i;
 					message = String.format("reg-> %s, value = %02X, bit = %d, newValue = %02X", regNote, value,
@@ -104,7 +104,7 @@ public class InstructionDD_CB4 {
 				loadData(valueBase, targetValue);
 				code3 = (byte) (opCodeBase + (testBit << 3));
 				loadInstructions(code0, (byte) 0xCB, code3);
-				newValue = (byte) (value & Z80.BITS_NOT[testBit]);
+				newValue = (byte) (value & Z80.getBitNot(testBit));
 				for (int i = 0; i < 0x0100; i++) {
 					displacement = (byte) i;
 					message = String.format("reg-> %s, value = %02X, bit = %d, newValue = %02X", regNote, value,
@@ -145,7 +145,7 @@ public class InstructionDD_CB4 {
 			for (int testBit = 0; testBit < 8; testBit++) {
 				code3 = (byte) (opCodeBase + (testBit << 3));
 				loadInstructions(code0, (byte) 0xCB, code3);
-				bitState = (Z80.BITS[testBit] & (byte) value) != Z80.BITS[testBit] ? true : false;
+				bitState = (Z80.getBit(testBit) & (byte) value) != Z80.getBit(testBit) ? true : false;
 				for (int i = 0; i < 0x0100; i++) {
 					message = String.format("reg-> %s, value = %02X, bit = %d, bitState = %s", regNote, value, testBit,
 							bitState);
