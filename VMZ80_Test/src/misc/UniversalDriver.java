@@ -38,7 +38,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
-import disks.DiskDrive;
 import disks.DiskMetrics;
 import disks.utility.DiskUtility;
 import disks.utility.UpdateSystemDisk;
@@ -97,15 +96,15 @@ public class UniversalDriver {
 		} // try
 	}//doUpdateSystemDisk
 	
-	private void doDiskDrive() {
-		String msg;
-		String[] types = new String[] { "f3DD", "f3HD", "f3ED", "f5DD", "f5HD", "f8SS", "F8ds" };
-		for (String type : types) {
-			DiskDrive diskDrive = new DiskDrive("abc." + type);
-			msg = String.format("Type %s, - %s", type, diskDrive.description);
-			log.info(msg);
-		} // for
-	}//doDiskDrive
+//	private void doDiskDrive() {
+//		String msg;
+//		String[] types = new String[] { "f3DD", "f3HD", "f3ED", "f5DD", "f5HD", "f8SS", "F8ds" };
+//		for (String type : types) {
+//			DiskDrive diskDrive = new DiskDrive("abc." + type);
+//			msg = String.format("Type %s, - %s", type);
+//			log.info(msg);
+//		} // for
+//	}//doDiskDrive
 	
 	private void doDiskMetric() {
 		String msg;
@@ -510,14 +509,6 @@ public class UniversalDriver {
 				doDiskMetric();
 		}});
 		mnuTargets.add(mnuTargetsDiskMetric);
-
-		JMenuItem mnuTargetsDiskDrive = new JMenuItem("DiskDrive");
-		mnuTargetsDiskDrive.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				doDiskDrive() ;
-			}
-		});
-		mnuTargets.add(mnuTargetsDiskDrive);
 
 		JMenuItem mntmUpdatesystemdisk = new JMenuItem("UpdateSystemDisk");
 		mntmUpdatesystemdisk.addActionListener(new ActionListener() {
