@@ -91,24 +91,31 @@ public class DriveDevices {
 
 	private void doBtnTwo() {
 		Byte statusValue = ioc.byteToCPU(TTYZ80.STATUS);
-		if ((statusValue & 0x7F)!= (byte)0x00) {
-			addScreenByte(ioc.byteToCPU(TTYZ80.IN));		
-		}//if
-		
-			hdStatusReturned.setValue(statusValue & Z80.BYTE_MASK);
-		
+		if ((statusValue & 0x7F) != (byte) 0x00) {
+			addScreenByte(ioc.byteToCPU(TTYZ80.IN));
+		} // if
+
+		hdStatusReturned.setValue(statusValue & Z80.BYTE_MASK);
+
 	}// doBtnTwo
 
 	private void doBtnThree() {
-		byte sourceByte = (byte) hdnByteOut.getValue();
-		ioc.byteFromCPU(TTYZ80.OUT, sourceByte);
+		if ((ioc.byteToCPU(TTYZ80.STATUS) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
+			byte sourceByte = (byte) hdnByteOut.getValue();
+			ioc.byteFromCPU(TTYZ80.OUT, sourceByte);
+
+		} else {
+			addScreenString(" TTY80 not ready for output");
+		}
 	}// doBtnThree
 
 	private void doBtnFour(byte ioAddress) {
 		byte[] sourceBytes = txtSource.getText().getBytes();
 		for (byte b : sourceBytes) {
-			ioc.byteFromCPU(ioAddress, b);
-		} //
+			if ((ioc.byteToCPU(TTYZ80.STATUS) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
+				ioc.byteFromCPU(ioAddress, b);
+			} // if
+		} // for
 		ioc.byteFromCPU(ioAddress, (byte) 0x0A);
 
 	}// doBtnFour
@@ -373,18 +380,18 @@ public class DriveDevices {
 		JButton btnReadAll = new JButton("Read all");
 		btnReadAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-//				byte byteCount = 0x00;
+				// byte byteCount = 0x00;
 				byte fromDevice = 0x00;
-				while ((ioc.byteToCPU(TTYZ80.STATUS)& Z80.ASCII_MASK)!=0) {
+				while ((ioc.byteToCPU(TTYZ80.STATUS) & Z80.ASCII_MASK) != 0) {
 					fromDevice = ioc.byteToCPU(TTYZ80.IN);
-					addScreenByte(fromDevice);					
-				}//while
-//				byteCount = ioc.byteToCPU(TTYZ80.STATUS);
-//				log.infof("Status = %d%n", byteCount);
-//				while (ioc.byteToCPU(TTYZ80.STATUS) > 0) {
-//					fromDevice = ioc.byteToCPU(TTYZ80.IN);
-//					addScreenByte(fromDevice);
-//				} // for
+					addScreenByte(fromDevice);
+				} // while
+				// byteCount = ioc.byteToCPU(TTYZ80.STATUS);
+				// log.infof("Status = %d%n", byteCount);
+				// while (ioc.byteToCPU(TTYZ80.STATUS) > 0) {
+				// fromDevice = ioc.byteToCPU(TTYZ80.IN);
+				// addScreenByte(fromDevice);
+				// } // for
 			}// actionPerformed
 		});
 		GridBagConstraints gbc_btnReadAll = new GridBagConstraints();
