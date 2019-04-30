@@ -17,7 +17,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
 import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.prefs.Preferences;
@@ -39,8 +38,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
 import disks.DiskMetrics;
-import disks.utility.DiskUtility;
-import disks.utility.UpdateSystemDisk;
 import hardware.ConditionCodeRegister;
 import ioSystem.IOController;
 import memory.MemoryLoaderFromFile;
@@ -84,27 +81,6 @@ public class UniversalDriver {
 		ioc.toString(); /* shut down 'not used' warning */
 	}
 	
-	private void doUpdateSystemDisk() {
-		String diskPath = "C:\\Users\\admin\\VMdata\\Disks\\ZZZ.F3HD";
-		File file = new File(diskPath);
-		file.delete();
-		try {
-			file.createNewFile();
-			UpdateSystemDisk.updateDisk(diskPath);
-		} catch (IOException e) {
-			log.error(" Did not create file :" + diskPath);
-		} // try
-	}//doUpdateSystemDisk
-	
-//	private void doDiskDrive() {
-//		String msg;
-//		String[] types = new String[] { "f3DD", "f3HD", "f3ED", "f5DD", "f5HD", "f8SS", "F8ds" };
-//		for (String type : types) {
-//			DiskDrive diskDrive = new DiskDrive("abc." + type);
-//			msg = String.format("Type %s, - %s", type);
-//			log.info(msg);
-//		} // for
-//	}//doDiskDrive
 	
 	private void doDiskMetric() {
 		String msg;
@@ -139,24 +115,15 @@ public class UniversalDriver {
 	
 	}//doFileChooser
 	
-	private void doDiskUtility() {
-		DiskUtility du = DiskUtility.getInstance();
-		du.setVisible(true);
-		du = null;
-	}//doDiskUtility
 
 	private void doBtnOne() {
 		doIOController();
 	}// doBtnOne
 
 	private void doBtnTwo() {
-		doDiskUtility() ;
 	}// doBtnTwo
 
 	private void doBtnThree() {
-		DiskUtility du = new DiskUtility();
-		du.setVisible(true);
-		du = null;
 	}// doBtnThree
 
 	private void doBtnFour() {
@@ -300,7 +267,7 @@ public class UniversalDriver {
 		btnOne.setMaximumSize(new Dimension(0, 0));
 		btnOne.setPreferredSize(new Dimension(100, 20));
 
-		btnTwo = new JButton("du Instance");
+		btnTwo = new JButton("Button 2");
 		btnTwo.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnTwo = new GridBagConstraints();
 		gbc_btnTwo.insets = new Insets(0, 0, 0, 5);
@@ -316,7 +283,7 @@ public class UniversalDriver {
 		btnTwo.setPreferredSize(new Dimension(100, 20));
 		btnTwo.setMaximumSize(new Dimension(0, 0));
 
-		btnThree = new JButton("du standard class");
+		btnThree = new JButton("Button 3");
 		btnThree.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnThree = new GridBagConstraints();
 		gbc_btnThree.insets = new Insets(0, 0, 0, 5);
@@ -480,12 +447,6 @@ public class UniversalDriver {
 		JMenu mnuTargets = new JMenu("Targets");
 		menuBar.add(mnuTargets);
 
-		JMenuItem mnuDiskUtility = new JMenuItem("DiskUtility");
-		mnuDiskUtility.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doDiskUtility();
-			}
-		});
 
 		JMenuItem mnuTargetsFileChooser = new JMenuItem("File Chooser");
 		mnuTargetsFileChooser.addActionListener(new ActionListener() {
@@ -501,7 +462,6 @@ public class UniversalDriver {
 		});
 		mnuTargets.add(mnuTargetsIOController);
 		mnuTargets.add(mnuTargetsFileChooser);
-		mnuTargets.add(mnuDiskUtility);
 
 		JMenuItem mnuTargetsDiskMetric = new JMenuItem("DiskMetric");
 		mnuTargetsDiskMetric.addActionListener(new ActionListener() {
@@ -510,13 +470,6 @@ public class UniversalDriver {
 		}});
 		mnuTargets.add(mnuTargetsDiskMetric);
 
-		JMenuItem mntmUpdatesystemdisk = new JMenuItem("UpdateSystemDisk");
-		mntmUpdatesystemdisk.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doUpdateSystemDisk();
-			}
-		});
-		mnuTargets.add(mntmUpdatesystemdisk);
 
 	}// initialize
 
