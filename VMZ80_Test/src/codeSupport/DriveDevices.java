@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
@@ -24,7 +25,10 @@ import java.util.Date;
 import java.util.prefs.Preferences;
 
 import javax.swing.Box;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -45,16 +49,17 @@ import javax.swing.text.StyledDocument;
 
 import ioSystem.IOController;
 import ioSystem.listDevice.GenericPrinter;
-import ioSystem.ttyZ80.TTYZ80;
+import ioSystem.terminals.TTYZ80;
+import ioSystem.terminals.VT100;
 import utilities.hdNumberBox.HDNumberBox;
 
 public class DriveDevices {
 
 	private JFrame frmTemplate;
-	private JButton btnOne;
-	private JButton btnTwo;
-	private JButton btnThree;
-	private JButton btnFour;
+	private JButton btnRead1Byte;
+	private JButton btnReadStatus;
+	private JButton btnSend1Byte;
+	private JButton btnSendAll;
 	private JSplitPane splitPane1;
 
 	private AppLogger log = AppLogger.getInstance();
@@ -64,6 +69,10 @@ public class DriveDevices {
 	private StyledDocument localScreen;
 
 	private IOController ioc = IOController.getInstance();
+	private ApplicationAdapter applicationAdapter = new ApplicationAdapter();
+
+	private byte consoleData;
+	private byte consoleStatus;
 
 	/**
 	 * Launch the application.
@@ -83,43 +92,84 @@ public class DriveDevices {
 
 	/* Standard Stuff */
 
-	private void doBtnOne() {
+	private void doRead1Byte() {
 		byte fromDevice = 0x00;
-		fromDevice = ioc.byteToCPU(TTYZ80.IN);
-		addScreenByte(fromDevice);
+		try {
+			fromDevice = ioc.byteToCPU(consoleData);
+			addScreenByte(fromDevice);
+		} catch (NullPointerException npe) {
+			log.warn("No data to read from device");
+		} // try
+
 	}// doBtnOne
 
-	private void doBtnTwo() {
-		Byte statusValue = ioc.byteToCPU(TTYZ80.STATUS);
+	private void doReadAll() {
+		byte fromDevice = 0x00;
+		while ((ioc.byteToCPU(consoleStatus) & Z80.ASCII_MASK) != 0) {
+			fromDevice = ioc.byteToCPU(consoleData);
+			addScreenByte(fromDevice);
+		} // while
+		addScreenString(System.lineSeparator());
+
+	}// doReadAll
+
+	private void doReadStatus() {
+		Byte statusValue = ioc.byteToCPU(consoleStatus);
 		if ((statusValue & 0x7F) != (byte) 0x00) {
-			addScreenByte(ioc.byteToCPU(TTYZ80.IN));
+			addScreenByte(ioc.byteToCPU(consoleData));
 		} // if
 
 		hdStatusReturned.setValue(statusValue & Z80.BYTE_MASK);
 
-	}// doBtnTwo
+	}// doReadStatus
 
-	private void doBtnThree() {
-		if ((ioc.byteToCPU(TTYZ80.STATUS) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
+	private void doSend1Byte() {
+		if ((ioc.byteToCPU(consoleStatus) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
 			byte sourceByte = (byte) hdnByteOut.getValue();
-			ioc.byteFromCPU(TTYZ80.OUT, sourceByte);
+			ioc.byteFromCPU(consoleData, sourceByte);
 
 		} else {
-			addScreenString(" TTY80 not ready for output");
+			addScreenString(" Device not ready for output");
 		}
-	}// doBtnThree
+	}// doSend1Byte
 
-	private void doBtnFour(byte ioAddress) {
-		byte[] sourceBytes = txtSource.getText().getBytes();
+	private void doSendAll(byte ioAddress, boolean newLine) {
+		if (txtLocalScreen.getText().length() == 0)
+			;
+		byte[] sourceBytes = txtLocalScreen.getText().length() != 0 ? txtLocalScreen.getText().getBytes()
+				: txtSource.getText().getBytes();
 		for (byte b : sourceBytes) {
-			if ((ioc.byteToCPU(TTYZ80.STATUS) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
+			if ((ioc.byteToCPU(consoleStatus) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
 				ioc.byteFromCPU(ioAddress, b);
 			} // if
 		} // for
-		ioc.byteFromCPU(ioAddress, (byte) 0x0A);
+		if (newLine) {
+			ioc.byteFromCPU(ioAddress, (byte) 0x0A);
+		}
 
-	}// doBtnFour
+	}// doSendAll
+	
+	private void doSendEscapeSequences() {
+		EscapeSequence es = (EscapeSequence) cbSequence.getSelectedItem();
+		byte[] values = es.sequence;
+		for (byte value:values) {
+		
+			if ((ioc.byteToCPU(consoleStatus) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
+				
+				ioc.byteFromCPU(consoleData, value);
 
+			} else {
+				addScreenString(" Device not ready for output");
+			}
+
+			
+			
+			
+			
+		}//for each
+	}//doSendEscapeSequences
+	
+	
 	// ---------------------------------------------------------
 
 	private void doFileNew() {
@@ -170,6 +220,23 @@ public class DriveDevices {
 		addScreenString(Character.toString(c));
 	}// addScreenByte
 
+	private void setConsole() {
+
+		btnConsole.setText(btnConsole.getText().equals(TTY) ? CRT : TTY);
+		SetAddresses();
+
+	}// setConsole
+
+	private void SetAddresses() {
+		if (btnConsole.getText().equals(TTY)) {
+			consoleData = (byte) 0xEC;
+			consoleStatus = (byte) 0xED;
+		} else {
+			consoleData = (byte) 0x01;
+			consoleStatus = (byte) 0x02;
+		} // if
+	}//
+
 	private void appClose() {
 		Preferences myPrefs = Preferences.userNodeForPackage(DriveDevices.class).node(this.getClass().getSimpleName());
 		Dimension dim = frmTemplate.getSize();
@@ -181,11 +248,11 @@ public class DriveDevices {
 		myPrefs.putInt("Divider", splitPane1.getDividerLocation());
 		myPrefs.putInt("Divider2", splitPane2.getDividerLocation());
 
-		myPrefs.putInt("AddressOut", hdnOutputAddress.getValue());
-		myPrefs.putInt("AddressIn", hdnIntputAddress.getValue());
-		myPrefs.putInt("AddressStatus", hdnStatusAddress.getValue());
-		myPrefs.putInt("ByteOut", hdnByteOut.getValue());
-
+		// myPrefs.putInt("AddressOut", hdnOutputAddress.getValue());
+		// myPrefs.putInt("AddressIn", hdnIntputAddress.getValue());
+		// myPrefs.putInt("AddressStatus", hdnStatusAddress.getValue());
+		// myPrefs.putInt("ByteOut", hdnByteOut.getValue());
+		myPrefs.put("Console", btnConsole.getText());
 		myPrefs = null;
 		ioc.close();
 	}// appClose
@@ -198,7 +265,7 @@ public class DriveDevices {
 		splitPane2.setDividerLocation(myPrefs.getInt("Divider2", 250));
 
 		initNumberBoxes(myPrefs);
-
+		btnConsole.setText(myPrefs.get("Console", TTY));
 		myPrefs = null;
 
 		txtLog.setText(EMPTY_STRING);
@@ -207,20 +274,129 @@ public class DriveDevices {
 		log.info("Starting....");
 
 		localScreen = txtLocalScreen.getStyledDocument();
+		SetAddresses();
+		ioc.addDevice(new VT100("VT100", VT100.IN, VT100.OUT, VT100.STATUS));
+		cbSequence.setModel(loadSequenceModel());
 	}// appInit
 
+	private ComboBoxModel<EscapeSequence> loadSequenceModel() {
+		ComboBoxModel<EscapeSequence> cbm = new DefaultComboBoxModel<EscapeSequence>();
+		
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B,  (byte) 0x43 }, "Move cursor right 1 column1"));
+		//((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x7F, (byte) 0x43 }, "Move cursor right n columns"));
+		
+		
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B,  (byte) 0x44 }, "Move cursor left 1 column"));
+		//((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x7F, (byte) 0x44 }, "Move cursor left n columns"));
+		
+		
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B,  (byte) 0x41 }, "Move cursor up 1 row"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x7F, (byte) 0x41 }, "Move cursor up n rows"));
+		
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B,  (byte) 0x42 }, "Move cursor down 1 row"));
+		//((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x7F, (byte) 0x42 }, "Move cursor down n rows"));
+
+
+		
+		
+		
+//      ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x4A }, "Clear entire screen"));
+		
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x48 }, "Move cursor to upper left corner (H)"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x66 }, "Move cursor to upper left corner (f)"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3B,(byte) 0x66 }, "Move cursor to upper left corner (;f)"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3B,(byte) 0x48 }, "Move cursor to upper left corner (;H)"));
+
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x4B }, "Clear line from cursor right(K)"));			
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x30, (byte) 0x4B }, "Clear line from cursor right (0K)"));
+
+		
+//      ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//		new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x4B }, "Clear entire line"));
+
+		
+		
+		
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
+//				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x35, (byte) 0x68 },
+//						"Set reverse video on screen"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
+//				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x35, (byte) 0x6C },
+//						"Set normal video on screen"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x37, (byte) 0x68 }, "Set auto-wrap mode"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
+//				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x37, (byte) 0x6C },
+//						"Reset auto-wrap mode"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x30, (byte) 0x4A }, "Clear screen from cursor down"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x30, (byte) 0x6D }, "Turn off character attributes"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x30, (byte) 0x71 }, "Turn off all four leds"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x4A }, "Clear screen from cursor up"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x4A }, "Clear entire Screen"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x4B }, "Clear line from cursor left"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x6D }, "Turn bold mode on"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x71 }, "Turn on LED #1"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x30, (byte) 0x68 }, "Set new line mode"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x30, (byte) 0x6C }, "Set line feed mode"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x71 }, "Turn on LED #2"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x33, (byte) 0x67 }, "Clear all tabs"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x33, (byte) 0x71 }, "Turn on LED #3"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x34, (byte) 0x6D }, "Turn underline mode on"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x34, (byte) 0x71 }, "Turn on LED #4"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x35, (byte) 0x6D }, "Turn blinking mode on"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x37, (byte) 0x6D }, "Turn reverse video on"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x38, (byte) 0x6D }, "Turn invisible text mode on"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x67 }, "Clear a tab at the current column"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x4A }, "Clear screen from cursor down"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x7F, (byte) 0x3B, (byte) 0x7F, (byte) 0x66 },
+//				"Move cursor to screen location v,h"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x7F, (byte) 0x3B, (byte) 0x7F, (byte) 0x48 },
+//				"Move cursor to screen location v,h"));
+//		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
+//				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x6D }, "Turn off character attributes"));
+
+		return cbm;
+	}// getSequenceModel()
+
 	private void initNumberBoxes(Preferences myPrefs) {
-		hdnOutputAddress.setValue(myPrefs.getInt("AddressOut", 0XEC));
-		hdnOutputAddress.setMaxValue(0xFF);
-		hdnOutputAddress.setMinValue(0x00);
-
-		hdnIntputAddress.setValue(myPrefs.getInt("AddressIn", 0XEC));
-		hdnIntputAddress.setMaxValue(0xFF);
-		hdnIntputAddress.setMinValue(0x00);
-
-		hdnStatusAddress.setValue(myPrefs.getInt("AddressStatus", 0XED));
-		hdnStatusAddress.setMaxValue(0xFF);
-		hdnStatusAddress.setMinValue(0x00);
 
 		hdnByteOut.setValue(myPrefs.getInt("ByteOut", 0X00));
 		hdnByteOut.setMaxValue(0xFF);
@@ -291,114 +467,85 @@ public class DriveDevices {
 		gbl_panelForButtons.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		panelForButtons.setLayout(gbl_panelForButtons);
 
-		JLabel lblTty = new JLabel("TTY: ");
-		GridBagConstraints gbc_lblTty = new GridBagConstraints();
-		gbc_lblTty.insets = new Insets(0, 0, 5, 5);
-		gbc_lblTty.gridx = 0;
-		gbc_lblTty.gridy = 0;
-		panelForButtons.add(lblTty, gbc_lblTty);
+		btnConsole = new JButton(TTY);
+		btnConsole.setActionCommand(TTY_CRT);
+		btnConsole.addActionListener(applicationAdapter);
+		GridBagConstraints gbc_btnTTY_CON = new GridBagConstraints();
+		gbc_btnTTY_CON.insets = new Insets(0, 0, 5, 5);
+		gbc_btnTTY_CON.gridx = 0;
+		gbc_btnTTY_CON.gridy = 0;
+		panelForButtons.add(btnConsole, gbc_btnTTY_CON);
 
-		btnOne = new JButton("Get 1 character");
-		btnOne.setMinimumSize(new Dimension(100, 20));
+		btnRead1Byte = new JButton("Read 1 Byte");
+		btnRead1Byte.setActionCommand(BTN_READ_1_BYTE);
+		btnRead1Byte.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnOne = new GridBagConstraints();
 		gbc_btnOne.insets = new Insets(0, 0, 5, 5);
 		gbc_btnOne.gridx = 1;
 		gbc_btnOne.gridy = 0;
-		panelForButtons.add(btnOne, gbc_btnOne);
-		btnOne.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		btnOne.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		btnOne.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doBtnOne();
-			}
-		});
-		btnOne.setMaximumSize(new Dimension(0, 0));
-		btnOne.setPreferredSize(new Dimension(100, 20));
+		panelForButtons.add(btnRead1Byte, gbc_btnOne);
+		btnRead1Byte.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		btnRead1Byte.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		btnRead1Byte.addActionListener(applicationAdapter);
+		btnRead1Byte.setMaximumSize(new Dimension(0, 0));
+		btnRead1Byte.setPreferredSize(new Dimension(100, 20));
 
-		btnTwo = new JButton("Get Byte (Status)");
-		btnTwo.setMinimumSize(new Dimension(100, 20));
-		GridBagConstraints gbc_btnTwo = new GridBagConstraints();
-		gbc_btnTwo.insets = new Insets(0, 0, 5, 5);
-		gbc_btnTwo.gridx = 2;
-		gbc_btnTwo.gridy = 0;
-		panelForButtons.add(btnTwo, gbc_btnTwo);
-		btnTwo.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		btnTwo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				doBtnTwo();
-			}
-		});
-		btnTwo.setPreferredSize(new Dimension(100, 20));
-		btnTwo.setMaximumSize(new Dimension(0, 0));
+		JButton btnReadAll = new JButton("Read All Bytes");
+		btnReadAll.setActionCommand(BTN_READ_ALL);
+		btnReadAll.addActionListener(applicationAdapter);
+		GridBagConstraints gbc_btnReadAll = new GridBagConstraints();
+		gbc_btnReadAll.insets = new Insets(0, 0, 5, 5);
+		gbc_btnReadAll.gridx = 2;
+		gbc_btnReadAll.gridy = 0;
+		panelForButtons.add(btnReadAll, gbc_btnReadAll);
 
-		btnThree = new JButton("Send Byte");
-		btnThree.setMinimumSize(new Dimension(100, 20));
+		btnSend1Byte = new JButton("Send 1 Byte");
+		btnSend1Byte.setActionCommand(BTN_SEND_1_BYTE);
+		btnSend1Byte.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnThree = new GridBagConstraints();
 		gbc_btnThree.insets = new Insets(0, 0, 5, 5);
 		gbc_btnThree.gridx = 4;
 		gbc_btnThree.gridy = 0;
-		panelForButtons.add(btnThree, gbc_btnThree);
-		btnThree.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		btnThree.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				doBtnThree();
-			}
-		});
-		btnThree.setPreferredSize(new Dimension(100, 20));
-		btnThree.setMaximumSize(new Dimension(0, 0));
+		panelForButtons.add(btnSend1Byte, gbc_btnThree);
+		btnSend1Byte.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		btnSend1Byte.addActionListener(applicationAdapter);
+		btnSend1Byte.setPreferredSize(new Dimension(100, 20));
+		btnSend1Byte.setMaximumSize(new Dimension(0, 0));
 
-		btnFour = new JButton("Send All Chars");
-		btnFour.setMinimumSize(new Dimension(100, 20));
+		btnSendAll = new JButton("Send ALL");
+		btnSendAll.setActionCommand(BTN_SEND_ALL);
+		btnSendAll.setMinimumSize(new Dimension(100, 20));
 		GridBagConstraints gbc_btnFour = new GridBagConstraints();
 		gbc_btnFour.insets = new Insets(0, 0, 5, 5);
 		gbc_btnFour.gridx = 5;
 		gbc_btnFour.gridy = 0;
-		panelForButtons.add(btnFour, gbc_btnFour);
-		btnFour.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		btnFour.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				doBtnFour(TTYZ80.OUT);
-			}
-		});
-		btnFour.setPreferredSize(new Dimension(100, 20));
-		btnFour.setMaximumSize(new Dimension(0, 0));
+		panelForButtons.add(btnSendAll, gbc_btnFour);
+		btnSendAll.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		btnSendAll.addActionListener(applicationAdapter);
+		btnSendAll.setPreferredSize(new Dimension(100, 20));
+		btnSendAll.setMaximumSize(new Dimension(0, 0));
 
-		JButton btnGetStatus = new JButton("Get Status");
-		btnGetStatus.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				byte fromDevice = 0x00;
-				fromDevice = ioc.byteToCPU(TTYZ80.STATUS);
-				log.infof("Status = %02X%n", fromDevice);
-			}
-		});
-		GridBagConstraints gbc_btnGetStatus = new GridBagConstraints();
-		gbc_btnGetStatus.insets = new Insets(0, 0, 5, 5);
-		gbc_btnGetStatus.gridx = 6;
-		gbc_btnGetStatus.gridy = 0;
-		panelForButtons.add(btnGetStatus, gbc_btnGetStatus);
+		JButton btnSendALLnl = new JButton("Send ALL NL");
+		btnSendALLnl.setActionCommand(BTN_SEND_ALL_NL);
+		btnSendALLnl.addActionListener(applicationAdapter);
+		GridBagConstraints gbc_btnSendALLnl = new GridBagConstraints();
+		gbc_btnSendALLnl.insets = new Insets(0, 0, 5, 5);
+		gbc_btnSendALLnl.gridx = 6;
+		gbc_btnSendALLnl.gridy = 0;
+		panelForButtons.add(btnSendALLnl, gbc_btnSendALLnl);
 
-		JButton btnReadAll = new JButton("Read all");
-		btnReadAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				// byte byteCount = 0x00;
-				byte fromDevice = 0x00;
-				while ((ioc.byteToCPU(TTYZ80.STATUS) & Z80.ASCII_MASK) != 0) {
-					fromDevice = ioc.byteToCPU(TTYZ80.IN);
-					addScreenByte(fromDevice);
-				} // while
-				// byteCount = ioc.byteToCPU(TTYZ80.STATUS);
-				// log.infof("Status = %d%n", byteCount);
-				// while (ioc.byteToCPU(TTYZ80.STATUS) > 0) {
-				// fromDevice = ioc.byteToCPU(TTYZ80.IN);
-				// addScreenByte(fromDevice);
-				// } // for
-			}// actionPerformed
-		});
-		GridBagConstraints gbc_btnReadAll = new GridBagConstraints();
-		gbc_btnReadAll.insets = new Insets(0, 0, 5, 5);
-		gbc_btnReadAll.gridx = 7;
-		gbc_btnReadAll.gridy = 0;
-		panelForButtons.add(btnReadAll, gbc_btnReadAll);
+		btnReadStatus = new JButton("Read Status");
+		btnReadStatus.setActionCommand(BTN_READ_STATUS);
+		btnReadStatus.setMinimumSize(new Dimension(100, 20));
+		GridBagConstraints gbc_btnTwo = new GridBagConstraints();
+		gbc_btnTwo.insets = new Insets(0, 0, 5, 0);
+		gbc_btnTwo.gridx = 8;
+		gbc_btnTwo.gridy = 0;
+		panelForButtons.add(btnReadStatus, gbc_btnTwo);
+		btnReadStatus.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		btnReadStatus.addActionListener(applicationAdapter);
+		btnReadStatus.setPreferredSize(new Dimension(100, 20));
+		btnReadStatus.setMaximumSize(new Dimension(0, 0));
 
 		JLabel lblLst = new JLabel("LST: ");
 		GridBagConstraints gbc_lblLst = new GridBagConstraints();
@@ -408,11 +555,8 @@ public class DriveDevices {
 		panelForButtons.add(lblLst, gbc_lblLst);
 
 		JButton btnPrintLine = new JButton("Print Line");
-		btnPrintLine.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				doBtnFour(GenericPrinter.OUT);
-			}
-		});
+		btnPrintLine.setActionCommand(BTN_PRINT_LINE);
+		btnPrintLine.addActionListener(applicationAdapter);
 		GridBagConstraints gbc_btnPrintLine = new GridBagConstraints();
 		gbc_btnPrintLine.insets = new Insets(0, 0, 0, 5);
 		gbc_btnPrintLine.gridx = 1;
@@ -448,9 +592,9 @@ public class DriveDevices {
 		splitPane2.setLeftComponent(panelTop);
 		GridBagLayout gbl_panelTop = new GridBagLayout();
 		gbl_panelTop.columnWidths = new int[] { 0, 0, 0, 0, 0, 0 };
-		gbl_panelTop.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_panelTop.columnWeights = new double[] { 0.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE };
-		gbl_panelTop.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_panelTop.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_panelTop.columnWeights = new double[] { 0.0, 1.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panelTop.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		panelTop.setLayout(gbl_panelTop);
 
 		Component verticalStrut_2 = Box.createVerticalStrut(20);
@@ -460,28 +604,12 @@ public class DriveDevices {
 		gbc_verticalStrut_2.gridy = 0;
 		panelTop.add(verticalStrut_2, gbc_verticalStrut_2);
 
-		JLabel lblNewLabel_1 = new JLabel("Output Address");
-		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
-		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_1.gridx = 0;
-		gbc_lblNewLabel_1.gridy = 1;
-		panelTop.add(lblNewLabel_1, gbc_lblNewLabel_1);
-
-		hdnOutputAddress = new HDNumberBox();
-		hdnOutputAddress.setPreferredSize(new Dimension(40, 25));
-		hdnOutputAddress.setDecimalDisplay(false);
-		GridBagConstraints gbc_hdnOutputAddress = new GridBagConstraints();
-		gbc_hdnOutputAddress.anchor = GridBagConstraints.WEST;
-		gbc_hdnOutputAddress.insets = new Insets(0, 0, 5, 5);
-		gbc_hdnOutputAddress.gridx = 1;
-		gbc_hdnOutputAddress.gridy = 1;
-		panelTop.add(hdnOutputAddress, gbc_hdnOutputAddress);
-
 		JLabel lblNewLabel_3 = new JLabel("Byte Out:");
 		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
+		gbc_lblNewLabel_3.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_3.gridx = 1;
-		gbc_lblNewLabel_3.gridy = 2;
+		gbc_lblNewLabel_3.gridx = 0;
+		gbc_lblNewLabel_3.gridy = 1;
 		panelTop.add(lblNewLabel_3, gbc_lblNewLabel_3);
 
 		hdnByteOut = new HDNumberBox();
@@ -493,22 +621,46 @@ public class DriveDevices {
 		gbc_hdnByteOut.anchor = GridBagConstraints.WEST;
 		gbc_hdnByteOut.insets = new Insets(0, 0, 5, 5);
 		gbc_hdnByteOut.fill = GridBagConstraints.VERTICAL;
-		gbc_hdnByteOut.gridx = 2;
-		gbc_hdnByteOut.gridy = 2;
+		gbc_hdnByteOut.gridx = 1;
+		gbc_hdnByteOut.gridy = 1;
 		panelTop.add(hdnByteOut, gbc_hdnByteOut);
-		// GridBagLayout gbl_hdnByteOut = new GridBagLayout();
-		// gbl_hdnByteOut.columnWidths = new int[]{0};
-		// gbl_hdnByteOut.rowHeights = new int[]{0};
-		// gbl_hdnByteOut.columnWeights = new double[]{Double.MIN_VALUE};
-		// gbl_hdnByteOut.rowWeights = new double[]{Double.MIN_VALUE};
-		// hdnByteOut.setLayout(gbl_hdnByteOut);
 
-		// GridBagLayout gbl_hdnOutputAddress = new GridBagLayout();
-		// gbl_hdnOutputAddress.columnWidths = new int[]{0};
-		// gbl_hdnOutputAddress.rowHeights = new int[]{0};
-		// gbl_hdnOutputAddress.columnWeights = new double[]{Double.MIN_VALUE};
-		// gbl_hdnOutputAddress.rowWeights = new double[]{Double.MIN_VALUE};
-		// hdnOutputAddress.setLayout(gbl_hdnOutputAddress);
+		JLabel lblStatusAddress = new JLabel("Status");
+		GridBagConstraints gbc_lblStatusAddress = new GridBagConstraints();
+		gbc_lblStatusAddress.anchor = GridBagConstraints.NORTHEAST;
+		gbc_lblStatusAddress.insets = new Insets(0, 0, 5, 5);
+		gbc_lblStatusAddress.gridx = 2;
+		gbc_lblStatusAddress.gridy = 1;
+		panelTop.add(lblStatusAddress, gbc_lblStatusAddress);
+
+		hdStatusReturned = new HDNumberBox();
+		hdStatusReturned.setPreferredSize(new Dimension(40, 25));
+		hdStatusReturned.setDecimalDisplay(false);
+		GridBagConstraints gbc_hdStatusReturned = new GridBagConstraints();
+		gbc_hdStatusReturned.insets = new Insets(0, 0, 5, 5);
+		gbc_hdStatusReturned.anchor = GridBagConstraints.NORTHWEST;
+		gbc_hdStatusReturned.gridx = 3;
+		gbc_hdStatusReturned.gridy = 1;
+		panelTop.add(hdStatusReturned, gbc_hdStatusReturned);
+
+		JLabel lblCharactersOut = new JLabel("Characters Out:");
+		GridBagConstraints gbc_lblCharactersOut = new GridBagConstraints();
+		gbc_lblCharactersOut.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCharactersOut.anchor = GridBagConstraints.EAST;
+		gbc_lblCharactersOut.gridx = 0;
+		gbc_lblCharactersOut.gridy = 3;
+		panelTop.add(lblCharactersOut, gbc_lblCharactersOut);
+
+		txtSource = new JTextField();
+		txtSource.setText("01234567890123456789012345678901234567890123456789012345678901234567890123456789");
+		GridBagConstraints gbc_txtSource = new GridBagConstraints();
+		gbc_txtSource.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtSource.gridwidth = 3;
+		gbc_txtSource.insets = new Insets(0, 0, 5, 5);
+		gbc_txtSource.gridx = 1;
+		gbc_txtSource.gridy = 3;
+		panelTop.add(txtSource, gbc_txtSource);
+		txtSource.setColumns(10);
 
 		Component verticalStrut = Box.createVerticalStrut(20);
 		GridBagConstraints gbc_verticalStrut = new GridBagConstraints();
@@ -517,92 +669,31 @@ public class DriveDevices {
 		gbc_verticalStrut.gridy = 4;
 		panelTop.add(verticalStrut, gbc_verticalStrut);
 
-		JLabel lblCharactersOut = new JLabel("Characters Out:");
-		GridBagConstraints gbc_lblCharactersOut = new GridBagConstraints();
-		gbc_lblCharactersOut.insets = new Insets(0, 0, 5, 5);
-		gbc_lblCharactersOut.anchor = GridBagConstraints.EAST;
-		gbc_lblCharactersOut.gridx = 1;
-		gbc_lblCharactersOut.gridy = 4;
-		panelTop.add(lblCharactersOut, gbc_lblCharactersOut);
-
-		txtSource = new JTextField();
-		txtSource.setText("ABCDEFGHIJKLMNOPQRSTUV");
-		GridBagConstraints gbc_txtSource = new GridBagConstraints();
-		gbc_txtSource.anchor = GridBagConstraints.WEST;
-		gbc_txtSource.gridwidth = 3;
-		gbc_txtSource.insets = new Insets(0, 0, 5, 0);
-		gbc_txtSource.gridx = 2;
-		gbc_txtSource.gridy = 4;
-		panelTop.add(txtSource, gbc_txtSource);
-		txtSource.setColumns(10);
-
-		JLabel lblNewLabel_2 = new JLabel("InputAddress");
-		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
-		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_2.anchor = GridBagConstraints.NORTH;
-		gbc_lblNewLabel_2.gridx = 0;
-		gbc_lblNewLabel_2.gridy = 5;
-		panelTop.add(lblNewLabel_2, gbc_lblNewLabel_2);
-
-		hdnIntputAddress = new HDNumberBox();
-		hdnIntputAddress.setPreferredSize(new Dimension(40, 25));
-		hdnIntputAddress.setDecimalDisplay(false);
-
-		GridBagConstraints gbc_hdnIntputAddress = new GridBagConstraints();
-		gbc_hdnIntputAddress.anchor = GridBagConstraints.NORTHWEST;
-		gbc_hdnIntputAddress.insets = new Insets(0, 0, 5, 5);
-		gbc_hdnIntputAddress.gridx = 1;
-		gbc_hdnIntputAddress.gridy = 5;
-		panelTop.add(hdnIntputAddress, gbc_hdnIntputAddress);
-		// GridBagLayout gbl_hdnIntputAddress = new GridBagLayout();
-		// gbl_hdnIntputAddress.columnWidths = new int[]{0};
-		// gbl_hdnIntputAddress.rowHeights = new int[]{0};
-		// gbl_hdnIntputAddress.columnWeights = new double[]{Double.MIN_VALUE};
-		// gbl_hdnIntputAddress.rowWeights = new double[]{Double.MIN_VALUE};
-		// hdnIntputAddress.setLayout(gbl_hdnIntputAddress);
-
 		Component verticalStrut_1 = Box.createVerticalStrut(20);
 		GridBagConstraints gbc_verticalStrut_1 = new GridBagConstraints();
 		gbc_verticalStrut_1.insets = new Insets(0, 0, 5, 5);
 		gbc_verticalStrut_1.gridx = 0;
-		gbc_verticalStrut_1.gridy = 6;
+		gbc_verticalStrut_1.gridy = 5;
 		panelTop.add(verticalStrut_1, gbc_verticalStrut_1);
 
-		JLabel lblStatusAddress = new JLabel("Status Address");
-		GridBagConstraints gbc_lblStatusAddress = new GridBagConstraints();
-		gbc_lblStatusAddress.insets = new Insets(0, 0, 0, 5);
-		gbc_lblStatusAddress.gridx = 0;
-		gbc_lblStatusAddress.gridy = 7;
-		panelTop.add(lblStatusAddress, gbc_lblStatusAddress);
+		cbSequence = new JComboBox<EscapeSequence>();
+		GridBagConstraints gbc_cbSequence = new GridBagConstraints();
+		gbc_cbSequence.gridwidth = 3;
+		gbc_cbSequence.insets = new Insets(0, 0, 0, 5);
+		gbc_cbSequence.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cbSequence.gridx = 0;
+		gbc_cbSequence.gridy = 6;
+		panelTop.add(cbSequence, gbc_cbSequence);
 
-		hdnStatusAddress = new HDNumberBox();
-		hdnStatusAddress.setPreferredSize(new Dimension(40, 25));
-		hdnStatusAddress.setDecimalDisplay(false);
-		GridBagConstraints gbc_hdnStatusAddress = new GridBagConstraints();
-		gbc_hdnStatusAddress.insets = new Insets(0, 0, 0, 5);
-		gbc_hdnStatusAddress.anchor = GridBagConstraints.NORTHWEST;
-		gbc_hdnStatusAddress.gridx = 1;
-		gbc_hdnStatusAddress.gridy = 7;
-		panelTop.add(hdnStatusAddress, gbc_hdnStatusAddress);
-
-		hdStatusReturned = new HDNumberBox();
-		// hdStatusReturned.setValue(237);
-		hdStatusReturned.setPreferredSize(new Dimension(40, 25));
-		// hdStatusReturned.setMinValue(0);
-		// hdStatusReturned.setMaxValue(255);
-		hdStatusReturned.setDecimalDisplay(false);
-		GridBagConstraints gbc_hdStatusReturned = new GridBagConstraints();
-		gbc_hdStatusReturned.insets = new Insets(0, 0, 0, 5);
-		gbc_hdStatusReturned.anchor = GridBagConstraints.NORTHWEST;
-		gbc_hdStatusReturned.gridx = 2;
-		gbc_hdStatusReturned.gridy = 7;
-		panelTop.add(hdStatusReturned, gbc_hdStatusReturned);
-		// GridBagLayout gbl_hdnStatusAddress = new GridBagLayout();
-		// gbl_hdnStatusAddress.columnWidths = new int[]{0};
-		// gbl_hdnStatusAddress.rowHeights = new int[]{0};
-		// gbl_hdnStatusAddress.columnWeights = new double[]{Double.MIN_VALUE};
-		// gbl_hdnStatusAddress.rowWeights = new double[]{Double.MIN_VALUE};
-		// hdnStatusAddress.setLayout(gbl_hdnStatusAddress);
+		JButton btnSequences = new JButton("Send");
+		btnSequences.addActionListener(applicationAdapter);
+		btnSequences.setActionCommand(BTN_ESCAPE_SEQUENCES);
+		GridBagConstraints gbc_btnSequences = new GridBagConstraints();
+		gbc_btnSequences.anchor = GridBagConstraints.NORTH;
+		gbc_btnSequences.insets = new Insets(0, 0, 0, 5);
+		gbc_btnSequences.gridx = 3;
+		gbc_btnSequences.gridy = 6;
+		panelTop.add(btnSequences, gbc_btnSequences);
 		//
 		JPanel panelBottom = new JPanel();
 		splitPane2.setRightComponent(panelBottom);
@@ -626,14 +717,7 @@ public class DriveDevices {
 		scrollPaneForScreen.setColumnHeaderView(lblForScreen);
 
 		txtLocalScreen = new JTextPane();
-		txtLocalScreen.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent mouseEvent) {
-				if (mouseEvent.getClickCount() > 1) {
-					clearScreen();
-				} // if
-			}// mouseClicked
-		});
+		txtLocalScreen.addMouseListener(applicationAdapter);
 		scrollPaneForScreen.setViewportView(txtLocalScreen);
 		splitPane2.setDividerLocation(300);
 
@@ -694,60 +778,47 @@ public class DriveDevices {
 		menuBar.add(mnuFile);
 
 		JMenuItem mnuFileNew = new JMenuItem("New");
-		mnuFileNew.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doFileNew();
-			}
-		});
+		mnuFileNew.setEnabled(false);
+		mnuFileNew.setActionCommand(MNU_FILE_NEW);
+		mnuFileNew.addActionListener(applicationAdapter);
 		mnuFile.add(mnuFileNew);
 
 		JMenuItem mnuFileOpen = new JMenuItem("Open...");
-		mnuFileOpen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doFileOpen();
-			}
-		});
+		mnuFileOpen.setEnabled(false);
+		mnuFileOpen.setActionCommand(MNU_FILE_OPEN);
+		mnuFileOpen.addActionListener(applicationAdapter);
 		mnuFile.add(mnuFileOpen);
 
 		JSeparator separator99 = new JSeparator();
 		mnuFile.add(separator99);
 
 		JMenuItem mnuFileSave = new JMenuItem("Save...");
-		mnuFileSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doFileSave();
-			}
-		});
+		mnuFileSave.setEnabled(false);
+		mnuFileSave.setActionCommand(MNU_FILE_SAVE);
+		mnuFileSave.addActionListener(applicationAdapter);
 		mnuFile.add(mnuFileSave);
 
 		JMenuItem mnuFileSaveAs = new JMenuItem("Save As...");
-		mnuFileSaveAs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doFileSaveAs();
-			}
-		});
+		mnuFileSaveAs.setEnabled(false);
+		mnuFileSaveAs.setActionCommand(MNU_FILE_SAVE_AS);
+		mnuFileSaveAs.addActionListener(applicationAdapter);
 		mnuFile.add(mnuFileSaveAs);
 
 		JSeparator separator_2 = new JSeparator();
 		mnuFile.add(separator_2);
 
 		JMenuItem mnuFilePrint = new JMenuItem("Print...");
-		mnuFilePrint.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doFilePrint();
-			}
-		});
+		mnuFilePrint.setEnabled(false);
+		mnuFilePrint.setActionCommand(MNU_FILE_PRINT);
+		mnuFilePrint.addActionListener(applicationAdapter);
 		mnuFile.add(mnuFilePrint);
 
 		JSeparator separator_1 = new JSeparator();
 		mnuFile.add(separator_1);
 
 		JMenuItem mnuFileExit = new JMenuItem("Exit");
-		mnuFileExit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				doFileExit();
-			}
-		});
+		mnuFileExit.setActionCommand(MNU_FILE_EXIT);
+		mnuFileExit.addActionListener(applicationAdapter);
 		mnuFile.add(mnuFileExit);
 
 	}// initialize
@@ -757,9 +828,6 @@ public class DriveDevices {
 
 	static final String EMPTY_STRING = "";
 	private JSplitPane splitPane2;
-	private HDNumberBox hdnOutputAddress;
-	private HDNumberBox hdnIntputAddress;
-	private HDNumberBox hdnStatusAddress;
 	private HDNumberBox hdnByteOut;
 	private JLabel lblForScreen;
 	private JTextField txtSource;
@@ -767,6 +835,91 @@ public class DriveDevices {
 	private HDNumberBox hdStatusReturned;
 
 	//////////////////////////////////////////////////////////////////////////
+
+	class ApplicationAdapter implements ActionListener, MouseListener {
+
+		/* ActionListener */
+
+		@Override
+		public void actionPerformed(ActionEvent actionEvent) {
+			String cmd = actionEvent.getActionCommand();
+			switch (cmd) {
+			case TTY_CRT:
+				setConsole();
+				break;
+			case BTN_READ_1_BYTE:
+				doRead1Byte();
+				break;
+			case BTN_READ_ALL:
+				doReadAll();
+				break;
+			case BTN_SEND_1_BYTE:
+				doSend1Byte();
+				break;
+			case BTN_SEND_ALL_NL:
+				doSendAll(consoleData,true);
+				break;
+			case BTN_SEND_ALL:
+				doSendAll(consoleData,false);
+				break;
+			case BTN_READ_STATUS:
+				doReadStatus();
+				break;
+
+			case BTN_PRINT_LINE:
+				doSendAll(GenericPrinter.OUT,true);
+				break;
+				
+			case BTN_ESCAPE_SEQUENCES:
+				doSendEscapeSequences();
+
+			case MNU_FILE_NEW:
+				doFileNew();
+				break;
+			case MNU_FILE_OPEN:
+				doFileOpen();
+				break;
+			case MNU_FILE_SAVE:
+				doFileSave();
+				break;
+			case MNU_FILE_SAVE_AS:
+				doFileSaveAs();
+				break;
+			case MNU_FILE_PRINT:
+				doFilePrint();
+				break;
+			case MNU_FILE_EXIT:
+				doFileExit();
+				break;
+
+			default:
+			}// swing
+		}// action Performed
+
+		@Override
+		public void mouseClicked(MouseEvent mouseEvent) {
+			if (mouseEvent.getClickCount() > 1) {
+				clearScreen();
+			} // if
+		}// mouseClicked
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}// mouseEntered
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}// mouseExited
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}// mousePressed
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}// mouseReleased
+
+	}// ApplicationAdapter
 
 	class AdapterLog implements ActionListener {// , ListSelectionListener
 		@Override
@@ -802,5 +955,28 @@ public class DriveDevices {
 			}
 		});
 	}// addPopup
+
+	static final String TTY = "TTY";
+	static final String CRT = "CRT";
+	static final String TTY_CRT = "TTY_CRT";
+
+	static final String MNU_FILE_NEW = "mnuFileNew";
+	static final String MNU_FILE_OPEN = "mnuFileOpen";
+	static final String MNU_FILE_SAVE = "mnuFileSave";
+	static final String MNU_FILE_SAVE_AS = "mnuFileSaveAs";
+	static final String MNU_FILE_PRINT = "mnuFilePrint";
+	static final String MNU_FILE_EXIT = "mnuFileExit";
+
+	static final String BTN_READ_1_BYTE = "btnRead1Byte";
+	static final String BTN_READ_ALL = "btnReadAll";
+	static final String BTN_SEND_1_BYTE = "btnSend1Byte";
+	static final String BTN_SEND_ALL = "btnSendAll";
+	static final String BTN_SEND_ALL_NL = "btnSendAllnl";
+	static final String BTN_READ_STATUS = "btnReadStatus";
+	static final String BTN_PRINT_LINE = "btnPrintLine";
+	
+	static final String BTN_ESCAPE_SEQUENCES = "btnEscapeSequences";
+	private JButton btnConsole;
+	private JComboBox<EscapeSequence> cbSequence;
 
 }// class GUItemplate
