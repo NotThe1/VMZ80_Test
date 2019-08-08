@@ -150,20 +150,22 @@ public class DriveDevices {
 	}// doSendAll
 
 	private void doSendEscapeSequences() {
+		sendByte((byte) 0x1B);
+		sendByte((byte) 0x5B);
 		EscapeSequence es = (EscapeSequence) cbSequence.getSelectedItem();
 		byte[] values = es.sequence;
 		for (byte value : values) {
-
-			if ((ioc.byteToCPU(consoleStatus) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
-
-				ioc.byteFromCPU(consoleData, value);
-
-			} else {
-				addScreenString(" Device not ready for output");
-			}
-
+			sendByte(value);
 		} // for each
 	}// doSendEscapeSequences
+
+	private void sendByte(byte value) {
+		if ((ioc.byteToCPU(consoleStatus) & TTYZ80.STATUS_OUT_READY) == TTYZ80.STATUS_OUT_READY) {
+			ioc.byteFromCPU(consoleData, value);
+		} else {
+			addScreenString(" Device not ready for output");
+		} // if
+	}// sendByte
 
 	// ---------------------------------------------------------
 
@@ -277,123 +279,118 @@ public class DriveDevices {
 	private ComboBoxModel<EscapeSequence> loadSequenceModel() {
 		ComboBoxModel<EscapeSequence> cbm = new DefaultComboBoxModel<EscapeSequence>();
 
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x35, (byte) 0x3B, (byte) 0x36, (byte) 0x66 },
-				"Move cursor to screen location 5,6"));
 		((DefaultComboBoxModel<EscapeSequence>) cbm)
-				.addElement(
-						new EscapeSequence(
-								new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x37, (byte) 0x3B,
-										(byte) 0x32, (byte) 0x38, (byte) 0x48 },
-								"Move cursor to screen location 17,28"));
-
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x41 }, "Move cursor up 1 row"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x33, (byte) 0x41 }, "Move cursor up 3 rows"));
-
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x42 }, "Move cursor down 1 row"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x33, (byte) 0x42 },
-						"Move cursor down 13 rows"));
-
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x43 }, "Move cursor right 1 columnl"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x32, (byte) 0x43 },
-						"Move cursor right 12 columns"));
-
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x44 }, "Move cursor left 1 column"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x35, (byte) 0x44 }, "Move cursor left 5 columns"));
-
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x48 }, "Move cursor to upper left corner (H)"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x66 }, "Move cursor to upper left corner (f)"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm)
-				.addElement(new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3B, (byte) 0x66 },
-						"Move cursor to upper left corner (;f)"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm)
-				.addElement(new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3B, (byte) 0x48 },
-						"Move cursor to upper left corner (;H)"));
-
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x4B }, "Clear line from cursor right(K)"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm)
-				.addElement(new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x30, (byte) 0x4B },
-						"Clear line from cursor right (0K)"));
-
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x4B }, "Clear entire line"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x4A }, "Clear entire screen"));
+				.addElement(new EscapeSequence("5;6f".getBytes(), "Move cursor to screen location [5;6f]"));
 
 		((DefaultComboBoxModel<EscapeSequence>) cbm)
-				.addElement(new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x30, (byte) 0x4A },
-						"Clear screen from cursor down (0J)"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x4A }, "Clear screen from cursor down (j)"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x4B }, "Clear line from cursor left"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x4A }, "Clear screen from cursor up"));
+				.addElement(new EscapeSequence("17;28H".getBytes(), "Move cursor to screen location 17,28 [17;28H]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("A".getBytes(), "Move cursor up 1 row [A]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("3A".getBytes(), "Move cursor up 3 rows [3A]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("B".getBytes(), "Move cursor down 1 row [B]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("13B".getBytes(), "Move cursor down 13 rows [13B]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("C".getBytes(), "Move cursor right 1 columnl [C]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("12C".getBytes(), "Move cursor right 12 columns[12C]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("D".getBytes(), "Move cursor left 1 column[D]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("5D".getBytes(), "Move cursor left 5 columns [5D]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("H".getBytes(), "Move cursor to upper left corner [H]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("f".getBytes(), "Move cursor to upper left corner [f]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence(";H".getBytes(), "Move cursor to upper left corner [;H]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence(";f".getBytes(), "Move cursor to upper left corner [;f]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("K".getBytes(), "Clear line from cursor right [K]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("0K".getBytes(), "Clear line from cursor right [0K]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("2K".getBytes(), "Clear entire line [2K]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("2J".getBytes(), "Clear entire screen [2J]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("J".getBytes(), "Clear screen from cursor down [J]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("0J".getBytes(), "Clear screen from cursor down [0J]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("1K".getBytes(), "Clear line from cursor left [1K]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("1J".getBytes(), "Clear screen from cursor up [1J]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("?3h".getBytes(), "Set number of columns to 132 [?3h]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("?3l".getBytes(), "Set number of columns to 80 [?3l]"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("0q".getBytes(), "Turn off all four leds [0q]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("1q".getBytes(), "Turn on LED #1 [1q]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("2q".getBytes(), "Turn on LED #2 [2q]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("3q".getBytes(), "Turn on LED #3 [3q]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("4q".getBytes(), "Turn on LED #4 [4q]"));
 
 		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x33, (byte) 0x68 },
-						"Set number of columns to 132"));
+				new EscapeSequence("What Follows is not Implemented".getBytes(), "What Follows is not Implemented"));
+
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("m".getBytes(), "* Turn off character attributes [m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("0m".getBytes(), "* Turn off character attributes [0m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("1m".getBytes(), "* Turn bold mode on [1m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("2m".getBytes(), "* Turn low intensity mode on [2m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("3m".getBytes(), "* Turn italisize mode on [3m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("4m".getBytes(), "* Turn underline mode on [4m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("5m".getBytes(), "* Turn blinking mode on[5m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("6m".getBytes(), "* Turn slow blinking mode on[6m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("7m".getBytes(), "* Turn reverse video on [7m]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("8m".getBytes(), "* Turn invisible text mode on [8m]"));
 		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-				new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x33, (byte) 0x6C },
-						"Set number of columns to 80"));
+				new EscapeSequence("0;1;2;3;4;5;6;7;8;0m".getBytes(), "All attributes 0,1,2,3,4,5,6,7,8,0"));
 
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x30, (byte) 0x71 }, "Turn off all four leds"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x71 }, "Turn on LED #1"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x71 }, "Turn on LED #2"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x33, (byte) 0x71 }, "Turn on LED #3"));
-		((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-				new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x34, (byte) 0x71 }, "Turn on LED #4"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("?7h".getBytes(), "* Set auto-wrap mode [?7h]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("?7l".getBytes(), "* Reset auto-wrap mode [?7l]"));
 
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x33, (byte) 0x67 }, "Clear all tabs"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-		// new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x35, (byte) 0x68 },
-		// "Set reverse video on screen"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-		// new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x35, (byte) 0x6C },
-		// "Set normal video on screen"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x37, (byte) 0x68 }, "Set auto-wrap mode"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(
-		// new EscapeSequence(new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x3F, (byte) 0x37, (byte) 0x6C },
-		// "Reset auto-wrap mode"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x30, (byte) 0x6D }, "Turn off character attributes"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x4A }, "Clear entire Screen"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x31, (byte) 0x6D }, "Turn bold mode on"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x30, (byte) 0x68 }, "Set new line mode"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x32, (byte) 0x30, (byte) 0x6C }, "Set line feed mode"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x34, (byte) 0x6D }, "Turn underline mode on"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x35, (byte) 0x6D }, "Turn blinking mode on"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x37, (byte) 0x6D }, "Turn reverse video on"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x38, (byte) 0x6D }, "Turn invisible text mode on"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x67 }, "Clear a tab at the current column"));
-		// ((DefaultComboBoxModel<EscapeSequence>) cbm).addElement(new EscapeSequence(
-		// new byte[] { (byte) 0x1B, (byte) 0x5B, (byte) 0x6D }, "Turn off character attributes"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("g".getBytes(), "* Clear a tab at the current column [g]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("3g".getBytes(), "* Clear all tabs [3g]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("?5h".getBytes(), "* Set reverse video on screen [?5h]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("?5l".getBytes(), "* Set normal video on screen [?5l]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("20h".getBytes(), "* Set new line mode [20h]"));
+		((DefaultComboBoxModel<EscapeSequence>) cbm)
+				.addElement(new EscapeSequence("20l".getBytes(), "* Set line feed mode [20l]"));
 
 		return cbm;
 	}// getSequenceModel()
